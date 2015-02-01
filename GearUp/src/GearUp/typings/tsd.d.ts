@@ -3,3 +3,4 @@
 /// <reference path="knockout/knockout.d.ts" />
 /// <reference path="bootstrap/bootstrap.d.ts" />
 /// <reference path="breeze/breeze.d.ts" />
+/// <reference path="requirejs/require.d.ts" />

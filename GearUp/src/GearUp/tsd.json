@@ -19,6 +19,9 @@
     },
     "breeze/breeze.d.ts": {
       "commit": "7bab855ae33d79e86da1eb6c73a7f7eab2676ddb"
+    },
+    "requirejs/require.d.ts": {
+      "commit": "7bab855ae33d79e86da1eb6c73a7f7eab2676ddb"
     }
   }
 }
