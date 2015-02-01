@@ -6,7 +6,9 @@
     "jquery-validation": "~1.11.1",
     "jquery-validation-unobtrusive": "~3.2.2",
     "durandal": "^2.1.0",
-    "modernizr": "^2.8.3"
+    "modernizr": "^2.8.3",
+    "breezejs": "^1.5.3",
+    "Font-Awesome": "^4.3.0"
   },
   "exportsOverride": {
     "bootstrap": {

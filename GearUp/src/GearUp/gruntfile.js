@@ -5,12 +5,12 @@ module.exports = function (grunt) {
     grunt.initConfig({
         typescript: {
             base: {
-                src: ['ts/**/*.ts'],
+                src: ['app/**/*.ts'],
                 dest: 'wwwroot/js',
                 options: {
                     module: 'amd', //or commonjs 
                     target: 'es5', //or es3 
-                    basePath: 'path/to/typescript/files',
+                    basePath: 'app',
                     sourceMap: true,
                     declaration: true
                 }
@@ -35,13 +35,39 @@ module.exports = function (grunt) {
                 }
             }
         },
+        cssmin: {  
+            sitecss: {  
+                options: {  
+                    banner: '/* My minified css file */'  
+                },  
+                files: {  
+                    'wwwroot/css/site.min.css': [  
+                        'css/site.css']  
+                }  
+            }  
+        },  
+        uglify: {  
+            options: {  
+                //compress: true  
+            },  
+            applib: {  
+                src: [  
+                    'wwwroot/lib/requirejs/require.js',
+                    'wwwroot/lib/jquery/jquery.min.js',
+                    'wwwroot/lib/jquery-validation/jquery.validate.js',  
+                    'wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',  
+   
+                ],  
+                dest: 'wwwroot/lib/vendor.js'  
+            }  
+        },
 
         bower: {
             install: {
                 options: {
                     targetDir: "wwwroot/lib",
                     layout: "byComponent",
-                    cleanTargetDir: true
+                    cleanTargetDir: false
                 }
             }
         }
@@ -50,11 +76,13 @@ module.exports = function (grunt) {
     });
 
     // This command registers the default task which will install bower packages into wwwroot/lib
-    grunt.registerTask("default", ["bower:install"]);
+    grunt.registerTask("default", ["bower:install", "typescript", "uglify", "cssmin"]);
 
     // The following line loads the grunt plugins.
     // This line needs to be at the end of this this file.
     grunt.loadNpmTasks("grunt-bower-task");
     grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-tsd');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 };
