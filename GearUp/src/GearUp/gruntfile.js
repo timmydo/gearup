@@ -39,7 +39,8 @@ module.exports = function (grunt) {
 		cssmin: {
 			vendorcss: {
 				files: {
-					'wwwroot/css/bootstrap.css': ['bower_components/bootstrap/dist/css/bootstrap.min.css']
+					'wwwroot/css/bootstrap.css': ['bower_components/bootstrap/dist/css/bootstrap.min.css'],
+					'wwwroot/css/font-awesome.css': ['bower_components/Font-Awesome/css/font-awesome.min.css']
 				}
 
 			},
@@ -54,7 +55,7 @@ module.exports = function (grunt) {
 			}
 		},
 		clean: {
-			files: { src: ['appjs', 'wwwroot/app', 'wwwroot/lib'] }
+			files: { src: ['appjs', 'wwwroot/app', 'wwwroot/lib', 'wwwroot/css'] }
 		},
 		copy: {
 			ember: {
@@ -76,6 +77,7 @@ module.exports = function (grunt) {
                     'bower_components/bootstrap/dist/js/bootstrap.min.js',
                     'bower_components/breezejs/breeze.debug.js',
                     'bower_components/handlebars/handlebars.min.js',
+                    'bower_components/ember/ember.min.js',
 
 				],
 				dest: 'wwwroot/lib/vendor.js'
