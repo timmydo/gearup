@@ -1,29 +1,25 @@
-﻿requirejs.config({
-	paths: {
-		'text': '/lib/requirejs-text/text',
-		'durandal': '/lib/durandal/js',
-		'plugins': '/lib/durandal/js/plugins',
-		'transitions': '/lib/durandal/js/transitions',
-		'knockout': '/lib/knockout.js/knockout',
-		'jquery': '/lib/jquery/js/jquery'
-	}
+﻿/// <reference path="../../typings/tsd.d.ts" />
+
+interface Window { App: any }
+window.App = Ember.Application.create({
+	LOG_TRANSITIONS: true
 });
 
-define(function (require) {
-	var system = require('durandal/system'),
-		app = require('durandal/app');
+var startup = function (App) {
 
-	system.debug(true);
-
-	app.title = 'Durandal Starter Kit';
-
-	app.configurePlugins({
-		router: true,
-		dialog: true
+	App.ApplicationRoute = Ember.Route.extend({
+		setupController: function (controller) {
+			// `controller` is the instance of ApplicationController
+			controller.set('title', "Hello world!");
+		}
 	});
 
-	app.start().then(function () {
-		app.setRoot('shell');
+	App.ApplicationController = Ember.Controller.extend({
+		appName: 'My First Example'
 	});
-});
+};
+
+startup(window.App);
+
+
 

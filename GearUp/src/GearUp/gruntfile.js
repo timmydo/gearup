@@ -4,9 +4,9 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
 		typescript: {
-			base: {
+			debug: {
 				src: ['app/ts/**/*.ts'],
-				dest: 'appjs',
+				dest: 'wwwroot/app/app.js',
 				options: {
 					references: ['typings/tsd.d.ts'],
 					module: 'amd', //or commonjs 
@@ -37,6 +37,12 @@ module.exports = function (grunt) {
 			}
 		},
 		cssmin: {
+			vendorcss: {
+				files: {
+					'wwwroot/css/bootstrap.css': ['bower_components/bootstrap/dist/css/bootstrap.min.css']
+				}
+
+			},
 			sitecss: {
 				options: {
 					banner: '/* My minified css file */'
@@ -48,21 +54,15 @@ module.exports = function (grunt) {
 			}
 		},
 		clean: {
-			jsfiles: { src: ['appjs', 'wwwroot/app'] }
+			files: { src: ['appjs', 'wwwroot/app', 'wwwroot/lib'] }
 		},
 		copy: {
-			jsfiles: {
-				cwd: 'appjs',
-				src: ['**'],
-				dest: 'wwwroot/app/',
+			ember: {
+				cwd: 'bower_components/ember',
+				src: 'ember.js',
+				dest: 'wwwroot/lib/',
 				expand: true
-			},
-			htmlfiles: {
-				cwd: 'app/html',
-				src: '**',
-				dest: 'wwwroot/app/',
-				expand: true
-			},
+			}
 		},
 		uglify: {
 			options: {
@@ -70,18 +70,19 @@ module.exports = function (grunt) {
 			},
 			applib: {
 				src: [
-                    'wwwroot/lib/requirejs/require.js',
-                    'wwwroot/lib/jquery/jquery.min.js',
-                    'wwwroot/lib/jquery-validation/jquery.validate.js',
-                    'wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
-                    'wwwroot/lib/breezejs/breeze.debug.js',
-                    'wwwroot/lib/knockout/knockout.js',
+                    'bower_components/jquery/jquery.min.js',
+                    'bower_components/jquery-validation/jquery.validate.js',
+                    'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
+                    'bower_components/bootstrap/dist/js/bootstrap.min.js',
+                    'bower_components/breezejs/breeze.debug.js',
+                    'bower_components/handlebars/handlebars.min.js',
 
 				],
 				dest: 'wwwroot/lib/vendor.js'
 			}
 		},
 
+		/*
 		bower: {
 			install: {
 				options: {
@@ -91,6 +92,7 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		*/
 		tslint: { // FIXME
 			options: {
 				//configuration: grunt.file.readJSON("tslint.json")
@@ -99,9 +101,22 @@ module.exports = function (grunt) {
 				src: ['app/ts/**.ts']
 			}
 		},
+		emberTemplates: {
+			compile: {
+				options: {
+					templateFileExtensions: /\.html/,
+					//amd: true,
+					templateBasePath: 'app/html',
+					
+				},
+				files: {
+					"wwwroot/app/templates.js": ["app/html/*.html"]
+				}
+			}
+		},
 		watch: {
 			ts: {
-				files: 'app/*.ts',
+				files: 'app/ts/*.ts',
 				tasks: ['typescript', 'copy:jsfiles'],
 				options: {
 					debounceDelay: 250,
@@ -109,7 +124,7 @@ module.exports = function (grunt) {
 			},
 			html: {
 				files: 'app/html/**.html',
-				tasks: ['typescript', 'copy:htmlfiles'],
+				tasks: ['emberTemplates'],
 				options: {
 					debounceDelay: 250,
 				},
@@ -120,14 +135,13 @@ module.exports = function (grunt) {
 				options: {
 					debounceDelay: 250,
 				},
-			},
+			}
 		},
 
 	});
 
 	// This command registers the default task which will install bower packages into wwwroot/lib
-	grunt.registerTask("default", ["bower:install", "clean", "typescript", "copy"]);
-	grunt.registerTask("full", ["bower:install", "clean", "typescript", "copy", "uglify", "cssmin"]);
+	grunt.registerTask("default", ["clean", "typescript", "copy", "uglify", "cssmin", "emberTemplates"]);
 
 	// The following line loads the grunt plugins.
 	// This line needs to be at the end of this this file.
@@ -140,4 +154,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-tslint');
+	grunt.loadNpmTasks('grunt-ember-templates');
+
 };
