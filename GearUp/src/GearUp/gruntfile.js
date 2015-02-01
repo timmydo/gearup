@@ -3,6 +3,39 @@
 
 module.exports = function (grunt) {
     grunt.initConfig({
+        typescript: {
+            base: {
+                src: ['ts/**/*.ts'],
+                dest: 'wwwroot/js',
+                options: {
+                    module: 'amd', //or commonjs 
+                    target: 'es5', //or es3 
+                    basePath: 'path/to/typescript/files',
+                    sourceMap: true,
+                    declaration: true
+                }
+            }
+        },
+        tsd: {
+            refresh: {
+                options: {
+                    // execute a command
+                    command: 'reinstall',
+
+                    //optional: always get from HEAD
+                    latest: true,
+
+                    // specify config file
+                    config: 'tsd.json',
+
+                    // experimental: options to pass to tsd.API
+                    opts: {
+                        // props from tsd.Options
+                    }
+                }
+            }
+        },
+
         bower: {
             install: {
                 options: {
@@ -12,6 +45,8 @@ module.exports = function (grunt) {
                 }
             }
         }
+
+
     });
 
     // This command registers the default task which will install bower packages into wwwroot/lib
@@ -20,4 +55,6 @@ module.exports = function (grunt) {
     // The following line loads the grunt plugins.
     // This line needs to be at the end of this this file.
     grunt.loadNpmTasks("grunt-bower-task");
+    grunt.loadNpmTasks('grunt-typescript');
+    grunt.loadNpmTasks('grunt-tsd');
 };
