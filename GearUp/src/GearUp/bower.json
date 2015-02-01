@@ -5,7 +5,6 @@
     "bootstrap": "~3.1.0",
     "jquery-validation": "~1.11.1",
     "jquery-validation-unobtrusive": "~3.2.2",
-    "breezejs": "^1.5.3",
     "Font-Awesome": "^4.3.0",
     "ember": "~1.9.1"
   },
