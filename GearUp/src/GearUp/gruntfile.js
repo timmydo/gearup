@@ -58,12 +58,12 @@ module.exports = function (grunt) {
 			files: { src: ['appjs', 'wwwroot/app', 'wwwroot/lib', 'wwwroot/css'] }
 		},
 		copy: {
-			ember: {
+			/*ember: {
 				cwd: 'bower_components/ember',
 				src: 'ember.js',
 				dest: 'wwwroot/lib/',
 				expand: true
-			}
+			}*/
 		},
 		uglify: {
 			options: {
@@ -118,7 +118,7 @@ module.exports = function (grunt) {
 		watch: {
 			ts: {
 				files: 'app/ts/*.ts',
-				tasks: ['typescript', 'copy:jsfiles'],
+				tasks: ['typescript'],
 				options: {
 					debounceDelay: 250,
 				},

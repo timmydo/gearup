@@ -7,12 +7,19 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">Project name</a>
+			<a class="navbar-brand" href="#">{{appName}}</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="/#/">Home</a></li>
-				<li><a href="/#/about">About</a></li>
+
+				{{#view App.NavView}}
+				{{#linkTo "index"}}Home{{/linkTo}}
+				{{/view}}
+				
+				{{#view App.NavView}}
+				{{#linkTo "about"}}About{{/linkTo}}
+				{{/view}}
+
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
@@ -27,15 +34,20 @@
 				</li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="../navbar/">Default</a></li>
-				<li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li>
-				<li><a href="../navbar-fixed-top/">Fixed top</a></li>
+				{{#view App.NavView}}
+				{{#linkTo "register"}}Register{{/linkTo}}
+				{{/view}}
+
+				{{#view App.NavView}}
+				{{#linkTo "login"}}Sign in{{/linkTo}}
+				{{/view}}
+
+
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>
 </nav>
 
+{{outlet}}
 
-<h1>{{appName}}</h1>
 
-<h2>{{title}}</h2>
