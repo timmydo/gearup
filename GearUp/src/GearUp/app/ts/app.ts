@@ -37,7 +37,7 @@ App.Ajax = Ember.Mixin.create({
 
     // perform ajax POST call to retrieve json
     POST: function (url, data) {
-        var settings = { data: data || {}, url: url, dataType: 'json', 'type': 'POST' };
+        var settings = { data: data || {}, url: url, dataType: 'json', 'type': 'POST', contentType: 'application/json; charset=utf-8' };
         var authToken = App.get('authToken');
         if (authToken != null) settings.data.authToken = authToken;
         // post our data as a JSON object in the request body

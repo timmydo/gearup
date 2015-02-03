@@ -7,9 +7,9 @@ App.LoginCreds = Ember.Object.extend({
 
     json: function () {
         return {
-            username: this.get('username'),
-            password: this.get('password'),
-            remember: this.get('remember')
+            username: this.get('username') || '',
+            password: this.get('password') || '',
+            remember: !!this.get('remember')
         }
     }
 });

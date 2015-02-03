@@ -6,40 +6,32 @@ using Newtonsoft.Json;
 
 namespace GearUp.Controllers.Controllers
 {
-	[Route("api/login")]
+	[Route("api/[controller]")]
     public class LoginController : Controller
     {
 
-		class LoginInfo
+		public class LoginInfo
 		{
 			public string username { get; set; }
 			public string password { get; set; }
 			public string remember { get; set; }
 		}
 
-
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+		
 
         // POST api/values
         [HttpPost]
-        public JsonResult Post([FromBody]string value)
+        public JsonResult Post([FromBody]LoginInfo value)
         {
-			var li = JsonConvert.DeserializeObject<LoginInfo>(value);
-
-			return Json(new { authResult = "abc123"});
-        }
+			if (value == null)
+			{
+				return Json(new { error = "login post value was empty"});
+			}
+			else
+			{
+				return Json(new { authResult = value.username + "_abc123" });
+			}
+		}
 
 
     }
