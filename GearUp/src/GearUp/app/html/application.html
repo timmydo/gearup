@@ -35,6 +35,13 @@
 				</li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
+
+				{{#if App.authToken}}
+				
+				<li><button class="btn pull-right" {{action logout}}>Logout</button></li>
+				
+				{{else}}
+
 				{{#view App.NavView}}
 				{{#linkTo "register"}}Register{{/linkTo}}
 				{{/view}}
@@ -44,11 +51,25 @@
 				{{/view}}
 
 
+				{{/if}}
+
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>
 </nav>
 
-{{outlet}}
+<div class="container">
+	{{#if App.error}}
+	<div class="alert alert-error">
+		<button type="button" class="close" data-dismiss="alert"
+				{{action "dismissError"}}>
+			&times;
+		</button>
+		{{App.error}}
+	</div>
+	{{/if}}
 
 
+	{{outlet}}
+
+</div>
