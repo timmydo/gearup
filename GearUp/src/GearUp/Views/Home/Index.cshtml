@@ -4,3 +4,19 @@
 
 
 <script src="/app/app.js?v=@typeof(GearUp.Startup).Assembly.GetName().Version"></script>
+<script type="text/javascript">
+	(function () {
+
+	@if (User.Identity.IsAuthenticated)
+	{
+		<text>App.set('User', '@User.Identity.Name');</text>
+	}
+	else
+	{
+		<text>App.set('User', '');</text>
+
+	}
+
+	})();
+
+</script>

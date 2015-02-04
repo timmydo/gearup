@@ -36,15 +36,18 @@
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 
-				{{#if App.authToken}}
+				{{#if App.User}}
 				
-				<li><button class="btn pull-right" {{action logout}}>Logout</button></li>
+
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{App.User}} <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="/logout">Logout</a></li>
+					</ul>
+				</li>
+
 				
 				{{else}}
-
-				{{#view App.NavView}}
-				{{#linkTo "register"}}Register{{/linkTo}}
-				{{/view}}
 
 				{{#view App.NavView}}
 				{{#linkTo "login"}}Sign in{{/linkTo}}

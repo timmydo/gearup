@@ -33,3 +33,6 @@
   border-top-right-radius: 0;
 }
 
+a:hover > div.btn {
+	text-decoration: none;
+}
