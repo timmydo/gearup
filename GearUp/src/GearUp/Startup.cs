@@ -97,6 +97,11 @@ namespace GearUp
 				options.ClientSecret = "1HBAvwhVIeZF6Jo0O71XeJud";
 			});
 
+			app.UseFacebookAuthentication(options =>
+			{
+				options.ClientId = "1524415717839570";
+				options.ClientSecret = "ddce01745ef5275c31eea6c2c1b9dea8";
+			});
 
 			// Choose an authentication type
 			app.Map("/login", signoutApp =>
