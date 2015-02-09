@@ -12,46 +12,82 @@ window.App = Ember.Application.create({
 });
 
 
-// Mixin to any Route that you want to be able to send authenticated ajax calls from. Calls that fail for auth
-// reasons will result in a redirect to the 'login' route automatically
-//App.Ajax = Ember.Mixin.create({
-//    ajaxSuccessHandler: function (json) {
-//        // in my app, error code 201 is reserved for authentication errors that require a login
-//        if (json.error != null && json.error.code == 201) {
-//            App.error.set(json.error.message);
-//            var self = this;
-//            // delay to let current processing finish.
-//            setTimeout(function () { self.transitionTo('login'); });
-//            // let handlers further down the Promise chain know that we've already handled this one.
-//            return null;
-//        }
-//        return json;
-//    },
 
-//    // perform ajax GET call to retrieve json
-//    GET: function (url, data) {
-//        var settings = { data: data || {}, url: url, dataType: 'json', 'type': 'GET' };
-//        var authToken = App.get('authToken');
-//        if (authToken != null) settings.data.authToken = authToken;
-//        return this.ajax(settings);
-//    },
+module Gear {
 
-//    // perform ajax POST call to retrieve json
-//    POST: function (url, data) {
-//        var settings = { data: data || {}, url: url, dataType: 'json', 'type': 'POST', contentType: 'application/json; charset=utf-8' };
-//        var authToken = App.get('authToken');
-//        if (authToken != null) settings.data.authToken = authToken;
-//        // post our data as a JSON object in the request body
-//        settings.data = JSON.stringify(settings.data);
-//        return this.ajax(settings);
-//    },
+	export class UUID {
+		static v4() {
+			var d = Date.now();
+			var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+				var r = (d + Math.random() * 16) % 16 | 0;
+				d = Math.floor(d / 16);
+				return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+			});
+			return uuid;
+		}
+	}
 
-//    ajax: function (settings) {
-//        var self = this;
-//        return $.ajax(settings).then(function () {
-//            // preserve 'this' for the success handler
-//            return self.ajaxSuccessHandler.apply(self, $.makeArray(arguments));
-//        });
-//    }
-//});
+	export class User {
+		uid: string;
+		title: string;
 
+		constructor() {
+			this.uid = UUID.v4();
+			this.title = 'Random user';
+		}
+
+	}
+
+	export class Image {
+		iid: string;
+		user: string;
+		created: moment.Moment;
+	}
+
+	export class Part {
+		pid: string;
+		creator: User;
+		title: string;
+		description: string;
+		mfrLink: string;
+		buyLink: string[];
+		price: string;
+		type: string;
+		img: Image[];
+		quantity: number;
+
+		constructor() {
+			this.pid = UUID.v4();
+			this.creator = new User();
+			this.title = 'part';
+			this.description = 'part desc';
+			this.mfrLink = 'mfrlink';
+			this.buyLink = [];
+			this.price = 'price';
+			this.type = 'parttype';
+			this.img = [];
+		}
+
+	}
+
+	export class Build {
+		bid: string;
+		modified: moment.Moment;
+		created: moment.Moment;
+		creator: string;
+		title: string;
+
+		parts: Part[]
+
+		constructor() {
+			this.bid = UUID.v4();
+			this.modified = moment();
+			this.created = moment();
+			this.creator = '';
+			this.parts = [];
+			this.title = 'title'
+		}
+
+	}
+
+}

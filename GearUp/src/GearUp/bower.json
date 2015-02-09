@@ -6,7 +6,8 @@
     "jquery-validation": "~1.11.1",
     "jquery-validation-unobtrusive": "~3.2.2",
     "Font-Awesome": "^4.3.0",
-    "ember": "~1.9.1"
+    "ember": "~1.9.1",
+    "moment": "~2.9.0"
   },
   "exportsOverride": {
     "bootstrap": {
@@ -23,5 +24,7 @@
     "jquery-validation-unobtrusive": {
       "": "jquery.validate.unobtrusive.{js,min.js}"
     }
+  },
+  "devDependencies": {
   }
 }

@@ -71,10 +71,11 @@ module.exports = function (grunt) {
 			},
 			applib: {
 				src: [
-                    'bower_components/jquery/jquery.min.js',
+                    'bower_components/jquery/dist/jquery.min.js',
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
                     'bower_components/bootstrap/dist/js/bootstrap.min.js',
+					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.min.js',
                     'bower_components/ember/ember.min.js',
 
