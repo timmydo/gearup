@@ -75,6 +75,7 @@ module.exports = function (grunt) {
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
                     'bower_components/bootstrap/dist/js/bootstrap.min.js',
+					'bower_components/holderjs/holder.min.js',
 					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.min.js',
                     'bower_components/ember/ember.min.js',

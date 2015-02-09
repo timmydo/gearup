@@ -3,6 +3,7 @@
 interface Window { App: any }
 
 declare var App: any;
+declare var Holder: any;
 
 window.App = Ember.Application.create({
 	LOG_TRANSITIONS: true,
@@ -44,48 +45,39 @@ module Gear {
 		created: moment.Moment;
 	}
 
-	export class Part {
-		pid: string;
+	export class Build {
+		version: number;
+		bid: string;
+		modified: number;
+		created: number;
 		creator: User;
+
 		title: string;
 		description: string;
+
 		mfrLink: string;
 		buyLink: string[];
 		price: string;
-		type: string;
-		img: Image[];
-		quantity: number;
+
+		images: Image[];
+		parts: Build[]
 
 		constructor() {
-			this.pid = UUID.v4();
-			this.creator = new User();
-			this.title = 'part';
-			this.description = 'part desc';
-			this.mfrLink = 'mfrlink';
-			this.buyLink = [];
-			this.price = 'price';
-			this.type = 'parttype';
-			this.img = [];
-		}
-
-	}
-
-	export class Build {
-		bid: string;
-		modified: moment.Moment;
-		created: moment.Moment;
-		creator: string;
-		title: string;
-
-		parts: Part[]
-
-		constructor() {
+			this.version = 1;
 			this.bid = UUID.v4();
-			this.modified = moment();
-			this.created = moment();
-			this.creator = '';
+			this.modified = Date.now();
+			this.created = Date.now();
+			this.creator = new User();
+
 			this.parts = [];
-			this.title = 'title'
+			this.images = [];
+
+			this.title = 'Title';
+			this.description = 'No description';
+
+			this.price = 'N/A';
+			this.buyLink = [];
+			this.mfrLink = '';
 		}
 
 	}
