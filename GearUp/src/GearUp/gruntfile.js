@@ -58,12 +58,12 @@ module.exports = function (grunt) {
 			files: { src: ['appjs', 'wwwroot/app', 'wwwroot/lib', 'wwwroot/css'] }
 		},
 		copy: {
-			/*ember: {
-				cwd: 'bower_components/ember',
-				src: 'ember.js',
-				dest: 'wwwroot/lib/',
+			img: {
+				cwd: 'app/img',
+				src: '*.gif',
+				dest: 'wwwroot/img/',
 				expand: true
-			}*/
+			}
 		},
 		uglify: {
 			options: {
@@ -71,7 +71,7 @@ module.exports = function (grunt) {
 			},
 			applib: {
 				src: [
-                    'bower_components/jquery/dist/jquery.min.js',
+                    'bower_components/jquery/jquery.min.js',
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
                     'bower_components/bootstrap/dist/js/bootstrap.min.js',
@@ -79,6 +79,7 @@ module.exports = function (grunt) {
 					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.min.js',
                     'bower_components/ember/ember.min.js',
+                    'bower_components/ember-droplet/dist/ember-droplet.min.js',
 
 				],
 				dest: 'wwwroot/lib/vendor.js'
