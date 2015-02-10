@@ -12,7 +12,7 @@ using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Logging.Console;
-using GearUp.Models;
+//using GearUp.Models;
 using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Security;
 
@@ -34,6 +34,7 @@ namespace GearUp
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Add EF services to the services container.
+			/*
 			services.AddEntityFramework(Configuration)
 				.AddSqlServer()
 				.AddDbContext<ApplicationDbContext>();
@@ -41,7 +42,7 @@ namespace GearUp
 			// Add Identity services to the services container.
 			services.AddIdentity<ApplicationUser, IdentityRole>(Configuration)
 				.AddEntityFrameworkStores<ApplicationDbContext>();
-
+				*/
 			// Add MVC services to the services container.
 			services.AddMvc();
 
@@ -67,7 +68,7 @@ namespace GearUp
 			// Add the following to the request pipeline only in development environment.
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
 			{
-				app.UseBrowserLink();
+				//app.UseBrowserLink();
 				app.UseErrorPage(ErrorPageOptions.ShowAll);
 				app.UseDatabaseErrorPage(DatabaseErrorPageOptions.ShowAll);
 			}

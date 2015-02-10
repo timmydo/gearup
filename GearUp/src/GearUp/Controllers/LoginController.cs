@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
-using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,18 +19,18 @@ namespace GearUp.Controllers.Controllers
 		
 
         // POST api/values
-        [HttpPost]
-        public JsonResult Post([FromBody]LoginInfo value)
-        {
-			if (value == null)
-			{
-				return Json(new { error = "login post value was empty"});
-			}
-			else
-			{
-				return Json(new { authResult = value.username + "_abc123" });
-			}
-		}
+  //      [HttpPost]
+  //      public JsonResult Post([FromBody]LoginInfo value)
+  //      {
+		//	if (value == null)
+		//	{
+		//		return Json(new { error = "login post value was empty"});
+		//	}
+		//	else
+		//	{
+		//		return Json(new { authResult = value.username + "_abc123" });
+		//	}
+		//}
 
 
     }
