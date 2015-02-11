@@ -78,9 +78,7 @@ module.exports = function (grunt) {
 					'bower_components/holderjs/holder.min.js',
 					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.min.js',
-                    'bower_components/ember/ember.min.js',
-                    'bower_components/ember-droplet/dist/ember-droplet.min.js',
-
+                    'bower_components/ember/ember.min.js'
 				],
 				dest: 'wwwroot/lib/vendor.js'
 			}

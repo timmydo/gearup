@@ -1,4 +1,5 @@
 ﻿/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="fileupload.ts" />
 
 interface Window { App: any }
 

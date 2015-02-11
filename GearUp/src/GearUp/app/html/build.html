@@ -9,57 +9,7 @@
 <div class="row">
 
 	<div class="col-xs-12 col-md-8">
-		<h3>Upload Files <small>({{files.length}} in total)</small></h3>
-
-		<ul class="counts">
-			{{#if validFiles.length}}
-				<li class="valid">Valid: {{validFiles.length}}</li>
-			{{/if}}
-			{{#if invalidFiles.length}}
-				<li class="invalid">Invalid: {{invalidFiles.length}}</li>
-			{{/if}}
-			{{#if uploadedFiles.length}}
-				<li class="uploaded">Uploaded: {{uploadedFiles.length}}</li>
-			{{/if}}
-			{{#if deletedFiles.length}}
-				<li class="deleted">Deleted: {{deletedFiles.length}}</li>
-			{{/if}}
-		</ul>
-
-		<div class="btn-toolbar">
-			<button class="btn btn-default" {{action "uploadAllFiles"}}>Upload All</button>
-			<button class="btn btn-default" {{action "abortUpload"}}>Abort Upload</button>
-			<button class="btn btn-default" {{action "clearAllFiles"}}>Clear</button>
-		</div>
-
-		{{#if uploadStatus.uploading}}
-		<h3 class="uploading-percentage">Uploaded Percentage: {{uploadStatus.percentComplete}}%</h3>
-		{{/if}}
-
-
-		<div class="dragdrop-container">
-			{{#view view.DragDrop}}
-			{{#unless validFiles.length}}
-			<span>Drag and drop files here</span>
-			{{/unless}}
-			{{#if uploadStatus.error}}
-			<div class="error">An error occurred during the upload process. Please try again later.</div>
-			{{/if}}
-
-			{{#each controller.validFiles}}
-
-			<div {{bind-attr class="className :file"}}>
-				{{name}}
-				<a class="remove" {{action "deleteFile" this}}>Discard.</a>
-				{{view view.ImagePreview imageBinding="this"}}
-			</div>
-
-			{{/each}}
-
-			{{view view.SingleInput}}
-
-			{{/view}}
-		</div>
+		<div id="upload-box" class="jumbotron">Drag and drop files here...</div>
 	</div>
 
 

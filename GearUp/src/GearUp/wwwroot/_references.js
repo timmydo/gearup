@@ -1,5 +1,4 @@
 ﻿/// <autosync enabled="true" />
-/// <reference path="../gruntfile.js" />
 /// <reference path="app/templates.js" />
 /// <reference path="app/app.js" />
 /// <reference path="lib/ember.js" />

@@ -164,3 +164,13 @@ div.dragdrop-container {
 	padding: 20px;
 }
 
+#upload-box {
+    min-height: 300px;
+    border:dashed;
+    border-width: 4px;
+    border-color: gray;
+}
+
+#upload-box:hover {
+    border-color: lightgreen;
+}
