@@ -1,12 +1,14 @@
 ﻿{
-    "Data": {
-        "DefaultConnection": { 
-            "ConnectionString": "Server=(localdb)\\mssqllocaldb;Database=aspnet5-GearUp-c7c3f6fd-9a1a-4a85-8dff-b2e4d4502deb;Trusted_Connection=True;MultipleActiveResultSets=true"
-        }
-    },
-    "EntityFramework": {
-        "ApplicationDbContext": {
-            "ConnectionStringKey": "Data:DefaultConnection:ConnectionString"
-        }
-    }
+	"BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=gearuptest;AccountKey=H7p5WKcTiBb/uBqN3vvh2tfajMtUcrVSQjuXHK5cvLr0ZI4fXGtQK8W9JGLB4sTtyZ3lq506FAC8f56OPWpuLg==",
+	"BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
+	"Data": {
+		"DefaultConnection": {
+			"ConnectionString": "Server=(localdb)\\mssqllocaldb;Database=aspnet5-GearUp-c7c3f6fd-9a1a-4a85-8dff-b2e4d4502deb;Trusted_Connection=True;MultipleActiveResultSets=true"
+		}
+	},
+	"EntityFramework": {
+		"ApplicationDbContext": {
+			"ConnectionStringKey": "Data:DefaultConnection:ConnectionString"
+		}
+	}
 }

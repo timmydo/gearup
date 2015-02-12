@@ -33,24 +33,18 @@ namespace GearUp
 		// This method gets called by the runtime.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			// Add EF services to the services container.
-			/*
-			services.AddEntityFramework(Configuration)
-				.AddSqlServer()
-				.AddDbContext<ApplicationDbContext>();
+			services.Configure<SiteSettings>(settings =>
+			{
+				settings.BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString");
+				settings.BlobEndpoint = Configuration.Get("BlobEndpoint");
+			});
 
-			// Add Identity services to the services container.
-			services.AddIdentity<ApplicationUser, IdentityRole>(Configuration)
-				.AddEntityFrameworkStores<ApplicationDbContext>();
-				*/
-			// Add MVC services to the services container.
+			
 			services.AddMvc();
 
-			// Uncomment the following line to add Web API servcies which makes it easier to port Web API 2 controllers.
-			// You need to add Microsoft.AspNet.Mvc.WebApiCompatShim package to project.json
-			// services.AddWebApiConventions();
-
 			services.AddDataProtection();
+
+
 			services.Configure<ExternalAuthenticationOptions>(options =>
 			{
 				options.SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType;
