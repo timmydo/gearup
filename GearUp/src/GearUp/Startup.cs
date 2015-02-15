@@ -31,7 +31,7 @@ namespace GearUp
 		public IConfiguration Configuration { get; set; }
 
 		// This method gets called by the runtime.
-		public void ConfigureServices(IServiceCollection services)
+		public void ConfigureServices(IServiceCollection services, ILoggerFactory loggerfactory)
 		{
 			services.Configure<SiteSettings>(settings =>
 			{
@@ -39,7 +39,19 @@ namespace GearUp
 				settings.BlobEndpoint = Configuration.Get("BlobEndpoint");
 			});
 
-			
+			var mySettings = new SiteSettings()
+			{
+				BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString"),
+				BlobEndpoint = Configuration.Get("BlobEndpoint")
+			};
+
+			services.AddInstance<SiteSettings>(mySettings);
+
+			loggerfactory.AddConsole();
+			var logger = loggerfactory.Create(typeof(Startup).FullName);
+			logger.WriteInformation("Creating Logger");
+			services.AddInstance<ILogger>(logger);
+
 			services.AddMvc();
 
 			services.AddDataProtection();
@@ -53,12 +65,8 @@ namespace GearUp
 		}
 
 		// Configure is called after ConfigureServices is called.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
-			// Configure the HTTP request pipeline.
-			// Add the console logger.
-			loggerfactory.AddConsole();
-
 			// Add the following to the request pipeline only in development environment.
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
 			{
@@ -73,6 +81,9 @@ namespace GearUp
 				app.UseErrorHandler("/Home/Error");
 			}
 
+			//app.UseServices(services =>
+			//{
+			//});
 
 			// Add static files to the request pipeline.
 			app.UseStaticFiles();

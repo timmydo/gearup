@@ -7,6 +7,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Framework.Logging;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,12 +25,13 @@ namespace GearUp.Controllers.Controllers
 		}
 
 
-		private CloudStorageAccount _storageAccount;
+		private readonly CloudStorageAccount _storageAccount;
+		private readonly ILogger _logger;
 
-
-		public UploadImageController(SiteSettings settings)
+		public UploadImageController(SiteSettings settings, ILogger logger)
 		{
 			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
+			this._logger = logger;
 		}
 
 
@@ -38,6 +40,8 @@ namespace GearUp.Controllers.Controllers
 		[Produces("application/json", "text/json")]
 		public async Task<UploadImageResult> Post(IList<IFormFile> files)
 		{
+			_logger.WriteInformation("Upload Images, file count = {0}", files.Count);
+
 			var result = new UploadImageResult();
 			var list = new List<string>();
 			var client = this._storageAccount.CreateCloudBlobClient();

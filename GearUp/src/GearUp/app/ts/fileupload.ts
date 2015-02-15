@@ -62,7 +62,7 @@ class FileUpload {
 					var xhr = $.ajaxSettings.xhr();
 					if (xhr.upload) {
 						xhr.upload.addEventListener('progress',(event) => {
-							//notify(event);
+							this.progress(event);
 						}, false);
 					}
 					return xhr;
