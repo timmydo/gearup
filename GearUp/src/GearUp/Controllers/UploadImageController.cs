@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.Framework.Logging;
+using System.IO;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,7 +21,7 @@ namespace GearUp.Controllers.Controllers
 		public class UploadImageResult
 		{
 			public string Message { get; set; }
-			public string[] Guids {get; set;}
+			public string Guid {get; set;}
 
 		}
 
@@ -34,34 +35,38 @@ namespace GearUp.Controllers.Controllers
 			this._logger = logger;
 		}
 
+		public readonly string[] ValidContentTypes = { "image/png", "image/jpeg", "image/gif"};
 
 		// POST api/values
 		[HttpPost]
 		[Produces("application/json", "text/json")]
-		public async Task<UploadImageResult> Post(IList<IFormFile> files)
+		public async Task<UploadImageResult> Post()
 		{
-			_logger.WriteInformation("Upload Images, file count = {0}", files.Count);
+			var stream = Request.Body;
+			var result = new UploadImageResult()
+			{
+				Message = "Error",
+				Guid = Guid.NewGuid().ToString()
+			};
 
-			var result = new UploadImageResult();
-			var list = new List<string>();
+			if (!ValidContentTypes.Contains(Request.ContentType))
+			{
+				result.Message = "Invalid Content Type";
+				await Task.Yield(); //fixme what do i do here?
+				return result;
+			}
+
+			_logger.WriteInformation("Upload Image, Content Type: " + Request.ContentType);
+
 			var client = this._storageAccount.CreateCloudBlobClient();
 			var container = client.GetContainerReference("uploadimages");
-			
-			foreach (var f in files)
-			{
-				if (f.ContentType == "blah") {
 
-				}
-				using (var stream = f.OpenReadStream())
-				{
-					var guid = Guid.NewGuid().ToString();
-					var blob = container.GetBlockBlobReference(guid);
-					await blob.UploadFromStreamAsync(stream);
-					list.Add(guid);
-				}
-			}
-			result.Message = "fixme";
-			result.Guids = list.ToArray();
+			var blob = container.GetBlockBlobReference(result.Guid);
+			await blob.UploadFromStreamAsync(stream);
+			blob.Properties.ContentType = Request.ContentType;
+			await blob.SetPropertiesAsync();
+			result.Message = "Uploaded";
+
 
 			return result;
 

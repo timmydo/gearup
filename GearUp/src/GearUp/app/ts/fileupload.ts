@@ -42,32 +42,66 @@ class FileUpload {
     }
 
 	private uploadAsync(file: File) {
-        var formData = new FormData();
-        formData.append('fileData', file);
+        //var formData = new FormData();
+        //formData.append('fileData', file);
+		var fileuploadInstance = this;
+		
         return new Ember.RSVP.Promise(function (resolve, reject) {
-			$.ajax({
-				type: 'POST',
-				url: '/api/UploadImage',
-				data: formData,
-				cache: false,
-				contentType: false, //read from formData
-				processData: false,
-				success: (resp, status, jqxhr) => {
-					resolve(resp);
-				},
-				error: (jqxhr, status, error) => {
-					reject(error);
-				},
-				xhr: () => {
-					var xhr = $.ajaxSettings.xhr();
-					if (xhr.upload) {
-						xhr.upload.addEventListener('progress',(event) => {
-							this.progress(event);
-						}, false);
-					}
-					return xhr;
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/api/UploadImage', true);
+			xhr.onload = function (e) {
+				if (this.status == 200) {
+					console.log(this.response);
+					resolve(this.response);
+				} else {
+					reject(this.response);
 				}
-			});
+			};
+			xhr.onerror = function (e) {
+				reject(e.error);
+			};
+			xhr.upload.onprogress = function (e) {
+				if (e.lengthComputable) {
+					var value = (e.loaded / e.total) * 100;
+					fileuploadInstance.progress(value);
+				}
+			};
+
+			xhr.setRequestHeader('Content-Type', file.type);
+			xhr.send(file);
+
+			//var reader = new FileReader();
+			//reader.onload = function (e) {
+			//	console.log('reader onload');
+			//	console.log(e);
+			//	//xhr.send(e.target);
+			//}
+			//reader.readAsArrayBuffer(file);
+
+
+			//$.ajax({
+			//	type: 'POST',
+			//	url: '/api/UploadImage',
+			//	data: formData,
+			//	cache: false,
+			//	contentType: false, //read from formData
+			//	processData: false,
+			//	success: (resp, status, jqxhr) => {
+			//		resolve(resp);
+			//	},
+			//	error: (jqxhr, status, error) => {
+			//		reject(error);
+			//	},
+			//	xhr: () => {
+			//		var xhr = $.ajaxSettings.xhr();
+			//		if (xhr.upload) {
+			//			xhr.upload.addEventListener('progress',(event) => {
+			//				this.progress(event);
+			//			}, false);
+			//		}
+			//		return xhr;
+			//	}
+			//});
 		});
 	}
 
