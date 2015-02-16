@@ -15,6 +15,11 @@ using Microsoft.Framework.Logging.Console;
 //using GearUp.Models;
 using Microsoft.AspNet.Http.Security;
 using Microsoft.AspNet.Security;
+using Microsoft.AspNet.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Linq;
+using GearUp.Services;
 
 namespace GearUp
 {
@@ -33,16 +38,15 @@ namespace GearUp
 		// This method gets called by the runtime.
 		public void ConfigureServices(IServiceCollection services, ILoggerFactory loggerfactory)
 		{
-			services.Configure<SiteSettings>(settings =>
-			{
-				settings.BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString");
-				settings.BlobEndpoint = Configuration.Get("BlobEndpoint");
-			});
 
 			var mySettings = new SiteSettings()
 			{
 				BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString"),
-				BlobEndpoint = Configuration.Get("BlobEndpoint")
+				BlobEndpoint = Configuration.Get("BlobEndpoint"),
+				DocumentDatabaseId = Configuration.Get("DocumentDatabaseId"),
+				DocumentCollectionId = Configuration.Get("DocumentCollectionId"),
+				DocumentEndpoint = Configuration.Get("DocumentEndpoint"),
+				DocumentKey = Configuration.Get("DocumentKey"),
 			};
 
 			services.AddInstance<SiteSettings>(mySettings);
@@ -52,7 +56,17 @@ namespace GearUp
 			logger.WriteInformation("Creating Logger");
 			services.AddInstance<ILogger>(logger);
 
-			services.AddMvc();
+			services.AddSingleton<DocumentDB>();
+
+			services.AddMvc().Configure<MvcOptions>(options =>
+			{
+				options.OutputFormatters
+						   .Where(f => f.Instance is JsonOutputFormatter)
+						   .Select(f => f.Instance as JsonOutputFormatter)
+						   .First()
+						   .SerializerSettings
+						   .ContractResolver = new CamelCasePropertyNamesContractResolver();
+			});
 
 			services.AddDataProtection();
 

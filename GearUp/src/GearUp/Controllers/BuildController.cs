@@ -6,6 +6,7 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.Framework.Logging;
 using GearUp.Models;
 using System.Threading.Tasks;
+using GearUp.Services;
 
 namespace GearUp.Controllers
 {
@@ -14,9 +15,11 @@ namespace GearUp.Controllers
     {
 
 		private readonly ILogger _logger;
+		private readonly DocumentDB _ddb;
 
-		public BuildController(SiteSettings settings, ILogger logger)
+		public BuildController(DocumentDB ddb, ILogger logger)
 		{
+			this._ddb = ddb;
 			this._logger = logger;
 		}
 
@@ -25,8 +28,14 @@ namespace GearUp.Controllers
 		[HttpGet("{id}")]
 		public async Task<Build> GetById(string id)
 		{
-			await Task.Yield();
-			var b = new Build() { Id = id };
+			var b = this._ddb.GetBuild(id);
+			if (b == null)
+			{
+				b = new Build();
+				b.Id = id;
+				b.Title = "Newly Created Build";
+				await this._ddb.CreateBuildAsync(b);
+			}
 			return b;
 		}
 
