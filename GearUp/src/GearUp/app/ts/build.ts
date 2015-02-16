@@ -3,14 +3,10 @@
 declare var DropletView: any;
 declare var DropletController: any;
 
-var testbuild = new Gear.Build();
-testbuild.parts = [new Gear.Build()];
-
 
 App.BuildRoute = Ember.Route.extend({
-	model: function () {
-		console.log(testbuild);
-		return testbuild;
+	model: function (params) {
+		return Ember.$.getJSON('/api/build/' + params.bid);
 	}
 });
 
@@ -25,6 +21,7 @@ App.BuildController = Ember.ObjectController.extend({
 
 
 App.BuildView = Ember.View.extend({
+	attributeBindings: ['data-guid'],
     didInsertElement: function () {
 		console.log('run holder');
         Ember.run.next(null, function () {
@@ -39,12 +36,13 @@ App.BuildView = Ember.View.extend({
             var drop = (e: JQueryEventObject) => {
                 e.stopPropagation();
                 e.preventDefault();
-                var files = (<any>e).dataTransfer.files
+                var files = (<any>e).dataTransfer.files;
+				var bid = $('#upload-box').attr('data-guid');
 				//$log.log('Upload');
 				//$log.log(files);
 				for (var i = 0; i < files.length; i++) {
 					var file = files[i];
-					var upload = new FileUpload(file);
+					var upload = new FileUpload(file, bid);
 					upload.start();
 					//fileUploads.push(upload);
 				}

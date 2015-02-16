@@ -32,8 +32,7 @@ namespace GearUp.Controllers
 			if (b == null)
 			{
 				b = new Build();
-				b.Id = id;
-				b.Title = "Newly Created Build";
+				b.id = id;
 				await this._ddb.CreateBuildAsync(b);
 			}
 			return b;

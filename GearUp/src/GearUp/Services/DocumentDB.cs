@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace GearUp.Services
 {
-    public class DocumentDB
-    {
+	public class DocumentDB
+	{
 
 		private SiteSettings _settings;
 		private ILogger _logger;
@@ -98,34 +98,65 @@ namespace GearUp.Services
 			return db;
 		}
 
+		public async Task AddImageToBuildAsync(string buildGuid, string imageGuid)
+		{
+			var b = GetBuild(buildGuid);
+			if (b != null)
+			{
+				b.Images.Add(new Image() { Guid = imageGuid });
+				await UpdateBuildAsync(b);
+			}
+			else
+			{
+				this._logger.WriteError("AddImageToBuild: Cannot find build: " + buildGuid);
+			}
+		}
 
 		public async Task<Document> CreateBuildAsync(Build item)
 		{
-			this._logger.WriteInformation("Creating build, id: " + item.Id);
+			this._logger.WriteInformation("Creating build, id: " + item.id);
 			return await Client.CreateDocumentAsync(Collection.SelfLink, item);
 		}
 
 		public Build GetBuild(string id)
 		{
+			this._logger.WriteInformation("GetBuild id = " + id);
 			var b = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
-						.Where(d => d.Id == id)
+						.Where(d => d.id == id)
 						.AsEnumerable()
 						.FirstOrDefault();
-			//this._logger.WriteInformation("GetBuild id = " + id + " returns " + b == null ? "null" :  b.ToString());
-			this._logger.WriteInformation("GetBuild id = " + id);
 
 			return b;
 		}
 
-		public async Task<Document> UpdateBuildAsync(Build item)
+		public async Task UpdateBuildAsync(Build item)
 		{
-			this._logger.WriteInformation("Updating build, id: " + item.Id);
-			Document doc = Client.CreateDocumentQuery(Collection.DocumentsLink)
-								.Where(d => d.Id == item.Id)
+			this._logger.WriteInformation("Updating build, id: " + item.id);
+			var doc = Client.CreateDocumentQuery(Collection.DocumentsLink)
+								.Where(d => d.Id == item.id)
 								.AsEnumerable()
 								.FirstOrDefault();
 
-			return await Client.ReplaceDocumentAsync(doc.SelfLink, item);
+			//var doc = Client.CreateDocumentQuery<Document>(Collection.DocumentsLink, new SqlQuerySpec
+			//{
+			//	QueryText = "SELECT * FROM Builds b WHERE b.id = @myid",
+			//	Parameters = new SqlParameterCollection()
+			//	{
+			//		new SqlParameter("@myid",item.id)
+			//	}
+			//}).AsEnumerable().FirstOrDefault();
+
+
+
+
+			if (doc == null)
+			{
+				this._logger.WriteError("Cannot find item id = " + item.id);
+				return;
+			}
+
+			this._logger.WriteInformation("Replacing build selflink= " + doc.SelfLink);
+			await Client.ReplaceDocumentAsync(doc.SelfLink, item);
 		}
 
 	}

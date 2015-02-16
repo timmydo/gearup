@@ -10,6 +10,7 @@ using Microsoft.AspNet.Security.Cookies;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Logging.Console;
 //using GearUp.Models;
@@ -54,8 +55,8 @@ namespace GearUp
 			loggerfactory.AddConsole();
 			var logger = loggerfactory.Create(typeof(Startup).FullName);
 			logger.WriteInformation("Creating Logger");
-			services.AddInstance<ILogger>(logger);
 
+			services.AddInstance<ILogger>(logger);
 			services.AddSingleton<DocumentDB>();
 
 			services.AddMvc().Configure<MvcOptions>(options =>
@@ -95,9 +96,6 @@ namespace GearUp
 				app.UseErrorHandler("/Home/Error");
 			}
 
-			//app.UseServices(services =>
-			//{
-			//});
 
 			// Add static files to the request pipeline.
 			app.UseStaticFiles();
@@ -107,76 +105,10 @@ namespace GearUp
 
 			app.UseCookieAuthentication(options =>
 			{
-				options.LoginPath = new PathString("/login");
+				options.LoginPath = new PathString(Configuration.Get("LoginPath"));
 			});
 
-
-			app.UseGoogleAuthentication(options =>
-			{
-				options.ClientId = "332102071004-38tstqp212sbssfgkn5fil5s2qhs9upl.apps.googleusercontent.com";
-				options.ClientSecret = "1HBAvwhVIeZF6Jo0O71XeJud";
-			});
-
-			app.UseFacebookAuthentication(options =>
-			{
-				options.ClientId = "1524415717839570";
-				options.ClientSecret = "ddce01745ef5275c31eea6c2c1b9dea8";
-			});
-
-			// Choose an authentication type
-			app.Map("/login", signoutApp =>
-			{
-				signoutApp.Run(async context =>
-				{
-					string authType = context.Request.Query["authtype"];
-					if (!string.IsNullOrEmpty(authType))
-					{
-						// By default the client will be redirect back to the URL that issued the challenge (/login?authtype=foo),
-						// send them to the home page instead (/).
-						context.Response.Challenge(new AuthenticationProperties() { RedirectUri = "/" }, authType);
-						return;
-					}
-
-					context.Response.ContentType = "text/html";
-					await context.Response.WriteAsync("<html><body>");
-					await context.Response.WriteAsync("Choose an authentication type: <br>");
-					foreach (var type in context.GetAuthenticationTypes())
-					{
-						await context.Response.WriteAsync("<a href=\"?authtype=" + type.AuthenticationType + "\">" + (type.Caption ?? "(suppressed)") + "</a><br>");
-					}
-					await context.Response.WriteAsync("</body></html>");
-				});
-			});
-
-			// Sign-out to remove the user cookie.
-			app.Map("/logout", signoutApp =>
-			{
-				signoutApp.Run(async context =>
-				{
-					context.Response.SignOut(CookieAuthenticationDefaults.AuthenticationType);
-					context.Response.ContentType = "text/html";
-					await context.Response.WriteAsync("<html><body>");
-					await context.Response.WriteAsync("You have been logged out. Goodbye " + context.User.Identity.Name + "<br>");
-					await context.Response.WriteAsync("<a href=\"/\">Home</a>");
-					await context.Response.WriteAsync("</body></html>");
-				});
-			});
-
-			app.Map("/me", meApp =>
-			{
-				meApp.Run(async context =>
-				{
-					context.Response.ContentType = "text/html";
-					await context.Response.WriteAsync("<html><body>");
-					await context.Response.WriteAsync("Hello " + context.User.Identity.Name + "<br>");
-					foreach (var claim in context.User.Claims)
-					{
-						await context.Response.WriteAsync(claim.Type + ": " + claim.Value + "<br>");
-					}
-					await context.Response.WriteAsync("<a href=\"/logout\">Logout</a>");
-					await context.Response.WriteAsync("</body></html>");
-				});
-			});
+			ExternalLogin.Setup(app, Configuration);
 
 			// Add MVC to the request pipeline.
 			app.UseMvc(routes =>
@@ -185,9 +117,6 @@ namespace GearUp
 					name: "default",
 					template: "{controller}/{action}/{id?}",
 					defaults: new { controller = "Home", action = "Index" });
-
-				// Uncomment the following line to add a route for porting Web API 2 controllers.
-				// routes.MapWebApiRoute("DefaultApi", "api/{controller}/{id?}");
 			});
 		}
 	}

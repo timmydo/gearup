@@ -1,10 +1,18 @@
 ﻿{
+
+	"LoginPath": "/login",
+
+	"GoogleClientId": "332102071004-38tstqp212sbssfgkn5fil5s2qhs9upl.apps.googleusercontent.com",
+	"GoogleClientSecret": "1HBAvwhVIeZF6Jo0O71XeJud",
+	"FacebookClientId": "1524415717839570",
+	"FacebookClientSecret": "ddce01745ef5275c31eea6c2c1b9dea8",
+
 	"BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=gearuptest;AccountKey=H7p5WKcTiBb/uBqN3vvh2tfajMtUcrVSQjuXHK5cvLr0ZI4fXGtQK8W9JGLB4sTtyZ3lq506FAC8f56OPWpuLg==",
 	"BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
 
 
 	"DocumentDatabaseId": "gearup",
-	"DocumentCollectionId":  "main",
+	"DocumentCollectionId": "main",
 	"DocumentEndpoint": "https://gearuptest.documents.azure.com:443/",
 	"DocumentKey": "hUPGPj2iu/7sQ/g1GteUG/uDxEW1xpLRVk1aohRqTKYtSbCShPsiWVSd1ciewqWOCoJu6GqTd7awTB97iO6d4Q==",
 

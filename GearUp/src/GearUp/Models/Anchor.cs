@@ -4,8 +4,11 @@ namespace GearUp.Models
 {
     public class Anchor
     {
-		public string Id { get; set; }
 		public string Url { get; set; }
 
+		public Anchor()
+		{
+			Url = string.Empty;
+		}
     }
 }

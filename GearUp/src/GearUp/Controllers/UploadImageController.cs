@@ -29,11 +29,13 @@ namespace GearUp.Controllers.Controllers
 
 		private readonly CloudStorageAccount _storageAccount;
 		private readonly ILogger _logger;
+		private readonly DocumentDB _ddb;
 
-		public UploadImageController(SiteSettings settings, ILogger logger)
+		public UploadImageController(SiteSettings settings, ILogger logger, DocumentDB ddb)
 		{
 			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
 			this._logger = logger;
+			this._ddb = ddb;
 		}
 
 		public readonly string[] ValidContentTypes = { "image/png", "image/jpeg", "image/gif"};
@@ -41,7 +43,7 @@ namespace GearUp.Controllers.Controllers
 		// POST api/values
 		[HttpPost]
 		[Produces("application/json", "text/json")]
-		public async Task<UploadImageResult> Post()
+		public async Task<UploadImageResult> Post([FromQuery]string buildid)
 		{
 			var stream = Request.Body;
 			var result = new UploadImageResult()
@@ -57,7 +59,14 @@ namespace GearUp.Controllers.Controllers
 				return result;
 			}
 
-			_logger.WriteInformation("Upload Image, Content Type: " + Request.ContentType);
+			if (string.IsNullOrEmpty(buildid))
+			{
+				result.Message = "Invalid Build ID";
+				await Task.Yield();	//fixme what do i do here?
+				return result;
+			}
+
+			_logger.WriteInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
 
 			var client = this._storageAccount.CreateCloudBlobClient();
 			var container = client.GetContainerReference("uploadimages");
@@ -67,7 +76,7 @@ namespace GearUp.Controllers.Controllers
 			blob.Properties.ContentType = Request.ContentType;
 			await blob.SetPropertiesAsync();
 			result.Message = "Uploaded";
-
+			await this._ddb.AddImageToBuildAsync(buildid, result.Guid);
 
 			return result;
 

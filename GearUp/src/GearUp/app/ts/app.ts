@@ -29,58 +29,5 @@ module Gear {
 		}
 	}
 
-	export class User {
-		uid: string;
-		title: string;
-
-		constructor() {
-			this.uid = UUID.v4();
-			this.title = 'Random user';
-		}
-
-	}
-
-	export class Image {
-		iid: string;
-		user: string;
-		created: moment.Moment;
-	}
-
-	export class Build {
-		version: number;
-		bid: string;
-		modified: number;
-		created: number;
-		creator: User;
-
-		title: string;
-		description: string;
-
-		mfrLink: string;
-		buyLink: string[];
-		price: string;
-
-		images: Image[];
-		parts: Build[]
-
-		constructor() {
-			this.version = 1;
-			this.bid = UUID.v4();
-			this.modified = Date.now();
-			this.created = Date.now();
-			this.creator = new User();
-
-			this.parts = [];
-			this.images = [];
-
-			this.title = 'Title';
-			this.description = 'No description';
-
-			this.price = 'N/A';
-			this.buyLink = [];
-			this.mfrLink = '';
-		}
-
-	}
 
 }

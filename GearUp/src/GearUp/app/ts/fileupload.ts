@@ -7,7 +7,7 @@ class FileUpload {
     public statusString: string;
     public fileid: string;
 
-    constructor(public file: File) {
+    constructor(public file: File, public buildid) {
         this.percentDone = 0;
         this.statusString = 'Starting...';
     }
@@ -48,7 +48,7 @@ class FileUpload {
 		
         return new Ember.RSVP.Promise(function (resolve, reject) {
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/api/UploadImage', true);
+			xhr.open('POST', '/api/UploadImage?buildid=' + fileuploadInstance.buildid, true);
 			xhr.onload = function (e) {
 				if (this.status == 200) {
 					console.log(this.response);
