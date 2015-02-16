@@ -144,6 +144,7 @@ namespace GearUp.Services
 			}
 
 			this._logger.WriteInformation("Replacing build selflink= " + doc.SelfLink);
+			item.Modifed = DateTime.UtcNow;
 			await Client.ReplaceDocumentAsync(doc.SelfLink, item);
 		}
 
