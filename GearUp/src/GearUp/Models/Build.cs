@@ -9,7 +9,7 @@ namespace GearUp.Models
 		{
 			Version = 1;
 			id = System.Guid.NewGuid().ToString();
-			Modifed = DateTime.UtcNow.ToString("s");
+			Modifed = DateTime.UtcNow;
 			Created = Modifed;
 			Creator = new User();
 			Title = "New Build";
@@ -24,8 +24,8 @@ namespace GearUp.Models
 
 		public int Version { get; set; }
 		public string id { get; set; }
-		public string Modifed { get; set; }
-		public string Created { get; set; }
+		public DateTime Modifed { get; set; }
+		public DateTime Created { get; set; }
 		public User Creator { get; set; }
 
 		public string Title { get; set; }

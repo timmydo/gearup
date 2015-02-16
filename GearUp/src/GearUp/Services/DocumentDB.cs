@@ -137,18 +137,6 @@ namespace GearUp.Services
 								.AsEnumerable()
 								.FirstOrDefault();
 
-			//var doc = Client.CreateDocumentQuery<Document>(Collection.DocumentsLink, new SqlQuerySpec
-			//{
-			//	QueryText = "SELECT * FROM Builds b WHERE b.id = @myid",
-			//	Parameters = new SqlParameterCollection()
-			//	{
-			//		new SqlParameter("@myid",item.id)
-			//	}
-			//}).AsEnumerable().FirstOrDefault();
-
-
-
-
 			if (doc == null)
 			{
 				this._logger.WriteError("Cannot find item id = " + item.id);
