@@ -111,7 +111,8 @@ namespace GearUp.Services
 						.Where(d => d.Id == id)
 						.AsEnumerable()
 						.FirstOrDefault();
-			this._logger.WriteInformation("GetBuild id = " + id + " returns " + b.ToString());
+			//this._logger.WriteInformation("GetBuild id = " + id + " returns " + b == null ? "null" :  b.ToString());
+			this._logger.WriteInformation("GetBuild id = " + id);
 
 			return b;
 		}
