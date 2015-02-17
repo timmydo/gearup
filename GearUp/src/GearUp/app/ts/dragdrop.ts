@@ -1,0 +1,25 @@
+﻿/// <reference path="app.ts" />
+
+App.DragDropComponent = Ember.Component.extend({
+	classNames: ['draggable-dropzone'],
+	classNameBindings: ['dragClass'],
+	dragClass: 'deactivated',
+
+	dragLeave(event) {
+		event.preventDefault();
+		Ember.set(this, 'dragClass', 'deactivated');
+	},
+
+	dragOver(event) {
+		event.preventDefault();
+		Ember.set(this, 'dragClass', 'activated');
+	},
+
+	drop(event) {
+		var data = event.dataTransfer;
+		this.sendAction('dropped', data, this.get('guid'));
+
+		Ember.set(this, 'dragClass', 'deactivated');
+	}
+});
+

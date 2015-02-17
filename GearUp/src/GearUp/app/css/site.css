@@ -164,23 +164,21 @@ div.dragdrop-container {
 	padding: 20px;
 }
 
-#upload-box {
+.draggable-dropzone {
     min-height: 300px;
-    border:dashed;
-    border-width: 4px;
-    border-color: gray;
 }
 
-#upload-box:hover {
-    border-color: lightgreen;
+.draggable-dropzone.activated {
+   background: rgb(54, 54, 200);
+   background: rgba(54, 54, 200, 0.25); 
 }
 
 div.build-image-thumbnail {
-	max-width: 300px;
+	max-width: 100px;
 
 }
 
 img.build-image-thumbnail {
-	max-width: 250px;
+	max-width: 100px;
 
 }

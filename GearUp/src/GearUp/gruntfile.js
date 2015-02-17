@@ -112,7 +112,7 @@ module.exports = function (grunt) {
 					
 				},
 				files: {
-					"wwwroot/app/templates.js": ["app/html/*.html"]
+					"wwwroot/app/templates.js": ["app/html/**/*.html"]
 				}
 			}
 		},
@@ -125,7 +125,7 @@ module.exports = function (grunt) {
 				},
 			},
 			html: {
-				files: 'app/html/**.html',
+				files: 'app/html/**/*.html',
 				tasks: ['emberTemplates'],
 				options: {
 					debounceDelay: 250,
