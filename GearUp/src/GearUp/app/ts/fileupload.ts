@@ -42,8 +42,6 @@ class FileUpload {
     }
 
 	private uploadAsync(file: File) {
-        //var formData = new FormData();
-        //formData.append('fileData', file);
 		var fileuploadInstance = this;
 		
         return new Ember.RSVP.Promise(function (resolve, reject) {
@@ -51,7 +49,6 @@ class FileUpload {
 			xhr.open('POST', '/api/UploadImage?buildid=' + fileuploadInstance.buildid, true);
 			xhr.onload = function (e) {
 				if (this.status == 200) {
-					console.log(this.response);
 					resolve(this.response);
 				} else {
 					reject(this.response);
@@ -69,39 +66,6 @@ class FileUpload {
 
 			xhr.setRequestHeader('Content-Type', file.type);
 			xhr.send(file);
-
-			//var reader = new FileReader();
-			//reader.onload = function (e) {
-			//	console.log('reader onload');
-			//	console.log(e);
-			//	//xhr.send(e.target);
-			//}
-			//reader.readAsArrayBuffer(file);
-
-
-			//$.ajax({
-			//	type: 'POST',
-			//	url: '/api/UploadImage',
-			//	data: formData,
-			//	cache: false,
-			//	contentType: false, //read from formData
-			//	processData: false,
-			//	success: (resp, status, jqxhr) => {
-			//		resolve(resp);
-			//	},
-			//	error: (jqxhr, status, error) => {
-			//		reject(error);
-			//	},
-			//	xhr: () => {
-			//		var xhr = $.ajaxSettings.xhr();
-			//		if (xhr.upload) {
-			//			xhr.upload.addEventListener('progress',(event) => {
-			//				this.progress(event);
-			//			}, false);
-			//		}
-			//		return xhr;
-			//	}
-			//});
 		});
 	}
 
@@ -111,14 +75,7 @@ class FileUpload {
             return;
         }
         var prom = this.uploadAsync(this.file);
-        return prom.then((val) => {
-            this.success(val);
-        },(val) => {
-                this.error(val);
-            }/*,(val) => {
-                this.progress(val);
-		}*/
-			);
+        return prom;
     }
 
 }

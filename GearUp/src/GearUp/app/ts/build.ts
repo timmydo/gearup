@@ -19,11 +19,15 @@ App.BuildController = Ember.ObjectController.extend({
 
 });
 
+Ember.Handlebars.registerHelper('buildImage', function (name, env) {
+	var guid = Ember.get(env.data.view.content, name);
+	return new Ember.Handlebars.SafeString('<img class="build-image-thumbnail" src="' + App.ImageEndpoint + '/' + guid + '" />');
+});
+
 
 App.BuildView = Ember.View.extend({
 	attributeBindings: ['data-guid'],
     didInsertElement: function () {
-		console.log('run holder');
         Ember.run.next(null, function () {
             Holder.run();
 
@@ -49,7 +53,6 @@ App.BuildView = Ember.View.extend({
                 return false;
             };
 
-            console.log('binding events');
             $('#upload-box').bind('dragover', preventDefault);
             $('#upload-box').bind('dragenter', preventDefault);
             $('#upload-box').bind('drop', drop);

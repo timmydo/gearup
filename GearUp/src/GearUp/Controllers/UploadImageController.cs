@@ -30,10 +30,12 @@ namespace GearUp.Controllers.Controllers
 		private readonly CloudStorageAccount _storageAccount;
 		private readonly ILogger _logger;
 		private readonly DocumentDB _ddb;
+		private readonly string _imagesContainer;
 
 		public UploadImageController(SiteSettings settings, ILogger logger, DocumentDB ddb)
 		{
 			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
+			this._imagesContainer = settings.ImagesContainer;
 			this._logger = logger;
 			this._ddb = ddb;
 		}
@@ -69,7 +71,7 @@ namespace GearUp.Controllers.Controllers
 			_logger.WriteInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
 
 			var client = this._storageAccount.CreateCloudBlobClient();
-			var container = client.GetContainerReference("uploadimages");
+			var container = client.GetContainerReference(this._imagesContainer);
 
 			var blob = container.GetBlockBlobReference(result.Guid);
 			await blob.UploadFromStreamAsync(stream);

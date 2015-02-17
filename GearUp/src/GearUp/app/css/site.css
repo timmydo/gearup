@@ -174,3 +174,13 @@ div.dragdrop-container {
 #upload-box:hover {
     border-color: lightgreen;
 }
+
+div.build-image-thumbnail {
+	max-width: 300px;
+
+}
+
+img.build-image-thumbnail {
+	max-width: 250px;
+
+}

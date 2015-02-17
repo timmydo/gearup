@@ -9,7 +9,11 @@
 <div class="row">
 
 	<div class="col-xs-12 col-md-8">
-		<div id="upload-box" class="jumbotron" {{bind-attr data-guid=id}}>Drag and drop files here...</div>
+		<div id="upload-box" class="jumbotron" {{bind-attr data-guid=id}}>Drag and drop images here...</div>
+
+		{{#each image in model.images}}
+		<div class="build-image-thumbnail">{{buildImage guid}}</div>
+		{{/each}}
 	</div>
 
 

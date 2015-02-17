@@ -2,13 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
+using GearUp.Services;
+using Microsoft.Framework.Logging;
 
 namespace GearUp.Controllers
 {
     public class HomeController : Controller
     {
+
+		public SiteSettings ss { get; set; }
+		public HomeController(SiteSettings s, ILogger logger)
+		{
+			ss = s;
+		}
+
         public IActionResult Index()
         {
+			ViewBag.SiteSettings = ss;
             return View();
         }
 

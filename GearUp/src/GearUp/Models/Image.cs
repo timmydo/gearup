@@ -3,6 +3,7 @@
 	public class Image
 	{
 		public string Guid { get; set;  }
+		public string Title { get; set; }
 
 		public Image()
 		{

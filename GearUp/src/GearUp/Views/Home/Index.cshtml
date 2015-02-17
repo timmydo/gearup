@@ -1,11 +1,13 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+	ViewBag.Title = "Home Page";
 }
 
 
 <script src="/app/app.js?v=2"></script>
 <script type="text/javascript">
 	(function () {
+
+	App.ImageEndpoint = '@(ViewBag.SiteSettings.BlobEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
 
 	@if (User.Identity.IsAuthenticated)
 	{

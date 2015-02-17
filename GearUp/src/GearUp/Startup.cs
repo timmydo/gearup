@@ -44,6 +44,7 @@ namespace GearUp
 			{
 				BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString"),
 				BlobEndpoint = Configuration.Get("BlobEndpoint"),
+				ImagesContainer = Configuration.Get("ImagesContainer"),
 				DocumentDatabaseId = Configuration.Get("DocumentDatabaseId"),
 				DocumentCollectionId = Configuration.Get("DocumentCollectionId"),
 				DocumentEndpoint = Configuration.Get("DocumentEndpoint"),
