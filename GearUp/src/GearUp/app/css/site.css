@@ -173,12 +173,23 @@ div.dragdrop-container {
    background: rgba(54, 54, 200, 0.25); 
 }
 
-div.build-image-thumbnail {
-	max-width: 100px;
+.draggable-dropzone.activated:before {
+	content: 'Drop files here to upload...';
+}
 
+div.build-image-thumbnail {
+	display:inline-block;
+	padding: 10px 10px 0 0;
+	
 }
 
 img.build-image-thumbnail {
 	max-width: 100px;
+	cursor: pointer;
+}
 
+img.build-image-main {
+	max-width: 700px;
+	max-height: 900px;
+	margin: 10px;
 }
