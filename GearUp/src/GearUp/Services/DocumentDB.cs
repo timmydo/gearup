@@ -141,16 +141,6 @@ namespace GearUp.Services
 			await EnsureStoredProcs();
 			this._logger.WriteInformation("Executing stored procedure addImageToBuild(" + buildGuid + ", " + imageGuid + ")");
 			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addImageToBuild.SelfLink, buildGuid, imageGuid);
-			//var b = GetBuild(buildGuid);
-			//if (b != null)
-			//{
-			//	b.Images.Add(new Image() { Guid = imageGuid });
-			//	await UpdateBuildAsync(b);
-			//}
-			//else
-			//{
-			//	this._logger.WriteError("AddImageToBuild: Cannot find build: " + buildGuid);
-			//}
 		}
 
 		public async Task<Document> CreateBuildAsync(Build item)
@@ -168,25 +158,6 @@ namespace GearUp.Services
 						.FirstOrDefault();
 
 			return b;
-		}
-
-		public async Task UpdateBuildAsync(Build item)
-		{
-			this._logger.WriteInformation("Updating build, id: " + item.id);
-			var doc = Client.CreateDocumentQuery(Collection.DocumentsLink)
-								.Where(d => d.Id == item.id)
-								.AsEnumerable()
-								.FirstOrDefault();
-
-			if (doc == null)
-			{
-				this._logger.WriteError("Cannot find item id = " + item.id);
-				return;
-			}
-
-			this._logger.WriteInformation("Replacing build selflink= " + doc.SelfLink);
-			item.Modified = DateTime.UtcNow;
-			await Client.ReplaceDocumentAsync(doc.SelfLink, item);
 		}
 
 	}
