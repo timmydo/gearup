@@ -22,7 +22,7 @@ App.BuildController = Ember.ObjectController.extend({
 	}.property('model.created'),
 	selectedImage: function () {
 		var i = this.get('model.images');
-		if (i) {
+		if (i && i.length > 0) {
 			return i[0].guid;
 		}
 	}.property('model.images'),

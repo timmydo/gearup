@@ -9,8 +9,8 @@ namespace GearUp.Models
 		{
 			Version = 1;
 			id = System.Guid.NewGuid().ToString();
-			Modifed = DateTime.UtcNow;
-			Created = Modifed;
+			Modified = DateTime.UtcNow;
+			Created = Modified;
 			Creator = new User();
 			Title = "New Build";
 			Description = "New Build";
@@ -18,13 +18,13 @@ namespace GearUp.Models
 			Reseller = new List<Anchor>();
 			Price = "Unknown";
 			Images = new List<Image>();
-			parts = new List<string>(); // guid ref
+			Parts = new List<string>(); // guid ref
 
 		}
 
 		public int Version { get; set; }
 		public string id { get; set; }
-		public DateTime Modifed { get; set; }
+		public DateTime Modified { get; set; }
 		public DateTime Created { get; set; }
 		public User Creator { get; set; }
 
@@ -38,6 +38,6 @@ namespace GearUp.Models
 
 		public List<Image> Images { get; set; }
 
-		public List<string> parts { get; set; }
+		public List<string> Parts { get; set; }
 	}
 }

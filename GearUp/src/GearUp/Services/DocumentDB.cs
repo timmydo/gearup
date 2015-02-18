@@ -4,6 +4,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Framework.Logging;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace GearUp.Services
 
 		private SiteSettings _settings;
 		private ILogger _logger;
+		private StoredProcedure _addImageToBuild;
 		public DocumentDB(SiteSettings settings, ILogger logger)
 		{
 			this._settings = settings;
@@ -98,18 +100,57 @@ namespace GearUp.Services
 			return db;
 		}
 
+		public async Task EnsureStoredProcs()
+		{
+			if (this._addImageToBuild == null)
+			{
+				await LoadStoredProcs();
+			}
+		}
+
+		private async Task LoadStoredProcs()
+		{
+			string addImageToBuildJs = @"Services\js\addImageToBuild.js";
+
+			var sproc = new StoredProcedure
+			{
+				Id = Path.GetFileNameWithoutExtension(addImageToBuildJs),
+				Body = File.ReadAllText(addImageToBuildJs)
+			};
+
+			await TryDeleteStoredProcedure(this.Collection.SelfLink, sproc.Id);
+
+			this._logger.WriteInformation("Creating stored procedure " + sproc.Id);
+			sproc = await client.CreateStoredProcedureAsync(this.Collection.SelfLink, sproc);
+			this._addImageToBuild = sproc;
+
+		}
+
+		private async Task TryDeleteStoredProcedure(string colSelfLink, string sprocId)
+		{
+			StoredProcedure sproc = Client.CreateStoredProcedureQuery(colSelfLink).Where(s => s.Id == sprocId).AsEnumerable().FirstOrDefault();
+			if (sproc != null)
+			{
+				this._logger.WriteInformation("Deleting stored procedure " + sprocId);
+				await client.DeleteStoredProcedureAsync(sproc.SelfLink);
+			}
+		}
+
 		public async Task AddImageToBuildAsync(string buildGuid, string imageGuid)
 		{
-			var b = GetBuild(buildGuid);
-			if (b != null)
-			{
-				b.Images.Add(new Image() { Guid = imageGuid });
-				await UpdateBuildAsync(b);
-			}
-			else
-			{
-				this._logger.WriteError("AddImageToBuild: Cannot find build: " + buildGuid);
-			}
+			await EnsureStoredProcs();
+			this._logger.WriteInformation("Executing stored procedure addImageToBuild(" + buildGuid + ", " + imageGuid + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addImageToBuild.SelfLink, buildGuid, imageGuid);
+			//var b = GetBuild(buildGuid);
+			//if (b != null)
+			//{
+			//	b.Images.Add(new Image() { Guid = imageGuid });
+			//	await UpdateBuildAsync(b);
+			//}
+			//else
+			//{
+			//	this._logger.WriteError("AddImageToBuild: Cannot find build: " + buildGuid);
+			//}
 		}
 
 		public async Task<Document> CreateBuildAsync(Build item)
@@ -144,7 +185,7 @@ namespace GearUp.Services
 			}
 
 			this._logger.WriteInformation("Replacing build selflink= " + doc.SelfLink);
-			item.Modifed = DateTime.UtcNow;
+			item.Modified = DateTime.UtcNow;
 			await Client.ReplaceDocumentAsync(doc.SelfLink, item);
 		}
 
