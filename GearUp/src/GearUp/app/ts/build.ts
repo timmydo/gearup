@@ -26,6 +26,7 @@ App.BuildController = Ember.ObjectController.extend({
 			return i[0].guid;
 		}
 	}.property('model.images'),
+	progressBars: [],
 
 	actions: {
 		selectImage: function (guid) {
@@ -35,13 +36,31 @@ App.BuildController = Ember.ObjectController.extend({
 			var files = evt.files;
 			for (var i = 0; i < files.length; i++) {
 				var file = files[i];
-				var upload = new FileUpload(file, bid);
-				upload.start().then((success) => {
-					this.send('invalidateModel');
-				}, (failure) => {
-						console.log('upload fail');
-						console.log(failure);
+
+				var progressFunc = (guid, val) => {
+					console.log('progress ' + guid + ' ' + val);
+					this.progressBars.forEach((item, idx) => {
+						if (item.guid === guid) {
+							this.progressBars[idx].progress = val;
+						}
 					});
+
+					this.get('progressBars').setObjects(this.progressBars);
+
+				}
+				var upload = new FileUpload(file, bid, progressFunc);
+				this.get('progressBars').pushObject({ guid: upload.guid, name: upload.file.name, progress: 0 });
+				((upload) => {
+					upload.start().then((success) => {
+						console.log("Removing upload " + upload.guid);
+						this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== upload.guid; }));
+						this.send('invalidateModel');
+					},(failure) => {
+							console.log('upload fail');
+							console.log(failure);
+							this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== upload.guid; }));
+						});
+				})(upload);
 			}
 		}
 

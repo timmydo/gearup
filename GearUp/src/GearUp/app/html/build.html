@@ -17,6 +17,21 @@
 		{{/unless}}
 		{{/drag-drop}}
 
+		{{#if progressBars}}
+		<div class="panel panel-default">
+			<div class="panel-heading">Upload Progress</div>
+			<div class="panel-body">
+				{{#each pb in progressBars}}
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{unbound pb.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{unbound pb.progress}}%">
+						<span>{{pb.name}} &ndash; {{pb.progress}}%</span>
+					</div>
+				</div>
+				{{/each}}
+			</div>
+		</div>
+		{{/if}}
+
 		{{#each image in model.images}}
 		<div class="build-image-thumbnail" {{action 'selectImage' image.guid}}>{{buildThumbnail image.guid}}</div>
 		{{/each}}

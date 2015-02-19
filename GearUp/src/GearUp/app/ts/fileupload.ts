@@ -5,11 +5,12 @@ class FileUpload {
 
     public percentDone: number;
     public statusString: string;
-    public fileid: string;
+	public guid: string;
 
-    constructor(public file: File, public buildid) {
+    constructor(public file: File, public buildid, public progressFunc) {
         this.percentDone = 0;
         this.statusString = 'Starting...';
+		this.guid = Math.random().toString(36);
     }
 
     public isSupported() {
@@ -36,10 +37,6 @@ class FileUpload {
             this.statusString = 'Error: ' + val;
         }
     }
-    private progress(val) {
-        console.log('progress');
-        console.log(val);
-    }
 
 	private uploadAsync(file: File) {
 		var fileuploadInstance = this;
@@ -60,7 +57,10 @@ class FileUpload {
 			xhr.upload.onprogress = function (e) {
 				if (e.lengthComputable) {
 					var value = (e.loaded / e.total) * 100;
-					fileuploadInstance.progress(value);
+
+					if (fileuploadInstance.progressFunc) {
+						fileuploadInstance.progressFunc(fileuploadInstance.guid, value);
+					}
 				}
 			};
 
