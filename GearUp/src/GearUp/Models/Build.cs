@@ -11,14 +11,12 @@ namespace GearUp.Models
 			id = System.Guid.NewGuid().ToString();
 			Modified = DateTime.UtcNow;
 			Created = Modified;
-			Creator = new User();
+			Creator = new User(); //fixme set user guid
 			Title = "New Build";
 			Description = "New Build";
-			Main = new Anchor();
-			Reseller = new List<Anchor>();
-			Price = "Unknown";
+			Url = string.Empty;
 			Images = new List<Image>();
-			Parts = new List<string>(); // guid ref
+			Parts = new List<Part>(); // guid ref
 
 		}
 
@@ -31,13 +29,10 @@ namespace GearUp.Models
 		public string Title { get; set; }
 		public string Description { get; set; }
 
-		public Anchor Main { get; set; }
-		public List<Anchor> Reseller { get; set; }
-
-		public string Price { get; set; }
+		public string Url { get; set; }
 
 		public List<Image> Images { get; set; }
 
-		public List<string> Parts { get; set; }
+		public List<Part> Parts { get; set; }
 	}
 }

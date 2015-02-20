@@ -2,7 +2,29 @@
 
 <div class="row">
 
-	<div class="col-xs-12 col-md-12"><h1>{{title}} <small>Created {{createdTime}} by {{creator.title}}</small></h1></div>
+	<div class="col-xs-8 col-md-8">
+
+		{{#if editTitle}}
+		<div class="input-group">
+			{{input type="text" class="form-control" placeholder="Enter title" value=title size="50"}}
+			<span class="input-group-btn">
+				<button class="btn btn-default" type="button" {{action saveTitle on="click"}}>Save</button>
+				<button class="btn btn-default" type="button" {{action discardTitle on="click"}}>Discard</button>
+			</span>
+		</div>
+		{{else}}
+		<h1>
+			<span {{action startEditTitle on="click"}} title="Click to change">{{title}}</span>
+			{{#if creator.title}}
+			<small>By {{creator.title}}</small>
+			{{/if}}
+		</h1>
+		{{/if}}
+
+	</div>
+	<div class="col-xs-4 col-md-4">
+		
+	</div>
 
 </div>
 

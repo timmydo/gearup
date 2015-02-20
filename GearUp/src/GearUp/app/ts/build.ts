@@ -26,9 +26,30 @@ App.BuildController = Ember.ObjectController.extend({
 			return i[0].guid;
 		}
 	}.property('model.images'),
+
+
+	canEditTitle: true,
+	editTitle: false,
+	savedTitle: '',
+
 	progressBars: [],
 
 	actions: {
+
+		startEditTitle: function () {
+			if (this.canEditTitle) {
+				this.savedTitle = this.get('title');
+				this.set('editTitle', true);
+			}
+		},
+		discardTitle: function () {
+			this.set('editTitle', false);
+			this.set('title', this.savedTitle);
+		},
+		saveTitle: function () {
+			this.set('editTitle', false);
+			//fixme save title
+		},
 		selectImage: function (guid) {
 			this.set('selectedImage', guid);
 		},
