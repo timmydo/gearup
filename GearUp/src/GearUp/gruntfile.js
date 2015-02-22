@@ -65,6 +65,20 @@ module.exports = function (grunt) {
 				expand: true
 			}
 		},
+		concat: {
+			devjs: {
+				src: ['bower_components/jquery/jquery.js',
+                    'bower_components/jquery-validation/jquery.validate.js',
+                    'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js',
+                    'bower_components/bootstrap/dist/js/bootstrap.js',
+					'bower_components/holderjs/holder.js',
+					'bower_components/moment/moment.js',
+                    'bower_components/handlebars/handlebars.js',
+                    'bower_components/ember/ember.debug.js'],
+				dest: 'wwwroot/lib/vendor-dev.js'
+			}
+
+		},
 		uglify: {
 			options: {
 				//compress: true  
@@ -109,7 +123,9 @@ module.exports = function (grunt) {
 					templateFileExtensions: /\.html/,
 					//amd: true,
 					templateBasePath: 'app/html',
-					
+					templateCompilerPath: 'bower_components/ember/ember-template-compiler.js',
+					handlebarsPath: 'bower_components/handlebars/handlebars.js',
+				    templateNamespace: 'HTMLBars'					
 				},
 				files: {
 					"wwwroot/app/templates.js": ["app/html/**/*.html"]
@@ -143,7 +159,7 @@ module.exports = function (grunt) {
 	});
 
 	// This command registers the default task which will install bower packages into wwwroot/lib
-	grunt.registerTask("default", ["clean", "typescript", "copy", "uglify", "cssmin", "emberTemplates"]);
+	grunt.registerTask("default", ["clean", "typescript", "copy", "uglify", "concat", "cssmin", "emberTemplates"]);
 
 	// The following line loads the grunt plugins.
 	// This line needs to be at the end of this this file.
@@ -155,6 +171,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('grunt-ember-templates');
 
