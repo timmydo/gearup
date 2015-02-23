@@ -11,12 +11,11 @@
 
 	@if (User.Identity.IsAuthenticated)
 	{
-		<text>App.set('User', '@User.Identity.Name');</text>
+		<text>window['UserIdentityName'] = '@User.Identity.Name';</text>
 	}
 	else
 	{
-		<text>App.set('User', '');</text>
-
+		<text>window['UserIdentityName'] = '';</text>
 	}
 
 	})();

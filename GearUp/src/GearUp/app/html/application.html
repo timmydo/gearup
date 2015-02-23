@@ -12,26 +12,26 @@
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 
-				{{#view App.NavView}}
+				{{#view "nav"}}
 				{{#link-to "index"}}Home{{/link-to}}
 				{{/view}}
 				
-				{{#view App.NavView}}
+				{{#view "nav"}}
 				{{#link-to "about"}}About{{/link-to}}
 				{{/view}}
 
-				{{#view App.NavView}}
+				{{#view "nav"}}
 				{{#link-to "build" "1"}}Build{{/link-to}}
 				{{/view}}
 				
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 
-				{{#if App.User}}
+				{{#if userLoggedIn}}
 				
 
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{App.User}} <span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{userLoginName}} <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="/logout">Logout</a></li>
 					</ul>
@@ -40,7 +40,7 @@
 				
 				{{else}}
 
-				{{#view App.NavView}}
+				{{#view "nav"}}
 				{{#link-to "login"}}Sign in{{/link-to}}
 				{{/view}}
 
@@ -53,13 +53,13 @@
 </nav>
 
 <div class="container">
-	{{#if App.error}}
+	{{#if errorMessage}}
 	<div class="alert alert-error">
 		<button type="button" class="close" data-dismiss="alert"
 				{{action "dismissError"}}>
 			&times;
 		</button>
-		{{App.error}}
+		{{errorMessage}}
 	</div>
 	{{/if}}
 

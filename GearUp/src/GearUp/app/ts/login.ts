@@ -20,11 +20,6 @@ App.LoginRoute = Ember.Route.extend({
         return App.LoginCreds.create({});
     },
 
-    events: {
-		google: function () {
-			window.location.href = "/login?authtype=Google";
-		},
-    }
 });
 
 App.LoginController = Ember.ObjectController.extend({

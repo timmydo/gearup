@@ -22,17 +22,27 @@ App.Router.map(function () {
 });
 
 App.ApplicationRoute = Ember.Route.extend({
-	setupController: function (controller) {
-	},
-	events: {
-        dismissError: function () {
-            App.set('error', null);
-        }
-    }
+
 });
 
 App.ApplicationController = Ember.Controller.extend({
-	appName: 'Gear up'
+	appName: 'Gear up',
+
+	errorMessage: '',
+
+	userLoggedIn: function () {
+		return window['UserIdentityName'] !== '';
+	}.property('window.UserIdentityName'),
+
+	userLoginName: function () {
+		return 'Unknown User';
+	}.property('window.UserIdentityName'),
+
+	actions: {
+        dismissError: function () {
+            this.set('errorMessage', null);
+        }
+    }
 });
 
 
