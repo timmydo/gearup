@@ -67,7 +67,7 @@ module.exports = function (grunt) {
 		},
 		concat: {
 			devjs: {
-				src: ['bower_components/jquery/jquery.js',
+				src: ['bower_components/jquery/dist/jquery.js',
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js',
                     'bower_components/bootstrap/dist/js/bootstrap.js',
@@ -85,7 +85,7 @@ module.exports = function (grunt) {
 			},
 			applib: {
 				src: [
-                    'bower_components/jquery/jquery.min.js',
+                    'bower_components/jquery/dist/jquery.min.js',
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
                     'bower_components/bootstrap/dist/js/bootstrap.min.js',

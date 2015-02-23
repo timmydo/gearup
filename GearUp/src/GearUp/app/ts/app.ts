@@ -13,6 +13,28 @@ window.App = Ember.Application.create({
     error: null
 });
 
+App.Router.map(function () {
+	this.route('index', { path: '/' });
+	this.route('about', { path: '/about' });
+	this.route('login', { path: '/login' });
+	this.route('register', { path: '/register' });
+	this.route('build', { path: '/builds/:bid' });
+});
+
+App.ApplicationRoute = Ember.Route.extend({
+	setupController: function (controller) {
+	},
+	events: {
+        dismissError: function () {
+            App.set('error', null);
+        }
+    }
+});
+
+App.ApplicationController = Ember.Controller.extend({
+	appName: 'Gear up'
+});
+
 
 
 module Gear {
@@ -31,3 +53,5 @@ module Gear {
 
 
 }
+
+
