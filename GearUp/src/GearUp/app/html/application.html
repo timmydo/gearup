@@ -54,13 +54,11 @@
 
 <div class="container">
 	{{#if errorMessage}}
-	<div class="alert alert-error">
-		<button type="button" class="close" data-dismiss="alert"
-				{{action "dismissError"}}>
-			&times;
-		</button>
+	<div class="alert alert-warning alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close" {{action "dismissError"}}><span aria-hidden="true">&times;</span></button>
 		{{errorMessage}}
 	</div>
+
 	{{/if}}
 
 

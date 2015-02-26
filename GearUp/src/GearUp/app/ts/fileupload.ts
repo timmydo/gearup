@@ -71,11 +71,12 @@ class FileUpload {
 
     public start() {
         if (!this.isSupported()) {
-            this.error('Unsupported file type');
-            return;
+			return new Ember.RSVP.Promise(function (resolve, reject) {
+				reject('Unsupported file type');
+            });
         }
-        var prom = this.uploadAsync(this.file);
-        return prom;
+
+        return this.uploadAsync(this.file);
     }
 
 }

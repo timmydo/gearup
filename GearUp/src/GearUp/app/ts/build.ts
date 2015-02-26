@@ -34,8 +34,26 @@ App.BuildController = Ember.ObjectController.extend({
 
 	progressBars: [],
 
-	actions: {
+	saveBuild: function () {
+		Ember.$.ajax({
+			type: 'POST',
+			url: '/api/SaveBuild',
+			data: this.get('model'),
+			dataType: 'json',
+			success: (data, status) => {
+				console.log(status);
+				console.log(data);
+			},
+			error: (xhr, status, err) => {
+				console.log(xhr);
+				console.log(status);
+				console.log(err);
+				this.send('setError', 'Error saving build: ' + err);
+			}
+		});
+	},
 
+	actions: {
 		startEditTitle: function () {
 			if (this.canEditTitle) {
 				this.savedTitle = this.get('title');
@@ -48,7 +66,7 @@ App.BuildController = Ember.ObjectController.extend({
 		},
 		saveTitle: function () {
 			this.set('editTitle', false);
-			//fixme save title
+			this.saveBuild();
 		},
 		selectImage: function (guid) {
 			this.set('selectedImage', guid);
@@ -79,6 +97,7 @@ App.BuildController = Ember.ObjectController.extend({
 					},(failure) => {
 							console.log('upload fail');
 							console.log(failure);
+							this.send('setError', 'Error uploading file: ' + failure);
 							this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== upload.guid; }));
 						});
 				})(upload);

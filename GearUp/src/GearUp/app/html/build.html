@@ -8,13 +8,13 @@
 		<div class="input-group">
 			{{input type="text" class="form-control" placeholder="Enter title" value=title size="50"}}
 			<span class="input-group-btn">
-				<button class="btn btn-default" type="button" {{action saveTitle on="click"}}>Save</button>
-				<button class="btn btn-default" type="button" {{action discardTitle on="click"}}>Discard</button>
+				<button class="btn btn-default" type="button" {{action 'saveTitle' on="click"}}>Save</button>
+				<button class="btn btn-default" type="button" {{action 'discardTitle' on="click"}}>Discard</button>
 			</span>
 		</div>
 		{{else}}
 		<h1>
-			<span {{action startEditTitle on="click"}} title="Click to change">{{title}}</span>
+			<span {{action 'startEditTitle' on="click"}} title="Click to change">{{title}}</span>
 			{{#if creator.title}}
 			<small>By {{creator.title}}</small>
 			{{/if}}

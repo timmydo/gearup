@@ -22,7 +22,11 @@ App.Router.map(function () {
 });
 
 App.ApplicationRoute = Ember.Route.extend({
-
+	actions: {
+		setError: function (e) {
+            this.get('controller').set('errorMessage', e);
+        }
+    }
 });
 
 App.ApplicationController = Ember.Controller.extend({
@@ -39,6 +43,9 @@ App.ApplicationController = Ember.Controller.extend({
 	}.property('window.UserIdentityName'),
 
 	actions: {
+		setError: function (e) {
+            this.set('errorMessage', e);
+        },
         dismissError: function () {
             this.set('errorMessage', null);
         }
