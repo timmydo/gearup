@@ -3,6 +3,7 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Framework.Logging;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace GearUp.Services
 		private SiteSettings _settings;
 		private ILogger _logger;
 		private StoredProcedure _addImageToBuild;
+		private StoredProcedure _saveBuild;
 		public DocumentDB(SiteSettings settings, ILogger logger)
 		{
 			this._settings = settings;
@@ -108,21 +110,29 @@ namespace GearUp.Services
 			}
 		}
 
-		private async Task LoadStoredProcs()
+		private async Task<StoredProcedure> LoadStoredProc(string sprocName)
 		{
-			string addImageToBuildJs = @"Services\js\addImageToBuild.js";
 
 			var sproc = new StoredProcedure
 			{
-				Id = Path.GetFileNameWithoutExtension(addImageToBuildJs),
-				Body = File.ReadAllText(addImageToBuildJs)
+				Id = Path.GetFileNameWithoutExtension(sprocName),
+				Body = File.ReadAllText(sprocName)
 			};
 
 			await TryDeleteStoredProcedure(this.Collection.SelfLink, sproc.Id);
 
 			this._logger.WriteInformation("Creating stored procedure " + sproc.Id);
+			this._logger.WriteVerbose("Creating stored procedure " + sproc.Body);
 			sproc = await client.CreateStoredProcedureAsync(this.Collection.SelfLink, sproc);
-			this._addImageToBuild = sproc;
+			return sproc;
+
+		}
+
+		private async Task LoadStoredProcs()
+		{
+			this._addImageToBuild = await this.LoadStoredProc(@"Services\js\addImageToBuild.js");
+			this._saveBuild = await this.LoadStoredProc(@"Services\js\saveBuild.js");
+			
 
 		}
 
@@ -132,6 +142,7 @@ namespace GearUp.Services
 			if (sproc != null)
 			{
 				this._logger.WriteInformation("Deleting stored procedure " + sprocId);
+				this._logger.WriteVerbose("Body:" + sproc.Body);
 				await client.DeleteStoredProcedureAsync(sproc.SelfLink);
 			}
 		}
@@ -142,6 +153,17 @@ namespace GearUp.Services
 			this._logger.WriteInformation("Executing stored procedure addImageToBuild(" + buildGuid + ", " + imageGuid + ")");
 			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addImageToBuild.SelfLink, buildGuid, imageGuid);
 		}
+
+
+		public async Task<string> SaveBuildAsync(Build b)
+		{
+			await EnsureStoredProcs();
+			var json = JsonConvert.SerializeObject(b);
+			this._logger.WriteInformation("Executing stored procedure saveBuild(" + json + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._saveBuild.SelfLink, json);
+			return response;
+		}
+
 
 		public async Task<Document> CreateBuildAsync(Build item)
 		{

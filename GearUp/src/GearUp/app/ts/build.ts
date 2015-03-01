@@ -35,10 +35,13 @@ App.BuildController = Ember.ObjectController.extend({
 	progressBars: [],
 
 	saveBuild: function () {
+		var data = JSON.stringify(this.get('model'));
+		console.log("Saving Build " + data);
 		Ember.$.ajax({
 			type: 'POST',
 			url: '/api/SaveBuild',
-			data: this.get('model'),
+			contentType: 'application/json',
+			data: data,
 			dataType: 'json',
 			success: (data, status) => {
 				console.log(status);
