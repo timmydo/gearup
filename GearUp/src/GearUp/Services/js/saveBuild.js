@@ -22,7 +22,7 @@ function saveBuild(json) {
 				throw "Document not found, id: " + newBuild.id
 			}
 			var build = documents[0];
-			build.Modified = Date.now();
+			build.Modified = (new Date()).toISOString();
 			build.Version = newBuild.Version;
 			build.Title = newBuild.Title;
 			build.Url = newBuild.Url;

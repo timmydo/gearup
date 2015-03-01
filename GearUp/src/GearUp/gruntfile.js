@@ -63,6 +63,12 @@ module.exports = function (grunt) {
 				src: '*.gif',
 				dest: 'wwwroot/img/',
 				expand: true
+			},
+			fonts: {
+				expand: true,
+				cwd: 'bower_components/font-awesome',
+				src: ['fonts/*.*'],
+				dest: 'wwwroot/',
 			}
 		},
 		concat: {
