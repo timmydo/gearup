@@ -28,7 +28,7 @@ App.BuildController = Ember.ObjectController.extend({
 	}.property('model.images'),
 
 
-	canEditTitle: true,
+	canEditBuild: true,
 	editTitle: false,
 	savedTitle: '',
 
@@ -57,8 +57,13 @@ App.BuildController = Ember.ObjectController.extend({
 	},
 
 	actions: {
+		addPart: function () {
+			if (this.canEditBuild) {
+				this.set('parts', this.get('parts').concat({url:'', title:'New part', price:''}));
+			}
+		},
 		startEditTitle: function () {
-			if (this.canEditTitle) {
+			if (this.canEditBuild) {
 				this.savedTitle = this.get('title');
 				this.set('editTitle', true);
 			}

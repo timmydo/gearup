@@ -65,17 +65,31 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th><i class="fa fa-plus"></i> New...</th>
+					<th>
+						{{#if canEditBuild}}
+						<i class="fa fa-plus clickable" title="Add a part" {{action 'addPart'}}></i>
+						{{/if}}
+					</th>
 					<th>Item</th>
 					<th>Price</th>
-					<th><!--option--></th>
 				</tr>
 			</thead>
 
 			<tbody>
 				{{#each part in model.parts}}
 				<tr>
-					<td>{{part.title}}</td>
+					<td>
+					{{#if canEditBuild}}
+						<i class="fa fa-pencil clickable"></i>
+					{{/if}}
+					</td>
+					<td>
+						{{#if part.url}}
+						<a href="{{part.url}}">{{part.title}}</a>
+						{{else}}
+						{{part.title}}
+						{{/if}}
+					</td>
 					<td>{{part.price}}</td>
 				</tr>
 				{{/each}}
