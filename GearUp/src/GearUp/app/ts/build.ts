@@ -91,9 +91,9 @@ App.BuildController = Ember.ObjectController.extend({
 
 				var progressFunc = (guid, val) => {
 					console.log('progress ' + guid + ' ' + val);
-					this.progressBars.forEach((item, idx) => {
+					this.get('progressBars').forEach((item, idx) => {
 						if (item.guid === guid) {
-							this.progressBars[idx].progress = val;
+							Ember.set(item, 'progress', val);
 						}
 					});
 

@@ -110,7 +110,7 @@
 
 					<td>
 						{{#if part.url}}
-						<a {{bind-attr href=part.url}}>{{part.title}}</a>
+						<a target="_blank" {{bind-attr href=part.url}}>{{part.title}}</a>
 						{{else}}
 						{{part.title}}
 						{{/if}}
