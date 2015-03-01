@@ -1,9 +1,5 @@
 ﻿/// <reference path="app.ts" />
 
-declare var DropletView: any;
-declare var DropletController: any;
-
-
 App.BuildRoute = Ember.Route.extend({
 	model: function (params) {
 		return Ember.$.getJSON('/api/build/' + params.bid);
@@ -12,6 +8,30 @@ App.BuildRoute = Ember.Route.extend({
 		invalidateModel: function () {
 			Ember.Logger.log('Route is now refreshing...');
 			this.refresh();
+		},
+		saveBuild: function () {
+			var model = this.modelFor(this.routeName);
+			var data = JSON.stringify(model);
+			console.log("Saving Build " + data);
+			if (data) {
+				Ember.$.ajax({
+					type: 'POST',
+					url: '/api/SaveBuild',
+					contentType: 'application/json',
+					data: data,
+					dataType: 'json',
+					success: (data, status) => {
+						console.log(status);
+						console.log(data);
+					},
+					error: (xhr, status, err) => {
+						console.log(xhr);
+						console.log(status);
+						console.log(err);
+						this.send('setError', 'Error saving build: ' + err);
+					}
+				});
+			}
 		}
 	}
 });
@@ -34,29 +54,14 @@ App.BuildController = Ember.ObjectController.extend({
 
 	progressBars: [],
 
-	saveBuild: function () {
-		var data = JSON.stringify(this.get('model'));
-		console.log("Saving Build " + data);
-		Ember.$.ajax({
-			type: 'POST',
-			url: '/api/SaveBuild',
-			contentType: 'application/json',
-			data: data,
-			dataType: 'json',
-			success: (data, status) => {
-				console.log(status);
-				console.log(data);
-			},
-			error: (xhr, status, err) => {
-				console.log(xhr);
-				console.log(status);
-				console.log(err);
-				this.send('setError', 'Error saving build: ' + err);
-			}
-		});
-	},
+	selectedParts: [],
 
 	actions: {
+		deletePart: function (part) {
+			var parts = this.get('parts');
+			parts.removeObject(part);
+			this.send('saveBuild');
+		},
 		addPart: function () {
 			if (this.canEditBuild) {
 				this.set('parts', this.get('parts').concat({url:'', title:'New part', price:''}));
@@ -74,7 +79,7 @@ App.BuildController = Ember.ObjectController.extend({
 		},
 		saveTitle: function () {
 			this.set('editTitle', false);
-			this.saveBuild();
+			this.send('saveBuild');
 		},
 		selectImage: function (guid) {
 			this.set('selectedImage', guid);

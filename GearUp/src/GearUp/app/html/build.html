@@ -23,7 +23,7 @@
 
 	</div>
 	<div class="col-xs-4 col-md-4">
-		
+
 	</div>
 
 </div>
@@ -76,21 +76,49 @@
 			</thead>
 
 			<tbody>
-				{{#each part in model.parts}}
+				{{#each part in model.parts itemController="part"}}
 				<tr>
+					
+					{{#if part.editing}}
 					<td>
-					{{#if canEditBuild}}
-						<i class="fa fa-pencil clickable"></i>
-					{{/if}}
+						<i class="fa fa-check clickable" {{action 'savePart' part}}></i>
+						<i class="fa fa-times clickable" {{action 'discardPart' part}}></i>
+						<br /><br />
+						<i class="fa fa-trash-o clickable" {{action 'deletePart' part}}></i>
 					</td>
+
+					<td colspan="2">
+						<div class="form-group">
+							<label>Item name</label>
+							{{input type="text" class="form-control" placeholder="Enter name" value=part.newTitle size="50"}}
+						</div>
+						<div class="form-group">
+							<label>Link to item</label>
+							{{input type="text" class="form-control" placeholder="http://" value=part.newUrl size="500"}}
+						</div>
+						<div class="form-group">
+							<label>Price</label>
+							{{input type="text" class="form-control" placeholder="price" value=part.newPrice size="15"}}
+						</div>
+					</td>
+					{{else}}
+					<td>
+						{{#if canEditBuild}}
+						<i class="fa fa-pencil clickable" {{action 'editPart' part}}></i>
+						{{/if}}
+					</td>
+
 					<td>
 						{{#if part.url}}
-						<a href="{{part.url}}">{{part.title}}</a>
+						<a {{bind-attr href=part.url}}>{{part.title}}</a>
 						{{else}}
 						{{part.title}}
 						{{/if}}
+
 					</td>
 					<td>{{part.price}}</td>
+
+					{{/if}}
 				</tr>
 				{{/each}}
 			</tbody>
