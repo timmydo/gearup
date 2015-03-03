@@ -11,7 +11,7 @@ namespace GearUp.Models
 			id = System.Guid.NewGuid().ToString();
 			Modified = DateTime.UtcNow;
 			Created = Modified;
-			Creator = new User(); //fixme set user guid
+			Creator = string.Empty; //fixme set user guid
 			Title = "New Build";
 			Description = "New Build";
 			Url = string.Empty;
@@ -24,7 +24,7 @@ namespace GearUp.Models
 		public string id { get; set; }
 		public DateTime Modified { get; set; }
 		public DateTime Created { get; set; }
-		public User Creator { get; set; }
+		public string Creator { get; set; }
 
 		public string Title { get; set; }
 		public string Description { get; set; }

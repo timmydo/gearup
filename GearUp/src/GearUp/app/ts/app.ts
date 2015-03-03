@@ -39,7 +39,7 @@ App.ApplicationController = Ember.Controller.extend({
 	}.property('window.UserIdentityName'),
 
 	userLoginName: function () {
-		return 'Unknown User';
+		return window['UserIdentityName'] || 'Unknown User';
 	}.property('window.UserIdentityName'),
 
 	actions: {

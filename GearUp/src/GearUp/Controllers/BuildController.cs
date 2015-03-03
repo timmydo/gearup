@@ -7,6 +7,7 @@ using Microsoft.Framework.Logging;
 using GearUp.Models;
 using System.Threading.Tasks;
 using GearUp.Services;
+using System.Security.Claims;
 
 namespace GearUp.Controllers
 {
@@ -33,6 +34,9 @@ namespace GearUp.Controllers
 			{
 				b = new Build();
 				b.id = id;
+				var uid = UserLogin.UserUniqueId(User.Identity);
+				b.Creator = uid;
+				this._logger.WriteInformation("Setting creator to " + uid);
 				await this._ddb.CreateBuildAsync(b);
 			}
 			return b;
