@@ -78,7 +78,8 @@ namespace GearUp.Controllers.Controllers
 			blob.Properties.ContentType = Request.ContentType;
 			await blob.SetPropertiesAsync();
 			result.Message = "Uploaded";
-			await this._ddb.AddImageToBuildAsync(buildid, result.Guid);
+			var uid = UserLogin.UserUniqueId(User.Identity);
+			await this._ddb.AddImageToBuildAsync(buildid, result.Guid, uid);
 
 			return result;
 

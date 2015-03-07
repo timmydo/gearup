@@ -1,7 +1,7 @@
 ﻿
 
 
-function addImageToBuild(buildid, imageid) {
+function addImageToBuild(buildid, imageid, uid) {
 	var context = getContext();
 	var collection = context.getCollection();
 	var collectionLink = collection.getSelfLink();
@@ -18,6 +18,9 @@ function addImageToBuild(buildid, imageid) {
 				throw "Add image to build, Document not found: " + buildid
 			}
 			var build = documents[0];
+			if (build.Creator !== uid) {
+				throw "Build modifier is not the creator of this build"
+			}
 			build.Images = build.Images.concat({ 'guid': imageid });
 			collection.replaceDocument(build._self, build,
 				function (err, docReplaced) {

@@ -147,20 +147,20 @@ namespace GearUp.Services
 			}
 		}
 
-		public async Task AddImageToBuildAsync(string buildGuid, string imageGuid)
+		public async Task AddImageToBuildAsync(string buildGuid, string imageGuid, string uid)
 		{
 			await EnsureStoredProcs();
-			this._logger.WriteInformation("Executing stored procedure addImageToBuild(" + buildGuid + ", " + imageGuid + ")");
-			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addImageToBuild.SelfLink, buildGuid, imageGuid);
+			this._logger.WriteInformation("Executing stored procedure addImageToBuild(" + buildGuid + ", " + imageGuid + ", " + uid + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addImageToBuild.SelfLink, buildGuid, imageGuid, uid);
 		}
 
 
-		public async Task<string> SaveBuildAsync(Build b)
+		public async Task<string> SaveBuildAsync(Build b, string uid)
 		{
 			await EnsureStoredProcs();
 			var json = JsonConvert.SerializeObject(b);
-			this._logger.WriteInformation("Executing stored procedure saveBuild(" + json + ")");
-			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._saveBuild.SelfLink, json);
+			this._logger.WriteInformation("Executing stored procedure saveBuild(" + json + ", " + uid +  ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._saveBuild.SelfLink, json, uid);
 			return response;
 		}
 

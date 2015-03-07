@@ -37,7 +37,8 @@ namespace GearUp.Controllers.Controllers
 		{
 			if (b != null)
 			{
-				return await this._ddb.SaveBuildAsync(b);
+				var uid = UserLogin.UserUniqueId(User.Identity);
+				return await this._ddb.SaveBuildAsync(b, uid);
 			}
 			else
 			{

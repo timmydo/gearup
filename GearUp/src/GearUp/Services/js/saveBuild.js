@@ -1,7 +1,7 @@
 ﻿
 
 
-function saveBuild(json) {
+function saveBuild(json, uid) {
 	var context = getContext();
 	var collection = context.getCollection();
 	var collectionLink = collection.getSelfLink();
@@ -22,6 +22,9 @@ function saveBuild(json) {
 				throw "Document not found, id: " + newBuild.id
 			}
 			var build = documents[0];
+			if (build.Creator !== uid) {
+				throw "Build modifier is not the creator of this build"
+			}
 			build.Modified = (new Date()).toISOString();
 			build.Version = newBuild.Version;
 			build.Title = newBuild.Title;
