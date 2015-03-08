@@ -81,13 +81,14 @@ namespace GearUp
 		}
 
 		// Configure is called after ConfigureServices is called.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
 		{
 			// Add the following to the request pipeline only in development environment.
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
 			{
 				//app.UseBrowserLink();
-				app.UseErrorPage(ErrorPageOptions.ShowAll);
+				//app.UseErrorPage(ErrorPageOptions.ShowAll);
+				app.Use(next => new SimpleErrorPage(next, loggerfactory.Create("SimpleErrorPage")).Invoke);
 				app.UseDatabaseErrorPage(DatabaseErrorPageOptions.ShowAll);
 			}
 			else

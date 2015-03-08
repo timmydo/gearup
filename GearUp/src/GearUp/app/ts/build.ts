@@ -28,7 +28,7 @@ App.BuildRoute = Ember.Route.extend({
 						console.log(xhr);
 						console.log(status);
 						console.log(err);
-						this.send('setError', 'Error saving build: ' + err);
+						this.send('setError', 'Error saving build: ' + xhr.responseJSON.Message);
 					}
 				});
 			}
