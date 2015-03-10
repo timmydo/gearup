@@ -48,7 +48,9 @@ App.BuildController = Ember.ObjectController.extend({
 	}.property('model.images'),
 
 
-	canEditBuild: true,
+	canEditBuild: function () {
+		return this.get('model.creator') === window['UserIdentityKey'];
+	}.property('model.creator'),
 	editTitle: false,
 	savedTitle: '',
 
@@ -63,12 +65,12 @@ App.BuildController = Ember.ObjectController.extend({
 			this.send('saveBuild');
 		},
 		addPart: function () {
-			if (this.canEditBuild) {
+			if (this.get('canEditBuild')) {
 				this.set('parts', this.get('parts').concat({url:'', title:'New part', price:''}));
 			}
 		},
 		startEditTitle: function () {
-			if (this.canEditBuild) {
+			if (this.get('canEditBuild')) {
 				this.savedTitle = this.get('title');
 				this.set('editTitle', true);
 			}

@@ -7,15 +7,18 @@
 <script type="text/javascript">
 	(function () {
 
-	App.ImageEndpoint = '@(ViewBag.SiteSettings.BlobEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
+		App.ImageEndpoint = '@(ViewBag.SiteSettings.BlobEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
 
-	@if (User.Identity.IsAuthenticated)
+		@if (User.Identity.IsAuthenticated)
 	{
 		<text>window['UserIdentityName'] = '@User.Identity.Name';</text>
-	}
+		<text>window['UserIdentityKey'] = '@GearUp.Services.UserLogin.UserUniqueId(User.Identity)';</text>
+    }
 	else
 	{
 		<text>window['UserIdentityName'] = '';</text>
+		<text>window['UserIdentityKey'] = '@GearUp.Services.UserLogin.UserUniqueId(User.Identity)';</text>
+
 	}
 
 	})();

@@ -30,7 +30,9 @@
 	<div class="col-xs-12 col-md-8">
 		{{#drag-drop dropped="uploadFile" guid=id}}
 		{{#unless model.images}}
+		{{#if canEditBuild}}
 		Drag and drop images here...
+		{{/if}}
 		{{else}}
 		<div class="build-image-main">{{buildImage selectedImage}}</div>
 		{{/unless}}
