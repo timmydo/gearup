@@ -5,6 +5,7 @@ using Microsoft.Azure.Documents.Linq;
 using Microsoft.Framework.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,9 @@ namespace GearUp.Services
 		}
 
 		private Database database;
+
+
+
 		private Database Database
 		{
 			get
@@ -178,6 +182,16 @@ namespace GearUp.Services
 						.Where(d => d.id == id)
 						.AsEnumerable()
 						.FirstOrDefault();
+
+			return b;
+		}
+
+		public async Task<IEnumerable<Build>> GetUserBuilds(string id)
+		{
+			this._logger.WriteInformation("GetUserBuilds = " + id);
+			var b = await Task.Run(() => Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
+						.Where(d => d.Creator == id)
+						.AsEnumerable().ToArray<Build>());
 
 			return b;
 		}
