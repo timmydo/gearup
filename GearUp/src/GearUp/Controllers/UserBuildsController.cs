@@ -30,6 +30,10 @@ namespace GearUp.Controllers
 		[HttpGet("{id}")]
 		public async Task<IEnumerable<Build>> GetById(string id)
 		{
+			if (string.IsNullOrEmpty(id))
+			{
+				return new Build[0];
+			}
 			var b = await this._ddb.GetUserBuilds(id);
 
 			return b;

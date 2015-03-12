@@ -1,0 +1,22 @@
+﻿
+<div class="row">
+
+	
+	<div class="col-md-12">
+		<h1>Builds</h1>
+		{{#each build in model}}
+		<div class="user-build">
+			<h1>{{build.title}}</h1>
+			<div>
+				<ul>
+					{{#each part in build.parts}}
+					<li>{{part.title}}</li>
+					{{/each}}
+				</ul>
+			</div>
+
+		</div>
+		{{/each}}
+	</div>
+
+</div>

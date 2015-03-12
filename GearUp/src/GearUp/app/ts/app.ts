@@ -19,6 +19,7 @@ App.Router.map(function () {
 	this.route('login', { path: '/login' });
 	this.route('register', { path: '/register' });
 	this.route('build', { path: '/builds/:bid' });
+	this.route('userbuilds', { path: '/userbuilds/:bid' });
 });
 
 App.ApplicationRoute = Ember.Route.extend({
@@ -41,6 +42,10 @@ App.ApplicationController = Ember.Controller.extend({
 	userLoginName: function () {
 		return window['UserIdentityName'] || 'Unknown User';
 	}.property('window.UserIdentityName'),
+
+	userLoginKey: function () {
+		return window['UserIdentityKey'] || '';
+	}.property('window.UserIdentityKey'),
 
 	actions: {
 		setError: function (e) {
