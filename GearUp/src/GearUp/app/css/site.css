@@ -183,6 +183,15 @@ div.build-image-thumbnail {
 	
 }
 
+div.user-build-image-thumbnail {
+	display:inline-block;
+	padding: 10px 10px 0 0;
+	
+}
+.user-build-image-thumbnail > img.build-image-thumbnail {
+	cursor: inherit;
+}
+
 img.build-image-thumbnail {
 	max-width: 100px;
 	cursor: pointer;
@@ -198,3 +207,8 @@ i.clickable {
 	cursor: pointer;
 }
 
+.user-build {
+	margin-top: 40px;
+	padding-top: 10px;
+	border-top: 1px solid #ddd;
+}

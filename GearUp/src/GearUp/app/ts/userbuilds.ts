@@ -12,10 +12,9 @@ App.UserbuildsRoute = Ember.Route.extend({
 
 App.UserbuildsController = Ember.ArrayController.extend({
 
-
+	
 
 });
-
 
 
 

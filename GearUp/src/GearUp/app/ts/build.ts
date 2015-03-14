@@ -123,12 +123,3 @@ App.BuildController = Ember.ObjectController.extend({
 
 });
 
-
-Ember.Handlebars.registerBoundHelper('buildThumbnail', function (value) {
-	return new Ember.Handlebars.SafeString('<img class="build-image-thumbnail" src="' + App.ImageEndpoint + '/' + value + '" />');
-});
-Ember.Handlebars.registerBoundHelper('buildImage', function (value) {
-	return new Ember.Handlebars.SafeString('<img class="build-image-main" src="' + App.ImageEndpoint + '/' + value + '" />');
-});
-
-
