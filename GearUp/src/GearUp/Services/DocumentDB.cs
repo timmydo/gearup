@@ -205,9 +205,38 @@ namespace GearUp.Services
 			await client.DeleteDocumentAsync(document.SelfLink);
         }
 
+		public async Task DeleteListAsync(BuildList b, string uid)
+		{
+			if (b == null)
+			{
+				throw new InvalidDataException("Invalid build passed to DeleteList");
+			}
+			this._logger.WriteInformation("DeleteList id = " + b.id);
+			var document = Client.CreateDocumentQuery(Collection.DocumentsLink)
+						.Where(d => d.Id == b.id)
+						.AsEnumerable()
+						.First();
+			var b2 = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
+						.Where(d => d.id == b.id)
+						.AsEnumerable()
+						.First();
+
+			if (b.Creator != uid)
+			{
+				throw new Exception("User did not create this list");
+			}
+
+			await client.DeleteDocumentAsync(document.SelfLink);
+		}
+
 		public async Task<Document> CreateBuildAsync(Build item)
 		{
 			this._logger.WriteInformation("Creating build, id: " + item.id);
+			return await Client.CreateDocumentAsync(Collection.SelfLink, item);
+		}
+		public async Task<Document> CreateListAsync(BuildList item)
+		{
+			this._logger.WriteInformation("Creating list, id: " + item.id);
 			return await Client.CreateDocumentAsync(Collection.SelfLink, item);
 		}
 
@@ -221,16 +250,36 @@ namespace GearUp.Services
 
 			return b;
 		}
+		public BuildList GetList(string id)
+		{
+			this._logger.WriteInformation("GetList id = " + id);
+			var b = Client.CreateDocumentQuery<BuildList>(Collection.DocumentsLink)
+						.Where(d => d.id == id)
+						.AsEnumerable()
+						.FirstOrDefault();
+
+			return b;
+		}
 
 		public async Task<IEnumerable<Build>> GetUserBuilds(string id)
 		{
 			this._logger.WriteInformation("GetUserBuilds = " + id);
 			var b = await Task.Run(() => Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
-						.Where(d => d.Creator == id)
+						.Where(d => d.Creator == id && d.DocType == "build")
 						.AsEnumerable().ToArray<Build>());
 
 			return b;
 		}
+		public async Task<IEnumerable<BuildList>> GetUserLists(string id)
+		{
+			this._logger.WriteInformation("GetUserLists = " + id);
+			var b = await Task.Run(() => Client.CreateDocumentQuery<BuildList>(Collection.DocumentsLink)
+						.Where(d => d.Creator == id && d.DocType == "list")
+						.AsEnumerable().ToArray<BuildList>());
+
+			return b;
+		}
+
 
 	}
 }

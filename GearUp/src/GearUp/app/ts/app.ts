@@ -20,6 +20,8 @@ App.Router.map(function () {
 	this.route('register', { path: '/register' });
 	this.route('build', { path: '/builds/:bid' });
 	this.route('userbuilds', { path: '/userbuilds/:bid' });
+	this.route('list', { path: '/lists/:bid' });
+	this.route('userlists', { path: '/userlists/:bid' });
 });
 
 App.ApplicationRoute = Ember.Route.extend({

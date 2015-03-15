@@ -1,0 +1,39 @@
+﻿
+<div class="row">
+
+	
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-md-6"><h1>Lists</h1></div>
+			<div class="col-md-6 text-right">
+				<button class="btn btn-default" {{action 'createList'}}>Create new List</button>
+			</div>
+
+
+		</div>
+		{{#each list in model}}
+		<div class="container user-build">
+			<div class="row">
+				<div class="col-md-9">
+					{{listTitleAnchor list}}
+				</div>
+				<div class="col-md-3">Modified {{modifiedFrom list.modified}}</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-9">
+					
+				</div>
+				<div class="col-md-3">
+					<ul>
+						{{#each build in list.builds}}
+						<li>{{build.title}}</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+		{{/each}}
+	</div>
+
+</div>

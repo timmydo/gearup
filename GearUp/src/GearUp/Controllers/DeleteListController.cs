@@ -16,14 +16,14 @@ using Newtonsoft.Json;
 namespace GearUp.Controllers.Controllers
 {
 	[Route("api/[controller]")]
-	public class DeleteBuildController : Controller
+	public class DeleteListController : Controller
 	{
 
 
 		private readonly ILogger _logger;
 		private readonly DocumentDB _ddb;
 
-		public DeleteBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb)
+		public DeleteListController(SiteSettings settings, ILogger logger, DocumentDB ddb)
 		{
 			this._logger = logger;
 			this._ddb = ddb;
@@ -32,17 +32,17 @@ namespace GearUp.Controllers.Controllers
 
 		// POST api/values
 		[HttpPost]
-		public async Task<string> Post([FromBody]Build b)
+		public async Task<string> Post([FromBody]BuildList b)
 		{
 			if (b != null)
 			{
 				var uid = UserLogin.UserUniqueId(User.Identity);
-				await this._ddb.DeleteBuildAsync(b, uid);
+				await this._ddb.DeleteListAsync(b, uid);
 				return "Deleted";
 			}
 			else
 			{
-				throw new Exception("Invalid Build");
+				throw new Exception("Invalid List");
 			}
 		}
 

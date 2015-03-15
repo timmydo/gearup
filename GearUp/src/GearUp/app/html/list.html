@@ -1,0 +1,53 @@
+﻿
+
+<div class="row">
+
+	<div class="col-xs-8 col-md-8">
+
+		{{#if editTitle}}
+		<div class="input-group">
+			{{input type="text" class="form-control" placeholder="Enter title" value=title size="50"}}
+			<span class="input-group-btn">
+				<button class="btn btn-default" type="button" {{action 'saveTitle' on="click"}}>Save</button>
+				<button class="btn btn-default" type="button" {{action 'discardTitle' on="click"}}>Discard</button>
+			</span>
+		</div>
+		{{else}}
+		<h1>
+			<span {{action 'startEditTitle' on="click"}} title="Click to change">{{title}}</span>
+		</h1>
+		{{/if}}
+
+	</div>
+	<div class="col-xs-4 col-md-4 text-right">
+		{{#if canEditList}}
+
+
+		{{#if tryDelete}}
+		<button class="btn btn-default" {{action 'deleteList'}}><i class="fa fa-trash-o"></i> Really Delete?</button>
+		{{/if}}
+		<button class="btn btn-default" {{action 'tryDeleteList'}}><i class="fa fa-trash-o"></i></button>
+
+		{{/if}}
+	</div>
+
+</div>
+
+<div class="row">
+
+	<div class="col-xs-12 col-md-8">
+		list builds here
+	</div>
+
+
+	<div class="col-xs-6 col-md-4">
+
+		stuff
+
+	</div>
+
+
+</div>
+
+
+

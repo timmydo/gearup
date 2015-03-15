@@ -21,9 +21,15 @@
 				{{/view}}
 
 				{{#if userLoginKey}}
+				
 				{{#view "nav"}}
 				{{#link-to "userbuilds" userLoginKey}}My Builds{{/link-to}}
 				{{/view}}
+
+				{{#view "nav"}}
+				{{#link-to "userlists" userLoginKey}}My Lists{{/link-to}}
+				{{/view}}
+
 				{{/if}}
 				
 			</ul>

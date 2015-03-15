@@ -3,21 +3,20 @@ using System.Collections.Generic;
 
 namespace GearUp.Models
 {
-	public class Build
+	public class BuildList
 	{
-		public Build()
+		public BuildList()
 		{
 			Version = 1;
 			id = System.Guid.NewGuid().ToString();
 			Modified = DateTime.UtcNow;
 			Created = Modified;
 			Creator = string.Empty;	//fixme set user guid
-			DocType = "build";
-			Title = "New Build";
+			DocType = "list";
+			Title = "New List";
 			Description = "New Build";
 			Url = string.Empty;
-			Images = new List<Image>();
-			Parts = new List<Part>(); // guid ref
+			Builds = new List<string>(); // guid ref
 
 		}
 
@@ -33,8 +32,7 @@ namespace GearUp.Models
 
 		public string Url { get; set; }
 
-		public List<Image> Images { get; set; }
 
-		public List<Part> Parts { get; set; }
+		public List<string> Builds { get; set; }
 	}
 }
