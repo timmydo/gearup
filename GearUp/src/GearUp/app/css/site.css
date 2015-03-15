@@ -209,6 +209,6 @@ i.clickable {
 
 .user-build {
 	margin-top: 40px;
-	padding-top: 10px;
-	border-top: 1px solid #ddd;
+	padding: 20px;
+	border: 1px solid #ddd;
 }

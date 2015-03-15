@@ -27,17 +27,19 @@ namespace GearUp.Controllers.Controllers
 		}
 
 
-		private readonly CloudStorageAccount _storageAccount;
+		private readonly BlobService _blobService;
 		private readonly ILogger _logger;
 		private readonly DocumentDB _ddb;
 		private readonly string _imagesContainer;
 
-		public UploadImageController(SiteSettings settings, ILogger logger, DocumentDB ddb)
+
+		public UploadImageController(SiteSettings settings, ILogger logger, DocumentDB ddb, BlobService bs)
 		{
-			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
-			this._imagesContainer = settings.ImagesContainer;
+			this._blobService = bs;
 			this._logger = logger;
 			this._ddb = ddb;
+			this._imagesContainer = settings.ImagesContainer;
+
 		}
 
 		public readonly string[] ValidContentTypes = { "image/png", "image/jpeg", "image/gif"};
@@ -70,14 +72,11 @@ namespace GearUp.Controllers.Controllers
 
 			_logger.WriteInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
 
-			var client = this._storageAccount.CreateCloudBlobClient();
-			var container = client.GetContainerReference(this._imagesContainer);
-
-			var blob = container.GetBlockBlobReference(result.Guid);
-			await blob.UploadFromStreamAsync(stream);
-			blob.Properties.ContentType = Request.ContentType;
-			await blob.SetPropertiesAsync();
+			// upload stream
+			await this._blobService.UploadFile(stream, Request.ContentType, this._imagesContainer, result.Guid);
 			result.Message = "Uploaded";
+
+			// add pointer to document db
 			var uid = UserLogin.UserUniqueId(User.Identity);
 			await this._ddb.AddImageToBuildAsync(buildid, result.Guid, uid);
 

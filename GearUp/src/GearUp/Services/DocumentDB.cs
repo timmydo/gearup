@@ -19,10 +19,16 @@ namespace GearUp.Services
 		private ILogger _logger;
 		private StoredProcedure _addImageToBuild;
 		private StoredProcedure _saveBuild;
-		public DocumentDB(SiteSettings settings, ILogger logger)
+		private BlobService _blobService;
+		private string _imagesContainer;
+
+		public DocumentDB(SiteSettings settings, ILogger logger, BlobService bs)
 		{
 			this._settings = settings;
 			this._logger = logger;
+			this._blobService = bs;
+			this._imagesContainer = settings.ImagesContainer;
+
 			logger.WriteInformation("DocumentDB creation");
 			this.ReadOrCreateDatabase();
 			this.ReadOrCreateCollection(Database.SelfLink);
@@ -60,6 +66,7 @@ namespace GearUp.Services
 		}
 
 		private DocumentClient client;
+
 		private DocumentClient Client
 		{
 			get
@@ -168,6 +175,35 @@ namespace GearUp.Services
 			return response;
 		}
 
+
+		public async Task DeleteBuildAsync(Build b, string uid)
+		{
+			if (b == null) {
+				throw new InvalidDataException("Invalid build passed to DeleteBuild");
+			}
+			this._logger.WriteInformation("DeleteBuild id = " + b.id);
+			var document = Client.CreateDocumentQuery(Collection.DocumentsLink)
+						.Where(d => d.Id == b.id)
+						.AsEnumerable()
+						.First();
+			var b2 = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
+						.Where(d => d.id == b.id)
+						.AsEnumerable()
+						.First();
+
+			if (b.Creator != uid)
+			{
+				throw new Exception("User did not create this build");
+			}
+			
+			//delete the images
+			foreach (var i in b2.Images) {
+				bool wasDeleted = await this._blobService.DeleteFile(this._imagesContainer, i.Guid);
+				this._logger.WriteInformation("Deleted image " + i .Guid + ": " + wasDeleted.ToString());
+			}
+
+			await client.DeleteDocumentAsync(document.SelfLink);
+        }
 
 		public async Task<Document> CreateBuildAsync(Build item)
 		{

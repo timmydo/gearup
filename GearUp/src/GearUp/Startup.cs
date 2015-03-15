@@ -58,6 +58,7 @@ namespace GearUp
 			logger.WriteInformation("Creating Logger");
 
 			services.AddInstance<ILogger>(logger);
+			services.AddSingleton<BlobService>();
 			services.AddSingleton<DocumentDB>();
 
 			services.AddMvc().Configure<MvcOptions>(options =>

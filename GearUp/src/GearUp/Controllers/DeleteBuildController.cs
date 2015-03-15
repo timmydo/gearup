@@ -16,14 +16,14 @@ using Newtonsoft.Json;
 namespace GearUp.Controllers.Controllers
 {
 	[Route("api/[controller]")]
-	public class SaveBuildController : Controller
+	public class DeleteBuildController : Controller
 	{
 
 
 		private readonly ILogger _logger;
 		private readonly DocumentDB _ddb;
 
-		public SaveBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb)
+		public DeleteBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb)
 		{
 			this._logger = logger;
 			this._ddb = ddb;
@@ -37,8 +37,8 @@ namespace GearUp.Controllers.Controllers
 			if (b != null)
 			{
 				var uid = UserLogin.UserUniqueId(User.Identity);
-				var newId = await this._ddb.SaveBuildAsync(b, uid);
-                return newId;
+				await this._ddb.DeleteBuildAsync(b, uid);
+				return "Deleted";
 			}
 			else
 			{

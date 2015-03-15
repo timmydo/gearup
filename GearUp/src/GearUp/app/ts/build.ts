@@ -19,7 +19,7 @@ App.BuildRoute = Ember.Route.extend({
 					url: '/api/SaveBuild',
 					contentType: 'application/json',
 					data: data,
-					dataType: 'json',
+					dataType: 'text',
 					success: (data, status) => {
 						console.log(status);
 						console.log(data);
@@ -28,11 +28,12 @@ App.BuildRoute = Ember.Route.extend({
 						console.log(xhr);
 						console.log(status);
 						console.log(err);
-						this.send('setError', 'Error saving build: ' + xhr.responseJSON.Message);
+						this.send('setError', 'Error saving build: ' + xhr.responseText);
 					}
 				});
 			}
 		}
+
 	}
 });
 
@@ -66,7 +67,36 @@ App.BuildController = Ember.ObjectController.extend({
 		},
 		addPart: function () {
 			if (this.get('canEditBuild')) {
-				this.set('parts', this.get('parts').concat({url:'', title:'New part', price:''}));
+				this.set('parts', this.get('parts').concat({ url: '', title: 'New part', price: '' }));
+			}
+		},
+		tryDeleteBuild: function () {
+			this.set('tryDelete', !this.get('tryDelete'));
+		},
+		deleteBuild: function () {
+			this.set('tryDelete', false); // try preventing doubleclick
+			var model = this.get('model');
+			var data = JSON.stringify(model);
+			console.log("Delete Build " + data);
+			if (data) {
+				Ember.$.ajax({
+					type: 'POST',
+					url: '/api/DeleteBuild',
+					contentType: 'application/json',
+					data: data,
+					dataType: 'text',
+					success: (data, status) => {
+						console.log(status);
+						console.log(data);
+						this.transitionToRoute('userbuilds', model.creator);
+					},
+					error: (xhr, status, err) => {
+						console.log(xhr);
+						console.log(status);
+						console.log(err);
+						this.send('setError', 'Error deleting build: ' + xhr.responseText);
+					}
+				});
 			}
 		},
 		startEditTitle: function () {

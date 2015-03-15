@@ -19,7 +19,11 @@
 		{{/if}}
 
 	</div>
-	<div class="col-xs-4 col-md-4">
+	<div class="col-xs-4 col-md-4 text-right">
+		{{#if tryDelete}}
+		<button class="btn btn-default" {{action 'deleteBuild'}}><i class="fa fa-trash-o"></i> Really Delete?</button>
+		{{/if}}
+		<button class="btn btn-default" {{action 'tryDeleteBuild'}}><i class="fa fa-trash-o"></i></button>
 
 	</div>
 

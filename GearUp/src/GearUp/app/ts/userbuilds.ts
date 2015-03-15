@@ -12,7 +12,11 @@ App.UserbuildsRoute = Ember.Route.extend({
 
 App.UserbuildsController = Ember.ArrayController.extend({
 
-	
+	actions: {
+		createBuild: function () {
+			this.transitionToRoute('build', Gear.UUID.v4());
+		}
+	}
 
 });
 
