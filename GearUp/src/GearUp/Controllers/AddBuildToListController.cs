@@ -16,34 +16,44 @@ using Newtonsoft.Json;
 namespace GearUp.Controllers.Controllers
 {
 	[Route("api/[controller]")]
-	public class SaveBuildController : Controller
+	public class AddBuildToListController : Controller
 	{
 
 
 		private readonly ILogger _logger;
 		private readonly DocumentDB _ddb;
 
-		public SaveBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb)
+		public AddBuildToListController(SiteSettings settings, ILogger logger, DocumentDB ddb)
 		{
 			this._logger = logger;
 			this._ddb = ddb;
 		}
 
+		public class ParamInfo
+		{
+			public string Build { get; set; }
+			public string List { get; set; }
+
+		}
+
 
 		// POST api/values
 		[HttpPost]
-		public async Task<string> Post([FromBody]Build b)
+		public async Task<string> Post([FromBody]ParamInfo pi)
 		{
-			if (b != null && !string.IsNullOrEmpty(b.Creator))
+			var uid = UserLogin.UserUniqueId(User.Identity);
+
+			if (string.IsNullOrEmpty(uid))
 			{
-				var uid = UserLogin.UserUniqueId(User.Identity);
-				var newId = await this._ddb.SaveBuildAsync(b, uid);
-                return newId;
+				throw new Exception("User is not logged in");
 			}
-			else
-			{
-				throw new Exception("Invalid Build");
-			}
+
+			var b = this._ddb.GetBuild(pi.Build);
+			var l = this._ddb.GetList(pi.List);
+
+			await this._ddb.AddBuildToListAsync(b.id, l.id, uid);
+
+			return "Success";
 		}
 
 	}

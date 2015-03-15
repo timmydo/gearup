@@ -43,6 +43,44 @@ App.ListController = Ember.ObjectController.extend({
 	}.property('model.creator'),
 	editTitle: false,
 	savedTitle: '',
+	startLoadBuildList: false,
+	buildList: function (key, value, previousValue) {
+		var list = [];
+		var firstCall = true;
+		var model = this.get('model');
+		var data = JSON.stringify(model);
+
+		//setter
+		if (arguments.length > 1) {
+			list = value;
+		} else {
+			if (!this.get('startLoadBuildList')) {
+				this.set('startLoadBuildList', true)
+				Ember.$.ajax({
+					type: 'POST',
+					url: '/api/Build',
+					contentType: 'application/json',
+					data: data,
+					dataType: 'json',
+					success: (data, status) => {
+						console.log(status);
+						console.log(data);
+						this.set('buildList', data);
+					},
+					error: (xhr, status, err) => {
+						console.log(xhr);
+						console.log(status);
+						console.log(err);
+						this.send('setError', 'Error getting build list: ' + xhr.responseJSON);
+					}
+				});
+			}
+		}
+
+		//getter
+		return list;
+
+	}.property('model.builds'),
 
 	actions: {
 		tryDeleteList: function () {

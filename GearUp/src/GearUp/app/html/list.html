@@ -36,14 +36,32 @@
 <div class="row">
 
 	<div class="col-xs-12 col-md-8">
-		list builds here
-	</div>
+		{{#each build in buildList}}
 
+		<div class="container user-build">
+			<div class="row">
+				<div class="col-md-9">
+					{{buildTitleAnchor build}}
+				</div>
+				<div class="col-md-3">Modified {{modifiedFrom build.modified}}</div>
+			</div>
 
-	<div class="col-xs-6 col-md-4">
-
-		stuff
-
+			<div class="row">
+				<div class="col-md-9">
+					{{#each image in build.images}}
+					<div class="user-build-image-thumbnail">{{buildThumbnail image.guid}}</div>
+					{{/each}}
+				</div>
+				<div class="col-md-3">
+					<ul>
+						{{#each part in build.parts}}
+						<li>{{part.title}}</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+		{{/each}}
 	</div>
 
 

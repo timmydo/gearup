@@ -18,7 +18,9 @@ namespace GearUp.Services
 		private SiteSettings _settings;
 		private ILogger _logger;
 		private StoredProcedure _addImageToBuild;
+		private StoredProcedure _addBuildToList;
 		private StoredProcedure _saveBuild;
+		private StoredProcedure _saveList;
 		private BlobService _blobService;
 		private string _imagesContainer;
 
@@ -143,6 +145,8 @@ namespace GearUp.Services
 		{
 			this._addImageToBuild = await this.LoadStoredProc(@"Services\js\addImageToBuild.js");
 			this._saveBuild = await this.LoadStoredProc(@"Services\js\saveBuild.js");
+			this._saveList = await this.LoadStoredProc(@"Services\js\saveList.js");
+			this._addBuildToList = await this.LoadStoredProc(@"Services\js\addBuildToList.js");
 			
 
 		}
@@ -165,13 +169,28 @@ namespace GearUp.Services
 			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addImageToBuild.SelfLink, buildGuid, imageGuid, uid);
 		}
 
+		public async Task AddBuildToListAsync(string buildGuid, string listGuid, string uid)
+		{
+			await EnsureStoredProcs();
+			this._logger.WriteInformation("Executing stored procedure addBuildToList(" + buildGuid + ", " + listGuid + ", " + uid + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addBuildToList.SelfLink, buildGuid, listGuid, uid);
+		}
 
 		public async Task<string> SaveBuildAsync(Build b, string uid)
 		{
 			await EnsureStoredProcs();
 			var json = JsonConvert.SerializeObject(b);
-			this._logger.WriteInformation("Executing stored procedure saveBuild(" + json + ", " + uid +  ")");
+			this._logger.WriteInformation("Executing stored procedure saveBuild(" + json + ", " + uid + ")");
 			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._saveBuild.SelfLink, json, uid);
+			return response;
+		}
+
+		public async Task<string> SaveListAsync(BuildList l, string uid)
+		{
+			await EnsureStoredProcs();
+			var json = JsonConvert.SerializeObject(l);
+			this._logger.WriteInformation("Executing stored procedure saveList(" + json + ", " + uid + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._saveList.SelfLink, json, uid);
 			return response;
 		}
 

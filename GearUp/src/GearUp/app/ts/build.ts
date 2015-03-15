@@ -48,10 +48,53 @@ App.BuildController = Ember.ObjectController.extend({
 		}
 	}.property('model.images'),
 
+	userLoginKey: function () {
+		return window['UserIdentityKey'] || '';
+	}.property('window.UserIdentityKey'),
 
 	canEditBuild: function () {
 		return this.get('model.creator') === window['UserIdentityKey'];
 	}.property('model.creator'),
+	startLoadUserBuildList: false,
+
+	userBuildList: function (key, value, previousValue) {
+		var list = [];
+		var firstCall = true;
+		var model = this.get('model');
+		var data = JSON.stringify(model);
+		var userKey = this.get('userLoginKey');
+
+		//setter
+		if (arguments.length > 1) {
+			list = value;
+		} else {
+			if (!this.get('startLoadUserBuildList') && userKey) {
+				this.set('startLoadUserBuildList', true);
+				Ember.$.ajax({
+					type: 'GET',
+					url: '/api/UserLists/' + userKey,
+					dataType: 'json',
+					success: (data, status) => {
+						console.log(status);
+						console.log(data);
+						this.set('userBuildList', data);
+					},
+					error: (xhr, status, err) => {
+						console.log(xhr);
+						console.log(status);
+						console.log(err);
+						this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
+					}
+				});
+			}
+		}
+
+		//getter
+		return list;
+
+	}.property('userLoginKey'),
+
+
 	editTitle: false,
 	savedTitle: '',
 
@@ -60,6 +103,29 @@ App.BuildController = Ember.ObjectController.extend({
 	selectedParts: [],
 
 	actions: {
+		addBuildToList: function (listId) {
+			var build = this.get('model');
+			console.log('Add build ' + build.id + ' to list ' + listId);
+			var d = { 'build': build.id, 'list': listId };
+			var data = JSON.stringify(d);
+			Ember.$.ajax({
+				type: 'POST',
+				url: '/api/AddBuildToList',
+				contentType: 'application/json',
+				data: data,
+				dataType: 'text',
+				success: (data, status) => {
+					console.log(status);
+					console.log(data);
+				},
+				error: (xhr, status, err) => {
+					console.log(xhr);
+					console.log(status);
+					console.log(err);
+					this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+				}
+			});
+		},
 		deletePart: function (part) {
 			var parts = this.get('parts');
 			parts.removeObject(part);

@@ -206,6 +206,9 @@ img.build-image-main {
 i.clickable {
 	cursor: pointer;
 }
+a.clickable {
+	cursor:pointer;
+}
 
 .user-build {
 	margin-top: 40px;

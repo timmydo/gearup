@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using GearUp.Services;
 using System.Security.Claims;
 using System;
+using System.Collections.Generic;
 
 namespace GearUp.Controllers
 {
@@ -46,6 +47,25 @@ namespace GearUp.Controllers
 				await this._ddb.CreateBuildAsync(b);
 			}
 			return b;
+		}
+
+		public Build[] Post([FromBody]BuildList bl)
+		{
+			if (bl.Builds.Count < 1)
+			{
+				return new Build[0];
+			}
+			var list = new List<Build>();
+			foreach (var id in bl.Builds)
+			{
+				var fullBuild = this._ddb.GetBuild(id);
+				if (fullBuild != null)
+				{
+					list.Add(fullBuild);
+				}
+			}
+
+			return list.ToArray();
 		}
 
 

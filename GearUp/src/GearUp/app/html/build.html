@@ -20,6 +20,21 @@
 
 	</div>
 	<div class="col-xs-4 col-md-4 text-right">
+
+		{{#if userLoginKey}}
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+				Add to list <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				{{#each buildList in userBuildList}}
+				<li><a class="clickable" {{action 'addBuildToList' buildList.id}}>{{buildList.title}}</a></li>
+
+				{{/each}}
+			</ul>
+		</div>
+		{{/if}}
+
 		{{#if canEditBuild}}
 
 
