@@ -8,6 +8,7 @@ using GearUp.Models;
 using System.Threading.Tasks;
 using GearUp.Services;
 using System.Security.Claims;
+using System;
 
 namespace GearUp.Controllers
 {
@@ -36,6 +37,11 @@ namespace GearUp.Controllers
 				b.id = id;
 				var uid = UserLogin.UserUniqueId(User.Identity);
 				b.Creator = uid;
+				if (string.IsNullOrEmpty(uid))
+				{
+					b.Title = "Must log in to create builds";
+					return b;
+				}
 				this._logger.WriteInformation("Setting creator to " + uid);
 				await this._ddb.CreateBuildAsync(b);
 			}

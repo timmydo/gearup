@@ -34,7 +34,7 @@ namespace GearUp.Controllers.Controllers
 		[HttpPost]
 		public async Task<string> Post([FromBody]Build b)
 		{
-			if (b != null)
+			if (b != null && !string.IsNullOrEmpty(b.Creator))
 			{
 				var uid = UserLogin.UserUniqueId(User.Identity);
 				var newId = await this._ddb.SaveBuildAsync(b, uid);
