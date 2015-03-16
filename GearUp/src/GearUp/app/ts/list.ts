@@ -4,6 +4,11 @@ App.ListRoute = Ember.Route.extend({
 	model: function (params) {
 		return Ember.$.getJSON('/api/list/' + params.bid);
 	},
+	resetController: function (controller, isExiting, transition) {
+		if (isExiting) {
+			controller.set('startLoadBuildList', false);
+		}
+	},	
 	actions: {
 		invalidateModel: function () {
 			Ember.Logger.log('Route is now refreshing...');
@@ -40,7 +45,7 @@ App.ListRoute = Ember.Route.extend({
 App.ListController = Ember.ObjectController.extend({
 	canEditList: function () {
 		return this.get('model.creator') === window['UserIdentityKey'];
-	}.property('model.creator'),
+	}.property('model'),
 	editTitle: false,
 	savedTitle: '',
 	startLoadBuildList: false,
@@ -55,7 +60,7 @@ App.ListController = Ember.ObjectController.extend({
 			list = value;
 		} else {
 			if (!this.get('startLoadBuildList')) {
-				this.set('startLoadBuildList', true)
+				this.set('startLoadBuildList', true);
 				Ember.$.ajax({
 					type: 'POST',
 					url: '/api/Build',
@@ -80,9 +85,36 @@ App.ListController = Ember.ObjectController.extend({
 		//getter
 		return list;
 
-	}.property('model.builds'),
+	}.property('model'),
 
 	actions: {
+
+		removeFromList: function (bid) {
+			var model = this.get('model');
+			var data = JSON.stringify({'build': bid, 'list': model.id});
+			console.log("Remove build from list" + data);
+			if (data) {
+				Ember.$.ajax({
+					type: 'POST',
+					url: '/api/RemoveBuildFromList',
+					contentType: 'application/json',
+					data: data,
+					dataType: 'text',
+					success: (data, status) => {
+						console.log(status);
+						console.log(data);
+						this.set('startLoadBuildList', false);
+						this.send('invalidateModel');
+					},
+					error: (xhr, status, err) => {
+						console.log(xhr);
+						console.log(status);
+						console.log(err);
+						this.send('setError', 'Error removing item: ' + xhr.responseText);
+					}
+				});
+			}
+		},
 		tryDeleteList: function () {
 			this.set('tryDelete', !this.get('tryDelete'));
 		},

@@ -43,7 +43,11 @@
 				<div class="col-md-9">
 					{{buildTitleAnchor build}}
 				</div>
-				<div class="col-md-3">Modified {{modifiedFrom build.modified}}</div>
+				<div class="col-md-3 text-right">
+					{{#if canEditList}}
+					<button class="btn btn-default" {{action 'removeFromList' build.id}}><i class="fa fa-trash-o"></i></button>
+					{{/if}}
+				</div>
 			</div>
 
 			<div class="row">

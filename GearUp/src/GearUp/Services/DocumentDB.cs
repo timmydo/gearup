@@ -19,6 +19,7 @@ namespace GearUp.Services
 		private ILogger _logger;
 		private StoredProcedure _addImageToBuild;
 		private StoredProcedure _addBuildToList;
+		private StoredProcedure _removeBuildFromList;
 		private StoredProcedure _saveBuild;
 		private StoredProcedure _saveList;
 		private BlobService _blobService;
@@ -147,6 +148,7 @@ namespace GearUp.Services
 			this._saveBuild = await this.LoadStoredProc(@"Services\js\saveBuild.js");
 			this._saveList = await this.LoadStoredProc(@"Services\js\saveList.js");
 			this._addBuildToList = await this.LoadStoredProc(@"Services\js\addBuildToList.js");
+			this._removeBuildFromList = await this.LoadStoredProc(@"Services\js\removeBuildFromList.js");
 			
 
 		}
@@ -174,6 +176,12 @@ namespace GearUp.Services
 			await EnsureStoredProcs();
 			this._logger.WriteInformation("Executing stored procedure addBuildToList(" + buildGuid + ", " + listGuid + ", " + uid + ")");
 			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._addBuildToList.SelfLink, buildGuid, listGuid, uid);
+		}
+		public async Task RemoveBuildFromListAsync(string buildGuid, string listGuid, string uid)
+		{
+			await EnsureStoredProcs();
+			this._logger.WriteInformation("Executing stored procedure addBuildToList(" + buildGuid + ", " + listGuid + ", " + uid + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._removeBuildFromList.SelfLink, buildGuid, listGuid, uid);
 		}
 
 		public async Task<string> SaveBuildAsync(Build b, string uid)
