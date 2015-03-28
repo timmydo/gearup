@@ -1,24 +1,51 @@
 ﻿/// <reference path="app.ts" />
 
 
-class MyAppData {
+App.BuildObject = Ember.Object.extend({
 
-	getBuild(bid) {
-		return Ember.$.getJSON('/api/build/' + bid);
-	}
-
-	saveBuild(data) {
+	save: function () {
+		var data = JSON.stringify(this);
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/SaveBuild',
 			contentType: 'application/json',
 			data: data,
-			dataType: 'text',
-			success: (data, status) => {
-				console.log(status);
-				console.log(data);
-			}
+			dataType: 'text'
 		});
+	}
+});
+
+App.ListObject = Ember.Object.extend({});
+
+
+class MyAppData {
+
+	builds : any;
+	lists: any;
+
+	constructor() {
+		this.builds = {};
+		this.lists = {};
+	}
+
+	getBuild(bid) {
+		var b = this.builds[bid];
+		if (!b) {
+			console.log('get build ' + bid);
+			return Ember.$.getJSON('/api/build/' + bid).then((res) => {
+				console.log('get build ' + bid);
+				console.log(res);
+				b = App.BuildObject.create(res);
+				this.builds[bid] = b;
+				return b;
+			});
+		} else {
+			return b;
+		}
+	}
+
+	saveBuild(data) {
+		
 	}
 
 	getUserList(userKey) {

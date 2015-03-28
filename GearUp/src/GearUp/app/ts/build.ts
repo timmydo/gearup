@@ -12,12 +12,10 @@ App.BuildRoute = Ember.Route.extend({
 		saveBuild: function () {
 			var model = this.modelFor(this.routeName);
 			var data = JSON.stringify(model);
-			console.log("Saving Build " + data);
 			if (data) {
-				App.Data.saveBuild(data).fail((xhr, status, err) => {
-					console.log(xhr);
-					console.log(status);
-					console.log(err);
+				model.save().then(() => {
+					this.send('setInfo', 'Saved changes');
+				}, (xhr) => {
 					this.send('setError', 'Error saving build: ' + xhr.responseText);
 				});
 			}

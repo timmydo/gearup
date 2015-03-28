@@ -66,8 +66,17 @@
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close" {{action "dismissError"}}><span aria-hidden="true">&times;</span></button>
 		{{errorMessage}}
 	</div>
+	{{/if}}
+
+	{{#if infoMessage}}
+	<div class="alert alert-info alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close" {{action "dismissInfo"}}><span aria-hidden="true">&times;</span></button>
+		{{infoMessage}}
+	</div>
 
 	{{/if}}
+
+
 
 
 	{{outlet}}

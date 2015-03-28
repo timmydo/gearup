@@ -5,7 +5,6 @@ App.PartController = Ember.ObjectController.extend({
 
 	actions: {
 		editPart: function (part) {
-			console.log('edit part');
 			this.setProperties({
 				editing: true,
 				newTitle: this.get('title'),
@@ -14,7 +13,6 @@ App.PartController = Ember.ObjectController.extend({
 			});
 		},
 		savePart: function (part) {
-			console.log('save part');
 			this.setProperties({
 				editing: false,
 				title: this.get('newTitle'),
@@ -25,7 +23,6 @@ App.PartController = Ember.ObjectController.extend({
 			this.send('saveBuild');
 		},
 		discardPart: function (part) {
-			console.log('discard part');
 			this.set('editing', false);
 		},
 

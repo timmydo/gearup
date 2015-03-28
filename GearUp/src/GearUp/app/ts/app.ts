@@ -28,6 +28,9 @@ App.ApplicationRoute = Ember.Route.extend({
 	actions: {
 		setError: function (e) {
             this.get('controller').set('errorMessage', e);
+        },
+		setInfo: function (e) {
+            this.get('controller').set('infoMessage', e);
         }
     }
 });
@@ -36,6 +39,7 @@ App.ApplicationController = Ember.Controller.extend({
 	appName: 'Gear up',
 
 	errorMessage: '',
+	infoMessage: '',
 
 	userLoggedIn: function () {
 		return window['UserIdentityName'] !== '';
@@ -55,6 +59,12 @@ App.ApplicationController = Ember.Controller.extend({
         },
         dismissError: function () {
             this.set('errorMessage', null);
+        },
+		setInfo: function (e) {
+            this.set('infoMessage', e);
+        },
+        dismissInfo: function () {
+            this.set('infoMessage', null);
         }
     }
 });
