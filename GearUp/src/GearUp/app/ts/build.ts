@@ -2,7 +2,7 @@
 
 App.BuildRoute = Ember.Route.extend({
 	model: function (params) {
-		return Ember.$.getJSON('/api/build/' + params.bid);
+		return App.Data.getBuild(params.bid);
 	},
 	actions: {
 		invalidateModel: function () {
@@ -14,22 +14,11 @@ App.BuildRoute = Ember.Route.extend({
 			var data = JSON.stringify(model);
 			console.log("Saving Build " + data);
 			if (data) {
-				Ember.$.ajax({
-					type: 'POST',
-					url: '/api/SaveBuild',
-					contentType: 'application/json',
-					data: data,
-					dataType: 'text',
-					success: (data, status) => {
-						console.log(status);
-						console.log(data);
-					},
-					error: (xhr, status, err) => {
-						console.log(xhr);
-						console.log(status);
-						console.log(err);
-						this.send('setError', 'Error saving build: ' + xhr.responseText);
-					}
+				App.Data.saveBuild(data).fail((xhr, status, err) => {
+					console.log(xhr);
+					console.log(status);
+					console.log(err);
+					this.send('setError', 'Error saving build: ' + xhr.responseText);
 				});
 			}
 		}
@@ -70,21 +59,15 @@ App.BuildController = Ember.ObjectController.extend({
 		} else {
 			if (!this.get('startLoadUserBuildList') && userKey) {
 				this.set('startLoadUserBuildList', true);
-				Ember.$.ajax({
-					type: 'GET',
-					url: '/api/UserLists/' + userKey,
-					dataType: 'json',
-					success: (data, status) => {
-						console.log(status);
-						console.log(data);
-						this.set('userBuildList', data);
-					},
-					error: (xhr, status, err) => {
-						console.log(xhr);
-						console.log(status);
-						console.log(err);
-						this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
-					}
+				App.Data.getUserList(userKey).then((data, status) => {
+					console.log(status);
+					console.log(data);
+					this.set('userBuildList', data);
+				}, (xhr, status, err) => {
+					console.log(xhr);
+					console.log(status);
+					console.log(err);
+					this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
 				});
 			}
 		}
@@ -108,22 +91,14 @@ App.BuildController = Ember.ObjectController.extend({
 			console.log('Add build ' + build.id + ' to list ' + listId);
 			var d = { 'build': build.id, 'list': listId };
 			var data = JSON.stringify(d);
-			Ember.$.ajax({
-				type: 'POST',
-				url: '/api/AddBuildToList',
-				contentType: 'application/json',
-				data: data,
-				dataType: 'text',
-				success: (data, status) => {
-					console.log(status);
-					console.log(data);
-				},
-				error: (xhr, status, err) => {
-					console.log(xhr);
-					console.log(status);
-					console.log(err);
-					this.send('setError', 'Error adding build to list: ' + xhr.responseText);
-				}
+			App.Data.addBuildToList(data).then((data, status) => {
+				console.log(status);
+				console.log(data);
+			},(xhr, status, err) => {
+				console.log(xhr);
+				console.log(status);
+				console.log(err);
+				this.send('setError', 'Error adding build to list: ' + xhr.responseText);
 			});
 		},
 		deletePart: function (part) {
@@ -145,24 +120,17 @@ App.BuildController = Ember.ObjectController.extend({
 			var data = JSON.stringify(model);
 			console.log("Delete Build " + data);
 			if (data) {
-				Ember.$.ajax({
-					type: 'POST',
-					url: '/api/DeleteBuild',
-					contentType: 'application/json',
-					data: data,
-					dataType: 'text',
-					success: (data, status) => {
+				App.Data.DeleteBuild(data).then((data, status) => {
 						console.log(status);
 						console.log(data);
 						this.transitionToRoute('userbuilds', model.creator);
-					},
-					error: (xhr, status, err) => {
+					}, (xhr, status, err) => {
 						console.log(xhr);
 						console.log(status);
 						console.log(err);
 						this.send('setError', 'Error deleting build: ' + xhr.responseText);
 					}
-				});
+				);
 			}
 		},
 		startEditTitle: function () {

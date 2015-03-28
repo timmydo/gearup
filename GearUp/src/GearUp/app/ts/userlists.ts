@@ -6,7 +6,7 @@ App.UserlistsRoute = Ember.Route.extend({
 		if (!bid) {
 			bid = window['UserIdentityKey'] || '';
 		}
-		return Ember.$.getJSON('/api/UserLists/' + bid);
+		return App.Data.getUserLists(bid);
 	}
 });
 

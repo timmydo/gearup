@@ -6,7 +6,7 @@ App.UserbuildsRoute = Ember.Route.extend({
 		if (!bid) {
 			bid = window['UserIdentityKey'] || '';
 		}
-		return Ember.$.getJSON('/api/UserBuilds/' + bid);
+		return App.Data.getUserBuilds(bid);
 	}
 });
 

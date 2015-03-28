@@ -2,7 +2,7 @@
 
 App.ListRoute = Ember.Route.extend({
 	model: function (params) {
-		return Ember.$.getJSON('/api/list/' + params.bid);
+		return App.Data.getList(params.bid);
 	},
 	resetController: function (controller, isExiting, transition) {
 		if (isExiting) {
@@ -19,23 +19,15 @@ App.ListRoute = Ember.Route.extend({
 			var data = JSON.stringify(model);
 			console.log("Saving List " + data);
 			if (data) {
-				Ember.$.ajax({
-					type: 'POST',
-					url: '/api/SaveList',
-					contentType: 'application/json',
-					data: data,
-					dataType: 'text',
-					success: (data, status) => {
+				App.Data.saveList(data).then((data, status) => {
 						console.log(status);
 						console.log(data);
-					},
-					error: (xhr, status, err) => {
+					}, (xhr, status, err) => {
 						console.log(xhr);
 						console.log(status);
 						console.log(err);
 						this.send('setError', 'Error saving build: ' + xhr.responseText);
-					}
-				});
+					});
 			}
 		}
 
@@ -61,23 +53,15 @@ App.ListController = Ember.ObjectController.extend({
 		} else {
 			if (!this.get('startLoadBuildList')) {
 				this.set('startLoadBuildList', true);
-				Ember.$.ajax({
-					type: 'POST',
-					url: '/api/Build',
-					contentType: 'application/json',
-					data: data,
-					dataType: 'json',
-					success: (data, status) => {
-						console.log(status);
-						console.log(data);
-						this.set('buildList', data);
-					},
-					error: (xhr, status, err) => {
-						console.log(xhr);
-						console.log(status);
-						console.log(err);
-						this.send('setError', 'Error getting build list: ' + xhr.responseJSON);
-					}
+				App.Data.getBuildsFromList(data).then((data, status) => {
+					console.log(status);
+					console.log(data);
+					this.set('buildList', data);
+				},(xhr, status, err) => {
+					console.log(xhr);
+					console.log(status);
+					console.log(err);
+					this.send('setError', 'Error getting build list: ' + xhr.responseJSON);
 				});
 			}
 		}
@@ -94,24 +78,16 @@ App.ListController = Ember.ObjectController.extend({
 			var data = JSON.stringify({'build': bid, 'list': model.id});
 			console.log("Remove build from list" + data);
 			if (data) {
-				Ember.$.ajax({
-					type: 'POST',
-					url: '/api/RemoveBuildFromList',
-					contentType: 'application/json',
-					data: data,
-					dataType: 'text',
-					success: (data, status) => {
-						console.log(status);
-						console.log(data);
-						this.set('startLoadBuildList', false);
-						this.send('invalidateModel');
-					},
-					error: (xhr, status, err) => {
-						console.log(xhr);
-						console.log(status);
-						console.log(err);
-						this.send('setError', 'Error removing item: ' + xhr.responseText);
-					}
+				App.Data.removeBuildFromList(data).then((data, status) => {
+					console.log(status);
+					console.log(data);
+					this.set('startLoadBuildList', false);
+					this.send('invalidateModel');
+				},(xhr, status, err) => {
+					console.log(xhr);
+					console.log(status);
+					console.log(err);
+					this.send('setError', 'Error removing item: ' + xhr.responseText);
 				});
 			}
 		},
@@ -124,23 +100,15 @@ App.ListController = Ember.ObjectController.extend({
 			var data = JSON.stringify(model);
 			console.log("Delete List " + data);
 			if (data) {
-				Ember.$.ajax({
-					type: 'POST',
-					url: '/api/DeleteList',
-					contentType: 'application/json',
-					data: data,
-					dataType: 'text',
-					success: (data, status) => {
-						console.log(status);
-						console.log(data);
-						this.transitionToRoute('userlists', model.creator);
-					},
-					error: (xhr, status, err) => {
-						console.log(xhr);
-						console.log(status);
-						console.log(err);
-						this.send('setError', 'Error deleting list: ' + xhr.responseText);
-					}
+				App.Data.deleteList(data).then((data, status) => {
+					console.log(status);
+					console.log(data);
+					this.transitionToRoute('userlists', model.creator);
+				},(xhr, status, err) => {
+					console.log(xhr);
+					console.log(status);
+					console.log(err);
+					this.send('setError', 'Error deleting list: ' + xhr.responseText);
 				});
 			}
 		},
