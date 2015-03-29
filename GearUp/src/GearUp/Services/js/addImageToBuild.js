@@ -21,7 +21,7 @@ function addImageToBuild(buildid, imageid, uid) {
 			if (build.Creator !== uid) {
 				throw "Build modifier is not the creator of this build"
 			}
-			build.Images = build.Images.concat({ 'guid': imageid });
+			build.Images = build.Images.concat({ 'Guid': imageid });
 			collection.replaceDocument(build._self, build,
 				function (err, docReplaced) {
 					if (err) {

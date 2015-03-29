@@ -89,6 +89,11 @@ App.BuildController = Ember.ObjectController.extend({
 			parts.removeObject(part);
 			this.send('saveBuild');
 		},
+		deleteImage: function (image) {
+			var b = this.get('model');
+			b.images.removeObject(image);
+		},
+
 		addPart: function () {
 			if (this.get('canEditBuild')) {
 				this.set('parts', this.get('parts').concat({ url: '', title: 'New part', price: '' }));

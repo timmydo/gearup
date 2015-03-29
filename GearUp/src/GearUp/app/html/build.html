@@ -146,6 +146,51 @@
 			</tbody>
 		</table>
 
+		<br /><br /><br /><br />
+
+
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><!--options--></th>
+
+					<th>Image</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{{#each image in model.images itemController="image"}}
+				<tr>
+
+					{{#if image.editing}}
+					<td>
+						<i class="fa fa-check clickable" {{action 'saveImage' image}}></i>
+						<i class="fa fa-times clickable" {{action 'discardImage' image}}></i>
+						<br /><br />
+						<i class="fa fa-trash-o clickable" {{action 'deleteImage' image}}></i>
+					</td>
+					<td>
+						<div class="form-group">
+							<label>Image Title</label>
+							{{input type="text" class="form-control" placeholder="Enter name" value=image.newTitle size="50"}}
+						</div>
+					</td>
+					{{else}}
+					<td>
+						{{#if canEditBuild}}
+						<i class="fa fa-pencil clickable" {{action 'editImage' image}}></i>
+						{{/if}}
+					</td>
+					<td>
+						{{buildImageAnchor image.guid image.title}}
+					</td>
+					{{/if}}
+				</tr>
+				{{/each}}
+			</tbody>
+		</table>
+
 	</div>
 
 

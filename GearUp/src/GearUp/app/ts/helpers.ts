@@ -23,3 +23,7 @@ Ember.Handlebars.registerBoundHelper('listTitleAnchor', function (value) {
 	return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + value.title + '</a>');
 });
 
+
+Ember.Handlebars.registerBoundHelper('buildImageAnchor', function (value, value2) {
+	return new Ember.Handlebars.SafeString('<a target="_blank" href="' + App.ImageEndpoint + '/' + value + '">' + (value2||'Untitled') + '</a>');
+});

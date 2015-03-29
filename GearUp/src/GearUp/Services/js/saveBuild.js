@@ -31,6 +31,18 @@ function saveBuild(json, uid) {
 			build.Url = newBuild.Url;
 			build.Description = newBuild.Description;
 			build.Parts = newBuild.Parts;
+			if (build.Images.length === newBuild.Images.length) {
+				for (var i = 0; i < build.Images.length; i++) {
+					if (build.Images[i].Guid === newBuild.Images[i].Guid) {
+						build.Images[i].Title = newBuild.Images[i].Title;
+					} else {
+						throw "Cannot reorder images " + build.Images[i].Guid + " != " + newBuild.Images[i].Guid;
+					}
+
+				}
+			} else {
+				throw "Save Build cannot change the number of images";
+			}
 			collection.replaceDocument(build._self, build,
 				function (err, docReplaced) {
 					if (err) {
