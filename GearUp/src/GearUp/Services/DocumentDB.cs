@@ -20,6 +20,7 @@ namespace GearUp.Services
 		private StoredProcedure _addImageToBuild;
 		private StoredProcedure _addBuildToList;
 		private StoredProcedure _removeBuildFromList;
+		private StoredProcedure _removeImageFromBuild;
 		private StoredProcedure _saveBuild;
 		private StoredProcedure _saveList;
 		private BlobService _blobService;
@@ -149,6 +150,7 @@ namespace GearUp.Services
 			this._saveList = await this.LoadStoredProc(@"Services\js\saveList.js");
 			this._addBuildToList = await this.LoadStoredProc(@"Services\js\addBuildToList.js");
 			this._removeBuildFromList = await this.LoadStoredProc(@"Services\js\removeBuildFromList.js");
+			this._removeImageFromBuild = await this.LoadStoredProc(@"Services\js\removeImageFromBuild.js");
 			
 
 		}
@@ -180,8 +182,20 @@ namespace GearUp.Services
 		public async Task RemoveBuildFromListAsync(string buildGuid, string listGuid, string uid)
 		{
 			await EnsureStoredProcs();
-			this._logger.WriteInformation("Executing stored procedure addBuildToList(" + buildGuid + ", " + listGuid + ", " + uid + ")");
+			this._logger.WriteInformation("Executing stored procedure removeBuildFromList(" + buildGuid + ", " + listGuid + ", " + uid + ")");
 			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._removeBuildFromList.SelfLink, buildGuid, listGuid, uid);
+		}
+
+		public async Task DeleteImageFromBuildAsync(string buildGuid, string imageGuid, string uid)
+		{
+			await EnsureStoredProcs();
+
+			this._logger.WriteInformation("Executing stored procedure DeleteImageFromBuild(" + buildGuid + ", " + imageGuid + ", " + uid + ")");
+			var response = await this.Client.ExecuteStoredProcedureAsync<string>(this._removeImageFromBuild.SelfLink, buildGuid, imageGuid, uid);
+
+			// todo/fixme ensure image is a part of build
+			bool wasDeleted = await this._blobService.DeleteFile(this._imagesContainer, imageGuid);
+			this._logger.WriteInformation("Deleted image " + imageGuid + ": " + wasDeleted.ToString());
 		}
 
 		public async Task<string> SaveBuildAsync(Build b, string uid)

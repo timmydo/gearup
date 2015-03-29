@@ -14,7 +14,7 @@ App.BuildObject = Ember.Object.extend({
 		});
 	},
 
-	deleteBuild: function() {
+	deleteBuild: function () {
 		var data = JSON.stringify(this);
 		return Ember.$.ajax({
 			type: 'POST',
@@ -28,6 +28,31 @@ App.BuildObject = Ember.Object.extend({
 			if (idx >= 0) {
 				App.Data.builds.splice(idx, 1);
 			}
+			return res;
+		});
+	},
+
+	deleteImageFromBuild: function (guid) {
+		var data = JSON.stringify({ Build: this.id, Image: guid });
+		var thisbuild = this;
+		return Ember.$.ajax({
+			type: 'POST',
+			url: '/api/DeleteImageFromBuild',
+			contentType: 'application/json',
+			data: data,
+			dataType: 'text'
+		}).then((res) => {
+			var obj = null;
+			for (var i = thisbuild.images.length - 1; i >= 0; i--) {
+				if (thisbuild.images[i].guid === guid) {
+					obj = thisbuild.images[i];
+					break;
+				}
+			}
+			if (obj) {
+				thisbuild.images.removeObject(obj);
+			}
+
 			return res;
 		});
 	},
@@ -83,7 +108,7 @@ App.BuildListObject = Ember.Object.extend({
 	},
 
 	addBuildToList: function (bid) {
-		var data = JSON.stringify({build: bid, list: this.id});
+		var data = JSON.stringify({ build: bid, list: this.id });
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/AddBuildToList',
@@ -91,7 +116,7 @@ App.BuildListObject = Ember.Object.extend({
 			data: data,
 			dataType: 'text'
 		}).then((success) => {
-				this.builds.pushObject(bid);
+			this.builds.pushObject(bid);
 		});
 	},
 
@@ -105,8 +130,8 @@ App.BuildListObject = Ember.Object.extend({
 			data: data,
 			dataType: 'text'
 		}).then((success) => {
-				this.builds.removeObject(bid);
-				return success;
+			this.builds.removeObject(bid);
+			return success;
 		});
 	},
 
@@ -148,7 +173,7 @@ function promiseFor(val) {
 
 class MyAppData {
 
-	builds : any;
+	builds: any;
 	userlists: any;
 	buildlists: any;
 
@@ -208,7 +233,7 @@ class MyAppData {
 		} else {
 			return promiseFor(l);
 		}
-		return 
+		return
 	}
 
 
