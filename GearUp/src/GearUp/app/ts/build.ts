@@ -5,10 +5,6 @@ App.BuildRoute = Ember.Route.extend({
 		return App.Data.getBuild(params.bid);
 	},
 	actions: {
-		invalidateModel: function () {
-			Ember.Logger.log('Route is now refreshing...');
-			this.refresh();
-		},
 		saveBuild: function () {
 			var model = this.modelFor(this.routeName);
 			var data = JSON.stringify(model);
@@ -145,20 +141,35 @@ App.BuildController = Ember.ObjectController.extend({
 					this.get('progressBars').setObjects(this.progressBars);
 
 				}
-				var upload = new FileUpload(file, bid, progressFunc);
-				this.get('progressBars').pushObject({ guid: upload.guid, name: upload.file.name, progress: 0 });
-				((upload) => {
-					upload.start().then((success) => {
-						console.log("Removing upload " + upload.guid);
-						this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== upload.guid; }));
-						this.send('invalidateModel');
-					},(failure) => {
-							console.log('upload fail');
-							console.log(failure);
-							this.send('setError', 'Error uploading file: ' + failure);
-							this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== upload.guid; }));
-						});
-				})(upload);
+				
+				var build = this.get('model');
+				var guid = Math.random().toString(36);
+
+				var supportedFileTypes = {
+					'image/png': true,
+					'image/jpeg': true,
+					'image/gif': true,
+				};
+
+				if (!supportedFileTypes[file.type]) {
+					this.send('setError', 'Filetype not supported: ' + file.type);
+					return;
+				}
+
+				this.get('progressBars').pushObject({ guid: guid, name: file.name, progress: 0 });
+
+
+				build.addImageToBuild(file, guid, progressFunc).then((success) => {
+					console.log("Removing upload " + guid);
+					this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== guid; }));
+					this.send('setInfo', 'Uploaded file');
+				},(failure) => {
+						console.log('upload fail');
+						console.log(failure);
+						this.send('setError', 'Error uploading file: ' + failure);
+						this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== guid; }));
+					});
+
 			}
 		}
 

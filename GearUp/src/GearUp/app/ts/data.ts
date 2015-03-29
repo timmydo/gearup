@@ -32,6 +32,40 @@ App.BuildObject = Ember.Object.extend({
 		});
 	},
 
+	addImageToBuild: function (file, guid, progressFunc) {
+		var thisbuild = this;
+		return new Ember.RSVP.Promise(function (resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.id, true);
+			xhr.onload = function (e) {
+				if (this.status == 200) {
+					var parsed = JSON.parse(this.response);
+					thisbuild.images.pushObject(parsed);
+					resolve(this.response);
+				} else {
+					reject(this.response);
+				}
+			};
+			xhr.onerror = function (e) {
+				reject(e.error);
+			};
+			xhr.upload.onprogress = function (e) {
+				if (e.lengthComputable) {
+					var value = (e.loaded / e.total) * 100;
+
+					if (progressFunc) {
+						progressFunc(guid, value);
+					}
+				}
+			};
+
+			xhr.setRequestHeader('Content-Type', file.type);
+			xhr.send(file);
+		});
+
+	}
+
+
 });
 
 App.UserListsObject = Ember.Object.extend({});
