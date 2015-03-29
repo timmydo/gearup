@@ -6,11 +6,11 @@ App.UserlistsRoute = Ember.Route.extend({
 		if (!bid) {
 			bid = window['UserIdentityKey'] || '';
 		}
-		return App.Data.getUserLists(bid);
+		return App.Data.getUserList(bid);
 	}
 });
 
-App.UserlistsController = Ember.ArrayController.extend({
+App.UserlistsController = Ember.ObjectController.extend({
 
 	actions: {
 		createList: function () {

@@ -11,7 +11,7 @@
 
 
 		</div>
-		{{#each list in model}}
+		{{#each list in model.lists}}
 		<div class="container user-build">
 			<div class="row">
 				<div class="col-md-9">
@@ -20,18 +20,6 @@
 				<div class="col-md-3">Modified {{modifiedFrom list.modified}}</div>
 			</div>
 			
-			<div class="row">
-				<div class="col-md-9">
-					
-				</div>
-				<div class="col-md-3">
-					<ul>
-						{{#each build in list.builds}}
-						<li>{{build.title}}</li>
-						{{/each}}
-					</ul>
-				</div>
-			</div>
 		</div>
 		{{/each}}
 	</div>

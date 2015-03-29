@@ -42,37 +42,30 @@ App.BuildController = Ember.ObjectController.extend({
 	canEditBuild: function () {
 		return this.get('model.creator') === window['UserIdentityKey'];
 	}.property('model.creator'),
-	startLoadUserBuildList: false,
 
 	userBuildList: function (key, value, previousValue) {
-		var list = [];
-		var firstCall = true;
-		var model = this.get('model');
-		var data = JSON.stringify(model);
 		var userKey = this.get('userLoginKey');
 
-		//setter
 		if (arguments.length > 1) {
-			list = value;
-		} else {
-			if (!this.get('startLoadUserBuildList') && userKey) {
-				this.set('startLoadUserBuildList', true);
-				App.Data.getUserList(userKey).then((data, status) => {
-					console.log(status);
-					console.log(data);
-					this.set('userBuildList', data);
-				}, (xhr, status, err) => {
-					console.log(xhr);
-					console.log(status);
-					console.log(err);
-					this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
-				});
-			}
+			//setter
+			return value;
 		}
 
-		//getter
-		return list;
+		if (userKey && !value) {
+			App.Data.getUserList(userKey).then((data) => {
+				this.set('userBuildList', data);
+				return data;
+			},(xhr) => {
+					console.log(xhr);
+					this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
+				});
+		} else {
+			console.log('Not loading userbuild list');
+			console.log(userKey);
+			console.log(value);
+		}
 
+		return value || [];
 	}.property('userLoginKey'),
 
 
@@ -86,17 +79,13 @@ App.BuildController = Ember.ObjectController.extend({
 	actions: {
 		addBuildToList: function (listId) {
 			var build = this.get('model');
-			console.log('Add build ' + build.id + ' to list ' + listId);
-			var d = { 'build': build.id, 'list': listId };
-			var data = JSON.stringify(d);
-			App.Data.addBuildToList(data).then((data, status) => {
-				console.log(status);
-				console.log(data);
-			},(xhr, status, err) => {
-				console.log(xhr);
-				console.log(status);
-				console.log(err);
-				this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+			
+			App.Data.getList(listId).then((list) => {
+				list.addBuildToList(build.id).then(() => {
+					this.send('setInfo', 'Build added to list');
+				}, (xhr) => {
+					this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+				});
 			});
 		},
 		deletePart: function (part) {
@@ -115,21 +104,13 @@ App.BuildController = Ember.ObjectController.extend({
 		deleteBuild: function () {
 			this.set('tryDelete', false); // try preventing doubleclick
 			var model = this.get('model');
-			var data = JSON.stringify(model);
-			console.log("Delete Build " + data);
-			if (data) {
-				App.Data.DeleteBuild(data).then((data, status) => {
-						console.log(status);
-						console.log(data);
-						this.transitionToRoute('userbuilds', model.creator);
-					}, (xhr, status, err) => {
-						console.log(xhr);
-						console.log(status);
-						console.log(err);
-						this.send('setError', 'Error deleting build: ' + xhr.responseText);
-					}
-				);
-			}
+			model.deleteBuild().then((data) => {
+				console.log(data);
+				this.transitionToRoute('userbuilds', model.creator);
+			}, (xhr) => {
+				console.log(xhr);
+				this.send('setError', 'Error deleting build: ' + xhr.responseText);
+			});
 		},
 		startEditTitle: function () {
 			if (this.get('canEditBuild')) {
