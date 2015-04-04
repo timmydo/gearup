@@ -30,6 +30,16 @@ App.BuildController = Ember.ObjectController.extend({
 			return i[0].guid;
 		}
 	}.property('model.images'),
+	selectedImageCaption: function () {
+		var images = this.get('model.images');
+		var guid = this.get('selectedImage');
+		for (var i = 0; i < images.length; i++) {
+			if (images[i].guid === guid) {
+				return images[i].title || 'Untitled';
+			}
+		}
+		return "No caption found";
+	}.property('selectedImage', 'editCaption'),
 
 	userLoginKey: function () {
 		return window['UserIdentityKey'] || '';
@@ -66,7 +76,10 @@ App.BuildController = Ember.ObjectController.extend({
 
 
 	editTitle: false,
+	editDescription: false,
+	editCaption: false,
 	savedTitle: '',
+	savedDescription: '',
 
 	progressBars: [],
 
@@ -125,6 +138,46 @@ App.BuildController = Ember.ObjectController.extend({
 				this.savedTitle = this.get('title');
 				this.set('editTitle', true);
 			}
+		},
+		startEditImageCaption: function () {
+			if (this.get('canEditBuild')) {
+				this.imageCaption = this.get('selectedImageCaption');
+				this.set('editCaption', true);
+			}
+		},
+		startEditDescription: function () {
+			if (this.get('canEditBuild')) {
+				this.savedDescription = this.get('description');
+				this.set('editDescription', true);
+			}
+		},
+		discardDescription: function () {
+			this.set('editDescription', false);
+			this.set('title', this.savedDescription);
+		},
+		saveImageCaption: function () {
+			this.set('editCaption', false);
+			var c = this.get('imageCaption');
+			var si = this.get('selectedImage');
+			var images = this.get('images');
+			console.log(c);
+			console.log(si);
+			console.log(images);
+			for (var i = 0; i < images.length; i++) {
+				if (images[i].guid === si) {
+					Ember.set(images[i], 'title', c);
+					break;
+				}
+			}
+			this.send('saveBuild');
+		},
+		saveDescription: function () {
+			this.set('editDescription', false);
+			this.send('saveBuild');
+		},
+		discardImageCaption: function () {
+			this.set('editCaption', false);
+			this.set('imageCaption', '');
 		},
 		discardTitle: function () {
 			this.set('editTitle', false);

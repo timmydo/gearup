@@ -14,7 +14,6 @@ window.App = Ember.Application.create({
 
 App.Router.map(function () {
 	this.route('index', { path: '/' });
-	this.route('about', { path: '/about' });
 	this.route('login', { path: '/login' });
 	this.route('register', { path: '/register' });
 	this.route('build', { path: '/builds/:bid' });

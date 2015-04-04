@@ -14,7 +14,7 @@ namespace GearUp.Models
 			Creator = string.Empty;	//fixme set user guid
 			DocType = "list";
 			Title = "New List";
-			Description = "New Build";
+			Description = "Edit your list description";
 			Url = string.Empty;
 			Builds = new List<string>(); // guid ref
 

@@ -38,6 +38,7 @@ App.ListController = Ember.ObjectController.extend({
 	}.property('model'),
 	editTitle: false,
 	savedTitle: '',
+	savedDescription: '',
 	startLoadBuildList: false,
 	buildList: function (key, value, previousValue) {
 		var list = [];
@@ -98,8 +99,9 @@ App.ListController = Ember.ObjectController.extend({
 			
 		},
 		startEditTitle: function () {
-			if (this.get('canEditBuild')) {
+			if (this.get('canEditList')) {
 				this.savedTitle = this.get('title');
+				this.savedDescription = this.get('description');
 				this.set('editTitle', true);
 			}
 		},
@@ -109,7 +111,7 @@ App.ListController = Ember.ObjectController.extend({
 		},
 		saveTitle: function () {
 			this.set('editTitle', false);
-			this.send('saveBuild');
+			this.send('saveList');
 		},
 
 	}
