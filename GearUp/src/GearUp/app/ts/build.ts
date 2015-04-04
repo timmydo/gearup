@@ -35,7 +35,7 @@ App.BuildController = Ember.ObjectController.extend({
 		var guid = this.get('selectedImage');
 		for (var i = 0; i < images.length; i++) {
 			if (images[i].guid === guid) {
-				return images[i].title || 'Untitled';
+				return images[i].title || 'No caption';
 			}
 		}
 		return "No caption found";
