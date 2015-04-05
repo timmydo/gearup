@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
 using GearUp.Services;
+using Microsoft.AspNet.StaticFiles;
 
 namespace GearUp
 {
@@ -82,6 +83,14 @@ namespace GearUp
 
 		}
 
+		public class CustomContentTypeProvider : FileExtensionContentTypeProvider
+		{
+			public CustomContentTypeProvider()
+			{
+				Mappings.Add(".woff2", "application/font-woff2");
+			}
+		}
+
 		// Configure is called after ConfigureServices is called.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
 		{
@@ -102,7 +111,10 @@ namespace GearUp
 
 
 			// Add static files to the request pipeline.
-			app.UseStaticFiles();
+			var sfopts = new StaticFileOptions();
+			sfopts.ContentTypeProvider = new CustomContentTypeProvider();
+			app.UseStaticFiles(sfopts);
+			//app.UseStaticFiles();
 
 			// Add cookie-based authentication to the request pipeline.
 			app.UseIdentity();
