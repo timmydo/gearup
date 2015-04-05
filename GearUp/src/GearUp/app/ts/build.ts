@@ -122,7 +122,7 @@ App.BuildController = Ember.ObjectController.extend({
 
 		addPart: function () {
 			if (this.get('canEditBuild')) {
-				this.get('parts').pushObject({ title: ''});
+				this.get('parts').pushObject({ title: '' });
 			}
 		},
 		tryDeleteBuild: function () {

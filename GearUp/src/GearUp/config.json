@@ -13,7 +13,7 @@
 	"ServiceJSFileRoot": ".",
 
 
-	"DocumentDatabaseId": "gearup",
+	"DocumentDatabaseId": "gearup-test",
 	"DocumentCollectionId": "main",
 	"DocumentEndpoint": "https://gearuptest.documents.azure.com:443/",
 

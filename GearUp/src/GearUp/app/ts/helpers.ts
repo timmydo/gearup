@@ -16,11 +16,11 @@ Ember.Handlebars.registerBoundHelper('buildImage', function (value) {
 });
 
 Ember.Handlebars.registerBoundHelper('buildTitleAnchor', function (value) {
-	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '">' + value.title + '</a>');
+	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '">' + (value.title||'Untitled') + '</a>');
 });
 
 Ember.Handlebars.registerBoundHelper('listTitleAnchor', function (value) {
-	return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + value.title + '</a>');
+	return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + (value.title||'Untitled') + '</a>');
 });
 
 

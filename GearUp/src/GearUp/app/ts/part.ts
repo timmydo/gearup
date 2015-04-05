@@ -1,10 +1,12 @@
 ﻿/// <reference path="app.ts" />
 
 App.PartController = Ember.ObjectController.extend({
-	editing: false,
+	editing: function () {
+		return this.get('model.title') === '';
+	}.property('title'),
 
 	actions: {
-		editPart: function (part) {
+		editPart: function () {
 			this.setProperties({
 				editing: true,
 				newTitle: this.get('title'),
@@ -12,7 +14,7 @@ App.PartController = Ember.ObjectController.extend({
 				newPrice: this.get('price')
 			});
 		},
-		savePart: function (part) {
+		savePart: function () {
 			this.setProperties({
 				editing: false,
 				title: this.get('newTitle'),
@@ -22,7 +24,7 @@ App.PartController = Ember.ObjectController.extend({
 
 			this.send('saveBuild');
 		},
-		discardPart: function (part) {
+		discardPart: function () {
 			this.set('editing', false);
 		},
 

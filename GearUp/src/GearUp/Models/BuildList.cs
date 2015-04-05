@@ -13,8 +13,8 @@ namespace GearUp.Models
 			Created = Modified;
 			Creator = string.Empty;	//fixme set user guid
 			DocType = "list";
-			Title = "New List";
-			Description = "Edit your list description";
+			Title = "";
+			Description = "";
 			Url = string.Empty;
 			Builds = new List<string>(); // guid ref
 

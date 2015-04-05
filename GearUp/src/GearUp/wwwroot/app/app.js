@@ -325,9 +325,8 @@ App.BuildObject = Ember.Object.extend({
             dataType: 'text'
         }).then(function (res) {
             //fixme todo does deleting a build remove it from lists???
-            var idx = App.Data.builds.indexOf(_this);
-            if (idx >= 0) {
-                App.Data.builds.splice(idx, 1);
+            if (App.Data.builds[_this.id]) {
+                delete App.Data.builds[_this.id];
             }
             return res;
         });
@@ -550,10 +549,10 @@ Ember.Handlebars.registerBoundHelper('buildImage', function (value) {
     return new Ember.Handlebars.SafeString('<img class="build-image-main" src="' + App.ImageEndpoint + '/' + value + '" />');
 });
 Ember.Handlebars.registerBoundHelper('buildTitleAnchor', function (value) {
-    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '">' + value.title + '</a>');
+    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '">' + (value.title || 'Untitled') + '</a>');
 });
 Ember.Handlebars.registerBoundHelper('listTitleAnchor', function (value) {
-    return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + value.title + '</a>');
+    return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + (value.title || 'Untitled') + '</a>');
 });
 Ember.Handlebars.registerBoundHelper('buildImageAnchor', function (value, value2) {
     return new Ember.Handlebars.SafeString('<a target="_blank" href="' + App.ImageEndpoint + '/' + value + '">' + (value2 || 'Untitled') + '</a>');
@@ -737,9 +736,11 @@ App.NavView = Ember.View.extend({
 });
 /// <reference path="app.ts" />
 App.PartController = Ember.ObjectController.extend({
-    editing: false,
+    editing: function () {
+        return this.get('model.title') === '';
+    }.property('title'),
     actions: {
-        editPart: function (part) {
+        editPart: function () {
             this.setProperties({
                 editing: true,
                 newTitle: this.get('title'),
@@ -747,7 +748,7 @@ App.PartController = Ember.ObjectController.extend({
                 newPrice: this.get('price')
             });
         },
-        savePart: function (part) {
+        savePart: function () {
             this.setProperties({
                 editing: false,
                 title: this.get('newTitle'),
@@ -756,7 +757,7 @@ App.PartController = Ember.ObjectController.extend({
             });
             this.send('saveBuild');
         },
-        discardPart: function (part) {
+        discardPart: function () {
             this.set('editing', false);
         },
     }

@@ -20,8 +20,17 @@
 			</div>
 		</form>
 		{{else}}
+
+		
+
 		<h1>
-			<span {{action 'startEditTitle' on="click"}} title="Click to change">{{title}}</span>
+			<span class="clickable" {{action 'startEditTitle' on="click"}} title="Click to change">
+			{{#if title}}
+				{{title}}
+			{{else}}
+					Edit your list title...
+			{{/if}}
+			</span>
 		</h1>
 		<div class="build-description">{{description}}</div>
 		{{/if}}

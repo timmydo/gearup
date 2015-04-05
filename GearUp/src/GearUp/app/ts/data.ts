@@ -24,9 +24,8 @@ App.BuildObject = Ember.Object.extend({
 			dataType: 'text'
 		}).then((res) => {
 			//fixme todo does deleting a build remove it from lists???
-			var idx = App.Data.builds.indexOf(this);
-			if (idx >= 0) {
-				App.Data.builds.splice(idx, 1);
+			if (App.Data.builds[this.id]) {
+				delete App.Data.builds[this.id];
 			}
 			return res;
 		});
