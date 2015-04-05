@@ -202,10 +202,7 @@ img.build-image-main {
 	max-height: 900px;
 }
 
-i.clickable {
-	cursor: pointer;
-}
-a.clickable {
+.clickable {
 	cursor:pointer;
 }
 

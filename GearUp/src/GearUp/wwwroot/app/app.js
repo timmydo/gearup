@@ -167,10 +167,15 @@ App.BuildController = Ember.ObjectController.extend({
             var _this = this;
             var image = this.get('selectedImage');
             var b = this.get('model');
+            this.set('editCaption', false);
             //b.images.removeObject(image);
             console.log(b);
             console.log(image);
             b.deleteImageFromBuild(image).then(function (x) {
+                var i = _this.get('model.images');
+                if (i && i.length > 0) {
+                    _this.set('selectedImage', i[0].guid);
+                }
                 _this.send('setInfo', 'Image deleted');
             }, function (xhr) {
                 _this.send('setError', 'Error adding build to list: ' + xhr.responseText);
