@@ -3,6 +3,6 @@
   <PropertyGroup>
     <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
     <ShowAllFiles>true</ShowAllFiles>
-    <AutoRefresh>true</AutoRefresh>
+    <AutoRefresh>false</AutoRefresh>
   </PropertyGroup>
 </Project>

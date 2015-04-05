@@ -848,14 +848,14 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         } else {
           fragment = this.build(dom);
         }
-        var element27 = dom.childAt(fragment, [1]);
-        var element28 = dom.childAt(element27, [3, 1]);
-        var element29 = dom.childAt(element28, [1]);
-        var element30 = dom.childAt(element28, [3]);
-        var morph0 = dom.createMorphAt(dom.childAt(element27, [1]),0,1);
+        var element28 = dom.childAt(fragment, [1]);
+        var element29 = dom.childAt(element28, [3, 1]);
+        var element30 = dom.childAt(element29, [1]);
+        var element31 = dom.childAt(element29, [3]);
+        var morph0 = dom.createMorphAt(dom.childAt(element28, [1]),0,1);
         inline(env, morph0, context, "input", [], {"type": "text", "class": "form-control", "placeholder": "Enter title", "value": get(env, context, "title"), "size": "50"});
-        element(env, element29, context, "action", ["saveTitle"], {"on": "click"});
-        element(env, element30, context, "action", ["discardTitle"], {"on": "click"});
+        element(env, element30, context, "action", ["saveTitle"], {"on": "click"});
+        element(env, element31, context, "action", ["discardTitle"], {"on": "click"});
         return fragment;
       }
     };
@@ -903,9 +903,9 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         } else {
           fragment = this.build(dom);
         }
-        var element26 = dom.childAt(fragment, [1, 1]);
-        var morph0 = dom.createMorphAt(element26,-1,-1);
-        element(env, element26, context, "action", ["startEditTitle"], {"on": "click"});
+        var element27 = dom.childAt(fragment, [1, 1]);
+        var morph0 = dom.createMorphAt(element27,-1,-1);
+        element(env, element27, context, "action", ["startEditTitle"], {"on": "click"});
         content(env, morph0, context, "title");
         return fragment;
       }
@@ -951,9 +951,9 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           } else {
             fragment = this.build(dom);
           }
-          var element25 = dom.childAt(fragment, [1, 0]);
-          var morph0 = dom.createMorphAt(element25,-1,-1);
-          element(env, element25, context, "action", ["addBuildToList", get(env, context, "buildList.id")], {});
+          var element26 = dom.childAt(fragment, [1, 0]);
+          var morph0 = dom.createMorphAt(element26,-1,-1);
+          element(env, element26, context, "action", ["addBuildToList", get(env, context, "buildList.id")], {});
           content(env, morph0, context, "buildList.title");
           return fragment;
         }
@@ -1071,8 +1071,8 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           } else {
             fragment = this.build(dom);
           }
-          var element23 = dom.childAt(fragment, [1]);
-          element(env, element23, context, "action", ["deleteBuild"], {});
+          var element24 = dom.childAt(fragment, [1]);
+          element(env, element24, context, "action", ["deleteBuild"], {});
           return fragment;
         }
       };
@@ -1118,10 +1118,10 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         } else {
           fragment = this.build(dom);
         }
-        var element24 = dom.childAt(fragment, [2]);
+        var element25 = dom.childAt(fragment, [2]);
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
         block(env, morph0, context, "if", [get(env, context, "tryDelete")], {}, child0, null);
-        element(env, element24, context, "action", ["tryDeleteBuild"], {});
+        element(env, element25, context, "action", ["tryDeleteBuild"], {});
         return fragment;
       }
     };
@@ -1240,7 +1240,15 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
             var el4 = dom.createTextNode("Discard");
             dom.appendChild(el3, el4);
             dom.appendChild(el2, el3);
-            var el3 = dom.createTextNode("\n				");
+            var el3 = dom.createTextNode("\n					");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createElement("button");
+            dom.setAttribute(el3,"class","btn btn-default");
+            dom.setAttribute(el3,"type","button");
+            var el4 = dom.createTextNode("Delete image");
+            dom.appendChild(el3, el4);
+            dom.appendChild(el2, el3);
+            var el3 = dom.createTextNode("\n\n				");
             dom.appendChild(el2, el3);
             dom.appendChild(el1, el2);
             var el2 = dom.createTextNode("\n			");
@@ -1274,10 +1282,12 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
             var element20 = dom.childAt(element19, [4]);
             var element21 = dom.childAt(element20, [1]);
             var element22 = dom.childAt(element20, [3]);
+            var element23 = dom.childAt(element20, [5]);
             var morph0 = dom.createMorphAt(element19,0,1);
             inline(env, morph0, context, "textarea", [], {"class": "form-control", "placeholder": "Enter description", "value": get(env, context, "imageCaption")});
             element(env, element21, context, "action", ["saveImageCaption"], {"on": "click"});
             element(env, element22, context, "action", ["discardImageCaption"], {"on": "click"});
+            element(env, element23, context, "action", ["deleteSelectedImage"], {"on": "click"});
             return fragment;
           }
         };
@@ -2673,25 +2683,25 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       } else {
         fragment = this.build(dom);
       }
-      var element31 = dom.childAt(fragment, [1]);
-      var element32 = dom.childAt(element31, [3]);
-      var element33 = dom.childAt(fragment, [3]);
-      var element34 = dom.childAt(element33, [1]);
-      var element35 = dom.childAt(element33, [3]);
-      var element36 = dom.childAt(element35, [1]);
-      if (this.cachedFragment) { dom.repairClonedNode(element36,[1]); }
-      var element37 = dom.childAt(element35, [3]);
-      var morph0 = dom.createMorphAt(dom.childAt(element31, [1]),0,1);
-      var morph1 = dom.createMorphAt(element32,0,1);
-      var morph2 = dom.createMorphAt(element32,1,2);
-      var morph3 = dom.createMorphAt(element34,0,1);
-      var morph4 = dom.createMorphAt(element34,1,2);
-      var morph5 = dom.createMorphAt(element34,2,3);
-      var morph6 = dom.createMorphAt(element36,0,1);
-      var morph7 = dom.createMorphAt(element36,1,2);
-      var morph8 = dom.createMorphAt(dom.childAt(element37, [1, 1, 1]),0,1);
-      var morph9 = dom.createMorphAt(dom.childAt(element37, [3]),0,1);
-      var morph10 = dom.createMorphAt(dom.childAt(element35, [10, 1, 3]),0,1);
+      var element32 = dom.childAt(fragment, [1]);
+      var element33 = dom.childAt(element32, [3]);
+      var element34 = dom.childAt(fragment, [3]);
+      var element35 = dom.childAt(element34, [1]);
+      var element36 = dom.childAt(element34, [3]);
+      var element37 = dom.childAt(element36, [1]);
+      if (this.cachedFragment) { dom.repairClonedNode(element37,[1]); }
+      var element38 = dom.childAt(element36, [3]);
+      var morph0 = dom.createMorphAt(dom.childAt(element32, [1]),0,1);
+      var morph1 = dom.createMorphAt(element33,0,1);
+      var morph2 = dom.createMorphAt(element33,1,2);
+      var morph3 = dom.createMorphAt(element35,0,1);
+      var morph4 = dom.createMorphAt(element35,1,2);
+      var morph5 = dom.createMorphAt(element35,2,3);
+      var morph6 = dom.createMorphAt(element37,0,1);
+      var morph7 = dom.createMorphAt(element37,1,2);
+      var morph8 = dom.createMorphAt(dom.childAt(element38, [1, 1, 1]),0,1);
+      var morph9 = dom.createMorphAt(dom.childAt(element38, [3]),0,1);
+      var morph10 = dom.createMorphAt(dom.childAt(element36, [10, 1, 3]),0,1);
       block(env, morph0, context, "if", [get(env, context, "editTitle")], {}, child0, child1);
       block(env, morph1, context, "if", [get(env, context, "userLoginKey")], {}, child2, null);
       block(env, morph2, context, "if", [get(env, context, "canEditBuild")], {}, child3, null);

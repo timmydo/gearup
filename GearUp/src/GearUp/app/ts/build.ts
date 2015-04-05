@@ -102,7 +102,8 @@ App.BuildController = Ember.ObjectController.extend({
 			parts.removeObject(part);
 			this.send('saveBuild');
 		},
-		deleteImage: function (image) {
+		deleteSelectedImage: function () {
+			var image = this.get('selectedImage');
 			var b = this.get('model');
 			//b.images.removeObject(image);
 			console.log(b);
