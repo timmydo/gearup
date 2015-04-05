@@ -35,9 +35,16 @@
 		"ef": "EntityFramework.Commands"
 	},
 	"frameworks": {
-		"aspnet50": { }//,
+		"aspnet50": { } //,
 		//"aspnetcore50": {		}
 	},
+	"bundleExclude": [
+        "node_modules",
+        "bower_components",
+        "**.kproj",
+        "**.user",
+        "**.vspscc"
+    ],
 	"exclude": [
 		"wwwroot",
 		"node_modules",
