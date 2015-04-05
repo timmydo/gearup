@@ -8,6 +8,7 @@ namespace GearUp.Services
 		public string BlobEndpoint { get; set; }
 		public string ImagesContainer { get; set; }
 
+		public string ServiceJSFileRoot { get; set; }
 
 		public string DocumentDatabaseId { get; set; }
 		public string DocumentCollectionId { get; set; }

@@ -25,6 +25,7 @@ namespace GearUp.Services
 		private StoredProcedure _saveList;
 		private BlobService _blobService;
 		private string _imagesContainer;
+		private string _serviceJSRoot;
 
 		public DocumentDB(SiteSettings settings, ILogger logger, BlobService bs)
 		{
@@ -32,6 +33,7 @@ namespace GearUp.Services
 			this._logger = logger;
 			this._blobService = bs;
 			this._imagesContainer = settings.ImagesContainer;
+			this._serviceJSRoot = settings.ServiceJSFileRoot;
 
 			logger.WriteInformation("DocumentDB creation");
 			this.ReadOrCreateDatabase();
@@ -131,7 +133,7 @@ namespace GearUp.Services
 			var sproc = new StoredProcedure
 			{
 				Id = Path.GetFileNameWithoutExtension(sprocName),
-				Body = File.ReadAllText(sprocName)
+				Body = File.ReadAllText(Path.Combine(this._serviceJSRoot, sprocName))
 			};
 
 			await TryDeleteStoredProcedure(this.Collection.SelfLink, sproc.Id);

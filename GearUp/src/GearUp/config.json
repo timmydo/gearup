@@ -10,6 +10,7 @@
 	"BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=gearuptest;AccountKey=H7p5WKcTiBb/uBqN3vvh2tfajMtUcrVSQjuXHK5cvLr0ZI4fXGtQK8W9JGLB4sTtyZ3lq506FAC8f56OPWpuLg==",
 	"BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
 	"ImagesContainer": "uploadimages",
+	"ServiceJSFileRoot": ".",
 
 
 	"DocumentDatabaseId": "gearup",
