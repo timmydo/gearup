@@ -12,7 +12,7 @@ module.exports = function (grunt) {
 					module: 'amd', //or commonjs 
 					target: 'es5', //or es3 
 					basePath: 'app/ts',
-					sourceMap: true,
+					sourceMap: false,
 					declaration: true
 				}
 			}

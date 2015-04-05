@@ -4,6 +4,8 @@
 App.BuildObject = Ember.Object.extend({
 
 	save: function () {
+		App.Track.track("SaveBuild", { Build: this.id });
+
 		var data = JSON.stringify(this);
 		return Ember.$.ajax({
 			type: 'POST',
@@ -16,6 +18,8 @@ App.BuildObject = Ember.Object.extend({
 
 	deleteBuild: function () {
 		var data = JSON.stringify(this);
+		App.Track.track("DeleteBuild", { Build: this.id });
+
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/DeleteBuild',
@@ -32,7 +36,10 @@ App.BuildObject = Ember.Object.extend({
 	},
 
 	deleteImageFromBuild: function (guid) {
-		var data = JSON.stringify({ Build: this.id, Image: guid });
+		var opts = { Build: this.id, Image: guid };
+		var data = JSON.stringify(opts);
+		App.Track.track("DeleteImage", opts);
+
 		var thisbuild = this;
 		return Ember.$.ajax({
 			type: 'POST',
@@ -58,6 +65,8 @@ App.BuildObject = Ember.Object.extend({
 
 	addImageToBuild: function (file, guid, progressFunc) {
 		var thisbuild = this;
+		App.Track.track("AddImageToBuild", { Build: thisbuild.id });
+
 		return new Ember.RSVP.Promise(function (resolve, reject) {
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.id, true);
@@ -96,6 +105,7 @@ App.UserListsObject = Ember.Object.extend({});
 App.BuildListObject = Ember.Object.extend({
 	save: function () {
 		var data = JSON.stringify(this);
+		App.Track.track("SaveList", { List: this.id });
 
 		return Ember.$.ajax({
 			type: 'POST',
@@ -107,7 +117,10 @@ App.BuildListObject = Ember.Object.extend({
 	},
 
 	addBuildToList: function (bid) {
-		var data = JSON.stringify({ build: bid, list: this.id });
+		var opts = { build: bid, list: this.id };
+		var data = JSON.stringify(opts);
+		App.Track.track("AddBuildToList", opts);
+
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/AddBuildToList',
@@ -120,7 +133,9 @@ App.BuildListObject = Ember.Object.extend({
 	},
 
 	removeBuildFromList: function (bid) {
-		var data = JSON.stringify({ 'build': bid, 'list': this.id });
+		var opts = { 'build': bid, 'list': this.id };
+		var data = JSON.stringify(opts);
+		App.Track.track("RemoveBuildFromList", opts);
 
 		return Ember.$.ajax({
 			type: 'POST',
@@ -149,7 +164,8 @@ App.BuildListObject = Ember.Object.extend({
 
 	deleteList: function () {
 		var data = JSON.stringify(this);
-
+		App.Track.track("DeleteList", { List: this.id });
+		
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/DeleteList',

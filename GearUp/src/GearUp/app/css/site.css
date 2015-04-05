@@ -228,3 +228,35 @@ img.build-image-main {
 	border-radius: 3px;
 }
 
+
+
+
+.growl-manager {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  width: 400px;
+  text-align: left;
+}
+
+.growl-instance {
+  width: 300px;
+  margin-left: 50px;
+  text-align: center;
+  margin-bottom: 30px;
+  display: inline-block;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+
+@media screen and (min-width: 480px) {
+  .growl-instance {
+    width: 400px;
+    margin-left: 0;
+    text-align: left;
+  }
+
+}
+

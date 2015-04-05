@@ -10,13 +10,12 @@ App.BuildRoute = Ember.Route.extend({
 			var data = JSON.stringify(model);
 			if (data) {
 				model.save().then(() => {
-					this.send('setInfo', 'Saved changes');
+					this.growl.success('Saved changes');
 				}, (xhr) => {
-					this.send('setError', 'Error saving build: ' + xhr.responseText);
+					this.growl.error('Error saving build: ' + xhr.responseText);
 				});
 			}
 		}
-
 	}
 });
 
@@ -63,7 +62,7 @@ App.BuildController = Ember.ObjectController.extend({
 				return data;
 			},(xhr) => {
 					console.log(xhr);
-					this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
+					this.growl.error('Error getting user build list: ' + xhr.responseJSON);
 				});
 		} else {
 			console.log('Not loading userbuild list');
@@ -91,9 +90,9 @@ App.BuildController = Ember.ObjectController.extend({
 			
 			App.Data.getList(listId).then((list) => {
 				list.addBuildToList(build.id).then(() => {
-					this.send('setInfo', 'Build added to list');
+					this.growl.success('Build added to list');
 				}, (xhr) => {
-					this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+					this.growl.error('Error adding build to list: ' + xhr.responseText);
 				});
 			});
 		},
@@ -114,13 +113,15 @@ App.BuildController = Ember.ObjectController.extend({
 				if (i && i.length > 0) {
 					this.set('selectedImage', i[0].guid);
 				}
-				this.send('setInfo', 'Image deleted');
+				this.growl.success('Image deleted');
+
 			},(xhr) => {
-					this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+					this.growl.error('Error adding build to list: ' + xhr.responseText);
 				});
 		},
 
 		addPart: function () {
+
 			if (this.get('canEditBuild')) {
 				this.get('parts').pushObject({ title: '' });
 			}
@@ -136,7 +137,7 @@ App.BuildController = Ember.ObjectController.extend({
 				this.transitionToRoute('userbuilds', model.creator);
 			}, (xhr) => {
 				console.log(xhr);
-				this.send('setError', 'Error deleting build: ' + xhr.responseText);
+				this.growl.error('Error deleting build: ' + xhr.responseText);
 			});
 		},
 		startEditTitle: function () {
@@ -223,7 +224,7 @@ App.BuildController = Ember.ObjectController.extend({
 				};
 
 				if (!supportedFileTypes[file.type]) {
-					this.send('setError', 'Filetype not supported: ' + file.type);
+					this.growl.error('Filetype not supported: ' + file.type);
 					return;
 				}
 
@@ -231,13 +232,13 @@ App.BuildController = Ember.ObjectController.extend({
 
 
 				build.addImageToBuild(file, guid, progressFunc).then((success) => {
-					console.log("Removing upload " + guid);
+					//console.log("Removing upload " + guid);
 					this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== guid; }));
-					this.send('setInfo', 'Uploaded file');
+					this.growl.success('Uploaded file');
 				},(failure) => {
 						console.log('upload fail');
 						console.log(failure);
-						this.send('setError', 'Error uploading file: ' + failure);
+						this.growl.error('Error uploading file: ' + failure);
 						this.get('progressBars').setObjects(this.progressBars.filter(function (x) { return x.guid !== guid; }));
 					});
 

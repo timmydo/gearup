@@ -82,9 +82,9 @@ App.BuildRoute = Ember.Route.extend({
             var data = JSON.stringify(model);
             if (data) {
                 model.save().then(function () {
-                    _this.send('setInfo', 'Saved changes');
+                    _this.growl.success('Saved changes');
                 }, function (xhr) {
-                    _this.send('setError', 'Error saving build: ' + xhr.responseText);
+                    _this.growl.error('Error saving build: ' + xhr.responseText);
                 });
             }
         }
@@ -129,7 +129,7 @@ App.BuildController = Ember.ObjectController.extend({
                 return data;
             }, function (xhr) {
                 console.log(xhr);
-                _this.send('setError', 'Error getting user build list: ' + xhr.responseJSON);
+                _this.growl.error('Error getting user build list: ' + xhr.responseJSON);
             });
         }
         else {
@@ -152,9 +152,9 @@ App.BuildController = Ember.ObjectController.extend({
             var build = this.get('model');
             App.Data.getList(listId).then(function (list) {
                 list.addBuildToList(build.id).then(function () {
-                    _this.send('setInfo', 'Build added to list');
+                    _this.growl.success('Build added to list');
                 }, function (xhr) {
-                    _this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+                    _this.growl.error('Error adding build to list: ' + xhr.responseText);
                 });
             });
         },
@@ -176,9 +176,9 @@ App.BuildController = Ember.ObjectController.extend({
                 if (i && i.length > 0) {
                     _this.set('selectedImage', i[0].guid);
                 }
-                _this.send('setInfo', 'Image deleted');
+                _this.growl.success('Image deleted');
             }, function (xhr) {
-                _this.send('setError', 'Error adding build to list: ' + xhr.responseText);
+                _this.growl.error('Error adding build to list: ' + xhr.responseText);
             });
         },
         addPart: function () {
@@ -198,7 +198,7 @@ App.BuildController = Ember.ObjectController.extend({
                 _this.transitionToRoute('userbuilds', model.creator);
             }, function (xhr) {
                 console.log(xhr);
-                _this.send('setError', 'Error deleting build: ' + xhr.responseText);
+                _this.growl.error('Error deleting build: ' + xhr.responseText);
             });
         },
         startEditTitle: function () {
@@ -280,20 +280,20 @@ App.BuildController = Ember.ObjectController.extend({
                     'image/gif': true,
                 };
                 if (!supportedFileTypes[file.type]) {
-                    this.send('setError', 'Filetype not supported: ' + file.type);
+                    this.growl.error('Filetype not supported: ' + file.type);
                     return;
                 }
                 this.get('progressBars').pushObject({ guid: guid, name: file.name, progress: 0 });
                 build.addImageToBuild(file, guid, progressFunc).then(function (success) {
-                    console.log("Removing upload " + guid);
+                    //console.log("Removing upload " + guid);
                     _this.get('progressBars').setObjects(_this.progressBars.filter(function (x) {
                         return x.guid !== guid;
                     }));
-                    _this.send('setInfo', 'Uploaded file');
+                    _this.growl.success('Uploaded file');
                 }, function (failure) {
                     console.log('upload fail');
                     console.log(failure);
-                    _this.send('setError', 'Error uploading file: ' + failure);
+                    _this.growl.error('Error uploading file: ' + failure);
                     _this.get('progressBars').setObjects(_this.progressBars.filter(function (x) {
                         return x.guid !== guid;
                     }));
@@ -305,6 +305,7 @@ App.BuildController = Ember.ObjectController.extend({
 /// <reference path="app.ts" />
 App.BuildObject = Ember.Object.extend({
     save: function () {
+        App.Track.track("SaveBuild", { Build: this.id });
         var data = JSON.stringify(this);
         return Ember.$.ajax({
             type: 'POST',
@@ -317,6 +318,7 @@ App.BuildObject = Ember.Object.extend({
     deleteBuild: function () {
         var _this = this;
         var data = JSON.stringify(this);
+        App.Track.track("DeleteBuild", { Build: this.id });
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/DeleteBuild',
@@ -332,7 +334,9 @@ App.BuildObject = Ember.Object.extend({
         });
     },
     deleteImageFromBuild: function (guid) {
-        var data = JSON.stringify({ Build: this.id, Image: guid });
+        var opts = { Build: this.id, Image: guid };
+        var data = JSON.stringify(opts);
+        App.Track.track("DeleteImage", opts);
         var thisbuild = this;
         return Ember.$.ajax({
             type: 'POST',
@@ -356,6 +360,7 @@ App.BuildObject = Ember.Object.extend({
     },
     addImageToBuild: function (file, guid, progressFunc) {
         var thisbuild = this;
+        App.Track.track("AddImageToBuild", { Build: thisbuild.id });
         return new Ember.RSVP.Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.id, true);
@@ -389,6 +394,7 @@ App.UserListsObject = Ember.Object.extend({});
 App.BuildListObject = Ember.Object.extend({
     save: function () {
         var data = JSON.stringify(this);
+        App.Track.track("SaveList", { List: this.id });
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/SaveList',
@@ -399,7 +405,9 @@ App.BuildListObject = Ember.Object.extend({
     },
     addBuildToList: function (bid) {
         var _this = this;
-        var data = JSON.stringify({ build: bid, list: this.id });
+        var opts = { build: bid, list: this.id };
+        var data = JSON.stringify(opts);
+        App.Track.track("AddBuildToList", opts);
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/AddBuildToList',
@@ -412,7 +420,9 @@ App.BuildListObject = Ember.Object.extend({
     },
     removeBuildFromList: function (bid) {
         var _this = this;
-        var data = JSON.stringify({ 'build': bid, 'list': this.id });
+        var opts = { 'build': bid, 'list': this.id };
+        var data = JSON.stringify(opts);
+        App.Track.track("RemoveBuildFromList", opts);
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/RemoveBuildFromList',
@@ -436,6 +446,7 @@ App.BuildListObject = Ember.Object.extend({
     },
     deleteList: function () {
         var data = JSON.stringify(this);
+        App.Track.track("DeleteList", { List: this.id });
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/DeleteList',
@@ -538,6 +549,127 @@ App.DragDropComponent = Ember.Component.extend({
     }
 });
 /// <reference path="app.ts" />
+App.GrowlInstanceComponent = Ember.Component.extend({
+    classNames: ['growl-instance'],
+    classNameBindings: ['type'],
+    type: function () {
+        return this.get('notification.options.type');
+    }.property(),
+    click: function () {
+        this.destroyAlert();
+    },
+    didInsertElement: function () {
+        if (this.get('notification.options.fadeIn')) {
+            this.$().hide().fadeIn();
+        }
+        if (this.get('notification.options.twitch')) {
+            var el = this.$(), maxDegree = 1, negative;
+            var interval = window.setInterval(function () {
+                negative = negative ? '' : '-';
+                el.css('transform', 'rotate(' + negative + maxDegree + 'deg)');
+            }, 75);
+            Ember.run.later(this, function () {
+                el.css('transform', 'rotate(0deg)');
+                window.clearInterval(interval);
+            }, 400);
+        }
+        // unless a click-to-dismiss is required we auto close
+        if (!this.get('notification.options.clickToDismiss')) {
+            Ember.run.later(this, this.destroyAlert, this.get('notification.options.closeIn'));
+        }
+    },
+    destroyAlert: function () {
+        var self = this;
+        if (this.$()) {
+            this.$().fadeOut(Ember.run(this, function () {
+                // send the action on up so the manager can remove this item from array
+                self.sendAction('action', self.get('notification'));
+            }));
+        }
+        else {
+            self.sendAction('action', self.get('notification'));
+        }
+    },
+    actions: {
+        dismiss: function () {
+            // a close button has been clicked
+            this.destroyAlert();
+        }
+    }
+});
+App.GrowlManagerComponent = Ember.Component.extend({
+    classNames: ['growl-manager'],
+    actions: {
+        dismiss: function (notification) {
+            this.get('notifications').removeObject(notification);
+        }
+    }
+});
+App.Growl = Ember.Object.extend({
+    notifications: Ember.A(),
+    error: function (context, opts) {
+        opts = opts || {};
+        opts.type = 'error';
+        this._notify.call(this, context, opts);
+        appInsights.trackEvent("ToastError", { Message: context }, {});
+    },
+    alert: function (context, opts) {
+        opts = opts || {};
+        opts.type = 'alert';
+        this._notify.call(this, context, opts);
+    },
+    info: function (context, opts) {
+        opts = opts || {};
+        opts.type = 'info';
+        this._notify.call(this, context, opts);
+    },
+    success: function (context, opts) {
+        opts = opts || {};
+        opts.type = 'success';
+        this._notify.call(this, context, opts);
+    },
+    _notify: function (context, opts) {
+        // default options
+        var options = {
+            type: 'error',
+            fadeIn: true,
+            closeIn: 5000,
+            clickToDismiss: false,
+            twitch: false
+        };
+        Ember.merge(options, opts);
+        // if the developer passed an identical message then we just update
+        // the open notification balloon options
+        var existing = this.get('notifications').findBy('content', context);
+        if (existing) {
+            return;
+        }
+        var notification = Ember.ObjectProxy.extend({
+            // {{notification.content}} for a string or {{notification.foo}} if you
+            // pass an object from a route via this.growl.error({foo: 'bar'});
+            content: context,
+            options: options,
+            updated: 0,
+            isSuccess: function () {
+                return options.type === 'success';
+            }.property(),
+            isInfo: function () {
+                return options.type === 'info';
+            }.property(),
+            isAlert: function () {
+                return options.type === 'alert';
+            }.property(),
+            isError: function () {
+                return options.type === 'error';
+            }.property()
+        }).create();
+        this.get('notifications').pushObject(notification);
+    }
+});
+App.register('growl:main', App.Growl);
+App.inject('route', 'growl', 'growl:main');
+App.inject('controller', 'growl', 'growl:main');
+/// <reference path="app.ts" />
 Ember.Handlebars.registerBoundHelper('modifiedFrom', function (value) {
     var m = moment(value).fromNow();
     return new Ember.Handlebars.SafeString('<span class="moment-from">' + m + '</span>');
@@ -609,11 +741,10 @@ App.ListRoute = Ember.Route.extend({
             console.log("Saving List " + data);
             if (data) {
                 model.save().then(function (data) {
-                    console.log(data);
-                    _this.send('setInfo', 'Saved list');
+                    _this.growl.success('Saved list');
                 }, function (xhr) {
                     console.log(xhr);
-                    _this.send('setError', 'Error saving build: ' + xhr.responseText);
+                    _this.growl.error('Error saving build: ' + xhr.responseText);
                 });
             }
         }
@@ -644,7 +775,7 @@ App.ListController = Ember.ObjectController.extend({
                     _this.set('buildList', data);
                 }, function (xhr, status, err) {
                     console.log(xhr);
-                    _this.send('setError', 'Error getting build list: ' + xhr.responseJSON);
+                    _this.growl.error('Error getting build list: ' + xhr.responseJSON);
                 });
             }
         }
@@ -663,7 +794,7 @@ App.ListController = Ember.ObjectController.extend({
             }, function (xhr) {
                 console.log(xhr);
                 console.log(status);
-                _this.send('setError', 'Error removing item: ' + xhr.responseText);
+                _this.growl.error('Error removing item: ' + xhr.responseText);
             });
         },
         tryDeleteList: function () {
@@ -674,12 +805,12 @@ App.ListController = Ember.ObjectController.extend({
             this.set('tryDelete', false); // try preventing doubleclick
             var model = this.get('model');
             model.deleteList().then(function (data) {
-                console.log(status);
-                _this.send('setInfo', 'List deleted');
+                //console.log(status);
+                _this.growl.success('List deleted');
                 _this.transitionToRoute('userlists', model.creator);
             }, function (xhr) {
                 console.log(xhr);
-                _this.send('setError', 'Error deleting list: ' + xhr.responseText);
+                _this.growl.error('Error deleting list: ' + xhr.responseText);
             });
         },
         startEditTitle: function () {
@@ -771,6 +902,22 @@ App.RegisterRoute = Ember.Route.extend({
 });
 App.RegisterController = Ember.Controller.extend({});
 /// <reference path="app.ts" />
+var AITracker = (function () {
+    function AITracker() {
+    }
+    AITracker.prototype.track = function (msg, properties, metrics) {
+        if (appInsights && appInsights.context && appInsights.context.user) {
+            appInsights.context.user.id = window['UserIdentityKey'];
+            appInsights.trackEvent(msg, properties, metrics);
+        }
+    };
+    return AITracker;
+})();
+App.Track = new AITracker();
+//App.register('track:main', App.Track);
+//App.inject('route', 'track', 'track:main');
+//App.inject('controller', 'track', 'track:main');
+/// <reference path="app.ts" />
 App.UserbuildsRoute = Ember.Route.extend({
     model: function (params) {
         var bid = params.bid;
@@ -804,4 +951,3 @@ App.UserlistsController = Ember.ObjectController.extend({
         }
     }
 });
-//# sourceMappingURL=app.js.map

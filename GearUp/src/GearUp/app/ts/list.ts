@@ -20,11 +20,10 @@ App.ListRoute = Ember.Route.extend({
 			console.log("Saving List " + data);
 			if (data) {
 				model.save().then((data) => {
-					console.log(data);
-					this.send('setInfo', 'Saved list');
+					this.growl.success('Saved list');
 					}, (xhr) => {
 						console.log(xhr);
-						this.send('setError', 'Error saving build: ' + xhr.responseText);
+						this.growl.error('Error saving build: ' + xhr.responseText);
 					});
 			}
 		}
@@ -56,7 +55,7 @@ App.ListController = Ember.ObjectController.extend({
 					this.set('buildList', data);
 				},(xhr, status, err) => {
 					console.log(xhr);
-					this.send('setError', 'Error getting build list: ' + xhr.responseJSON);
+					this.growl.error('Error getting build list: ' + xhr.responseJSON);
 				});
 			}
 		}
@@ -78,7 +77,7 @@ App.ListController = Ember.ObjectController.extend({
 			},(xhr) => {
 				console.log(xhr);
 				console.log(status);
-				this.send('setError', 'Error removing item: ' + xhr.responseText);
+				this.growl.error('Error removing item: ' + xhr.responseText);
 			});
 		},
 		tryDeleteList: function () {
@@ -89,12 +88,12 @@ App.ListController = Ember.ObjectController.extend({
 			var model = this.get('model');
 
 			model.deleteList().then((data) => {
-				console.log(status);
-				this.send('setInfo', 'List deleted');
+				//console.log(status);
+				this.growl.success('List deleted');
 				this.transitionToRoute('userlists', model.creator);
 			},(xhr) => {
 				console.log(xhr);
-				this.send('setError', 'Error deleting list: ' + xhr.responseText);
+				this.growl.error('Error deleting list: ' + xhr.responseText);
 			});
 			
 		},

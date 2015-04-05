@@ -4,6 +4,7 @@ interface Window { App: any }
 
 declare var App: any;
 declare var Holder: any;
+declare var appInsights: any;
 
 window.App = Ember.Application.create({
 	LOG_TRANSITIONS: true,

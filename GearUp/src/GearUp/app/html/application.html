@@ -57,6 +57,10 @@
 	</div>
 </nav>
 
+<div class="growl-section">
+	{{growl-manager notifications=growl.notifications}}
+</div>
+
 <div class="container">
 	{{#if errorMessage}}
 	<div class="alert alert-warning alert-dismissible" role="alert">
@@ -73,8 +77,7 @@
 
 	{{/if}}
 
-
-
+	
 
 	{{outlet}}
 
