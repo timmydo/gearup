@@ -13,7 +13,7 @@ namespace GearUp.Models
 			Created = Modified;
 			Creator = string.Empty;	//fixme set user guid
 			DocType = "build";
-			Title = "New Build";
+			Title = "Click here to edit the build name";
 			Description = "Edit your build description...";
 			Url = string.Empty;
 			Images = new List<Image>();

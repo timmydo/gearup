@@ -78,15 +78,19 @@
 				{{#if canEditBuild}}
 				<div class="pull-right"><i class="fa fa-pencil clickable" {{action 'startEditImageCaption'}}></i></div>
 				{{/if}}
-				{{selectedImageCaption}}
-			{{/if}}
+				{{#if selectedImageCaption}}
+					<span class="caption-text">{{selectedImageCaption}}</span>
+				{{else}}
+					<span class="caption-text">No caption entered.</span>
+				{{/if}}
+				{{/if}}
 
 
 
 
 
 
-		</div>
+</div>
 		{{/unless}}
 		{{/drag-drop}}
 
@@ -134,11 +138,10 @@
 				<tr>
 					<th>
 						{{#if canEditBuild}}
-						<i class="fa fa-plus clickable" title="Add a part" {{action 'addPart'}}></i>
+						<i class="fa fa-plus clickable" title="Add gear" {{action 'addPart'}}></i>
 						{{/if}}
 					</th>
 					<th>Item</th>
-					<th>Price</th>
 				</tr>
 			</thead>
 
@@ -168,14 +171,13 @@
 					</td>
 
 					<td>
-						{{#if part.url}}
-						<a target="_blank" {{bind-attr href=part.url}}>{{part.title}}</a>
-						{{else}}
+						{{#if part.title}}
 						{{part.title}}
+						{{else}}
+						(Click the pencil to add a name)
 						{{/if}}
 
 					</td>
-					<td>{{part.price}}</td>
 
 					{{/if}}
 				</tr>

@@ -35,7 +35,7 @@ App.BuildController = Ember.ObjectController.extend({
 		var guid = this.get('selectedImage');
 		for (var i = 0; i < images.length; i++) {
 			if (images[i].guid === guid) {
-				return images[i].title || 'No caption';
+				return images[i].title;
 			}
 		}
 		return "No caption found";
@@ -116,7 +116,7 @@ App.BuildController = Ember.ObjectController.extend({
 
 		addPart: function () {
 			if (this.get('canEditBuild')) {
-				this.set('parts', this.get('parts').concat({ url: '', title: 'New part', price: '' }));
+				this.get('parts').pushObject({ title: ''});
 			}
 		},
 		tryDeleteBuild: function () {
