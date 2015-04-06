@@ -1195,7 +1195,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           fragment = this.build(dom);
         }
         var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 3]),0,1);
-        block(env, morph0, context, "each", [get(env, context, "userBuildList.lists")], {"keyword": "buildList"}, child0, null);
+        block(env, morph0, context, "each", [get(env, context, "controllers.Userbuilds.userBuildList.lists")], {"keyword": "buildList"}, child0, null);
         return fragment;
       }
     };
@@ -4053,7 +4053,7 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
       var morph2 = dom.createMorphAt(dom.childAt(fragment, [3, 1]),0,1);
       block(env, morph0, context, "if", [get(env, context, "editTitle")], {}, child0, child1);
       block(env, morph1, context, "if", [get(env, context, "canEditList")], {}, child2, null);
-      block(env, morph2, context, "each", [get(env, context, "buildList")], {"keyword": "build"}, child3, null);
+      block(env, morph2, context, "each", [get(env, context, "builds")], {"keyword": "build"}, child3, null);
       return fragment;
     }
   };
@@ -4220,6 +4220,123 @@ Ember.TEMPLATES["register"] = Ember.HTMLBars.template((function() {
 Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
   var child0 = (function() {
     var child0 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("							");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("li");
+            var el2 = dom.createElement("a");
+            dom.setAttribute(el2,"class","clickable");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, get = hooks.get, element = hooks.element, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var element1 = dom.childAt(fragment, [1, 0]);
+            var morph0 = dom.createMorphAt(element1,-1,-1);
+            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.id")], {});
+            content(env, morph0, context, "buildList.title");
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("					");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","btn-group pull-right");
+          var el2 = dom.createTextNode("\n						");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("button");
+          dom.setAttribute(el2,"type","button");
+          dom.setAttribute(el2,"class","btn btn-default dropdown-toggle");
+          dom.setAttribute(el2,"data-toggle","dropdown");
+          dom.setAttribute(el2,"aria-expanded","false");
+          var el3 = dom.createTextNode("\n							Add to list ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("span");
+          dom.setAttribute(el3,"class","caret");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n						");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n						");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("ul");
+          dom.setAttribute(el2,"class","dropdown-menu");
+          dom.setAttribute(el2,"role","menu");
+          var el3 = dom.createTextNode("\n");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("						");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n					");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 3]),0,1);
+          block(env, morph0, context, "each", [get(env, context, "userBuildList.lists")], {"keyword": "buildList"}, child0, null);
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
       return {
         isHTMLBars: true,
         blockParams: 0,
@@ -4262,7 +4379,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
         }
       };
     }());
-    var child1 = (function() {
+    var child2 = (function() {
       var child0 = (function() {
         return {
           isHTMLBars: true,
@@ -4410,7 +4527,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
         var el3 = dom.createTextNode("\n				");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","col-md-9");
+        dom.setAttribute(el3,"class","col-md-4");
         var el4 = dom.createTextNode("\n					");
         dom.appendChild(el3, el4);
         var el4 = dom.createTextNode("\n				");
@@ -4419,8 +4536,24 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
         var el3 = dom.createTextNode("\n				");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","col-md-3");
-        var el4 = dom.createTextNode("Modified ");
+        dom.setAttribute(el3,"class","col-md-4");
+        var el4 = dom.createTextNode("\n					");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","pull-right");
+        var el5 = dom.createTextNode("Modified ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n				");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n				");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col-md-4");
+        var el4 = dom.createTextNode("\n");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("				");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         var el3 = dom.createTextNode("\n			");
@@ -4484,17 +4617,19 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
         } else {
           fragment = this.build(dom);
         }
-        var element1 = dom.childAt(fragment, [1]);
-        var element2 = dom.childAt(element1, [1]);
-        var element3 = dom.childAt(element1, [3]);
-        var morph0 = dom.createMorphAt(dom.childAt(element2, [1]),0,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element2, [3]),0,-1);
-        var morph2 = dom.createMorphAt(dom.childAt(element3, [1]),0,1);
-        var morph3 = dom.createMorphAt(dom.childAt(element3, [3, 1]),0,1);
+        var element2 = dom.childAt(fragment, [1]);
+        var element3 = dom.childAt(element2, [1]);
+        var element4 = dom.childAt(element2, [3]);
+        var morph0 = dom.createMorphAt(dom.childAt(element3, [1]),0,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element3, [3, 1]),0,-1);
+        var morph2 = dom.createMorphAt(dom.childAt(element3, [5]),0,1);
+        var morph3 = dom.createMorphAt(dom.childAt(element4, [1]),0,1);
+        var morph4 = dom.createMorphAt(dom.childAt(element4, [3, 1]),0,1);
         inline(env, morph0, context, "buildTitleAnchor", [get(env, context, "build")], {});
         inline(env, morph1, context, "modifiedFrom", [get(env, context, "build.modified")], {});
-        block(env, morph2, context, "each", [get(env, context, "build.images")], {"keyword": "image"}, child0, null);
-        block(env, morph3, context, "each", [get(env, context, "build.parts")], {"keyword": "part"}, child1, null);
+        block(env, morph2, context, "if", [get(env, context, "userLoginKey")], {}, child0, null);
+        block(env, morph3, context, "each", [get(env, context, "build.images")], {"keyword": "image"}, child1, null);
+        block(env, morph4, context, "each", [get(env, context, "build.parts")], {"keyword": "part"}, child2, null);
         return fragment;
       }
     };
@@ -4574,10 +4709,10 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
       } else {
         fragment = this.build(dom);
       }
-      var element4 = dom.childAt(fragment, [1, 1]);
-      var element5 = dom.childAt(element4, [1, 3, 1]);
-      var morph0 = dom.createMorphAt(element4,2,3);
-      element(env, element5, context, "action", ["createBuild"], {});
+      var element5 = dom.childAt(fragment, [1, 1]);
+      var element6 = dom.childAt(element5, [1, 3, 1]);
+      var morph0 = dom.createMorphAt(element5,2,3);
+      element(env, element6, context, "action", ["createBuild"], {});
       block(env, morph0, context, "each", [get(env, context, "model")], {"keyword": "build"}, child0, null);
       return fragment;
     }

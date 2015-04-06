@@ -39,31 +39,6 @@ App.ListController = Ember.ObjectController.extend({
 	savedTitle: '',
 	savedDescription: '',
 	startLoadBuildList: false,
-	buildList: function (key, value, previousValue) {
-		var list = [];
-		var firstCall = true;
-		var model = this.get('model');
-
-		//setter
-		if (arguments.length > 1) {
-			list = value;
-		} else {
-			if (!this.get('startLoadBuildList')) {
-				this.set('startLoadBuildList', true);
-				model.getBuilds().then((data, status) => {
-					console.log(data);
-					this.set('buildList', data);
-				},(xhr, status, err) => {
-					console.log(xhr);
-					this.growl.error('Error getting build list: ' + xhr.responseJSON);
-				});
-			}
-		}
-
-		//getter
-		return list;
-
-	}.property('model'),
 
 	actions: {
 

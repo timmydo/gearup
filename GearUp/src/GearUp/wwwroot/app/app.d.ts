@@ -16,7 +16,9 @@ declare class MyAppData {
     userlists: any;
     buildlists: any;
     constructor();
+    removeFromListCache(list: any): void;
     getBuild(bid: any): Ember.RSVP.Promise;
+    fillListBuilds(l: any): void;
     getUserList(userKey: any): Ember.RSVP.Promise;
     getList(lid: any): Ember.RSVP.Promise;
     getUserBuilds(bid: any): JQueryXHR;

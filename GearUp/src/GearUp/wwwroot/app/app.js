@@ -91,6 +91,7 @@ App.BuildRoute = Ember.Route.extend({
     }
 });
 App.BuildController = Ember.ObjectController.extend({
+    needs: ["Userbuilds"],
     createdTime: function () {
         return moment(this.get('model.created')).format('ll');
     }.property('model.created'),
@@ -116,29 +117,6 @@ App.BuildController = Ember.ObjectController.extend({
     canEditBuild: function () {
         return this.get('model.creator') === window['UserIdentityKey'];
     }.property('model.creator'),
-    userBuildList: function (key, value, previousValue) {
-        var _this = this;
-        var userKey = this.get('userLoginKey');
-        if (arguments.length > 1) {
-            //setter
-            return value;
-        }
-        if (userKey && !value) {
-            App.Data.getUserList(userKey).then(function (data) {
-                _this.set('userBuildList', data);
-                return data;
-            }, function (xhr) {
-                console.log(xhr);
-                _this.growl.error('Error getting user build list: ' + xhr.responseJSON);
-            });
-        }
-        else {
-            console.log('Not loading userbuild list');
-            console.log(userKey);
-            console.log(value);
-        }
-        return value || [];
-    }.property('userLoginKey'),
     editTitle: false,
     editDescription: false,
     editCaption: false,
@@ -395,6 +373,7 @@ App.BuildListObject = Ember.Object.extend({
     save: function () {
         var data = JSON.stringify(this);
         App.Track.track("SaveList", { List: this.id });
+        App.Data.updateCacheList(this);
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/SaveList',
@@ -434,19 +413,12 @@ App.BuildListObject = Ember.Object.extend({
             return success;
         });
     },
-    getBuilds: function () {
-        var data = JSON.stringify(this);
-        return Ember.$.ajax({
-            type: 'POST',
-            url: '/api/Build',
-            contentType: 'application/json',
-            data: data,
-            dataType: 'json'
-        });
-    },
     deleteList: function () {
         var data = JSON.stringify(this);
+        console.log('delete list');
+        console.log(this);
         App.Track.track("DeleteList", { List: this.id });
+        App.Data.removeFromListCache(this);
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/DeleteList',
@@ -467,6 +439,21 @@ var MyAppData = (function () {
         this.userlists = {};
         this.buildlists = {};
     }
+    MyAppData.prototype.removeFromListCache = function (list) {
+        // remove this from list cache
+        if (App.Data.buildlists[list.id]) {
+            delete App.Data.buildlists[list.id];
+        }
+        for (var name in App.Data.userlists) {
+            var ul = App.Data.userlists[name];
+            var newList = ul.get('lists').reject(function (li) {
+                return li.id === list.id;
+            });
+            console.log(ul);
+            ul.set('lists', newList);
+            console.log(ul);
+        }
+    };
     MyAppData.prototype.getBuild = function (bid) {
         var _this = this;
         var b = this.builds[bid];
@@ -483,6 +470,61 @@ var MyAppData = (function () {
             return promiseFor(b);
         }
     };
+    MyAppData.prototype.fillListBuilds = function (l) {
+        //console.log('getList');
+        var origbuilds = l.get('builds').copy();
+        // set builds to the ones we haven't already cached--so we can load them
+        var notCachedBuilds = l.get('builds').filter(function (el) {
+            return !App.Data.builds[el.id];
+        });
+        //console.log('filter');
+        //console.log(notCachedBuilds);
+        //console.log(App.Data.builds);
+        //console.log(filtered);
+        //l.set('builds', filtered);
+        // if we need to load some builds in this list, ask for them in bulk
+        if (notCachedBuilds.length > 0) {
+            l.set('builds', notCachedBuilds);
+            var postdata = JSON.stringify(l);
+            Ember.$.ajax({
+                type: 'POST',
+                url: '/api/Build',
+                contentType: 'application/json',
+                data: postdata,
+                dataType: 'json'
+            }).then(function (data) {
+                var barray = Ember.A();
+                //console.log('postbuild');
+                //console.log(data);
+                data.forEach(function (elem) {
+                    if (!App.Data.builds[elem.id]) {
+                        var item = App.BuildObject.create(elem);
+                        App.Data.builds[elem.id] = item;
+                    }
+                });
+                //console.log('cache');
+                //console.log(App.Data.builds);
+                //console.log(origbuilds);
+                origbuilds.forEach(function (guid) {
+                    barray.pushObject(App.Data.builds[guid]);
+                });
+                //console.log('set builds');
+                //console.log(barray);
+                l.set('builds', barray);
+            }, function (xhr) {
+                console.log(xhr);
+                App.Track.track("GetListError", { Message: 'Error getting user build list: ' + xhr.responseJSON });
+            });
+            // set the list to empty until we load everything
+            l.set('builds', Ember.A());
+        }
+        else {
+            l.set('builds', Ember.A());
+            origbuilds.forEach(function (b) {
+                l.get('builds').pushObject(App.Data.builds[b]);
+            });
+        }
+    };
     MyAppData.prototype.getUserList = function (userKey) {
         var _this = this;
         var l = this.userlists[userKey];
@@ -492,7 +534,17 @@ var MyAppData = (function () {
                 url: '/api/UserLists/' + userKey,
                 dataType: 'json',
             }).then(function (res) {
-                l = App.UserListsObject.create({ lists: res });
+                var newList = Ember.A();
+                console.log('getUserList');
+                console.log(res);
+                res.forEach(function (elem) {
+                    if (!App.Data.buildlists[elem.id]) {
+                        App.Data.buildlists[elem.id] = App.BuildListObject.create(elem);
+                    }
+                    _this.fillListBuilds(App.Data.buildlists[elem.id]);
+                    newList.pushObject(App.Data.buildlists[elem.id]);
+                });
+                l = App.UserListsObject.create({ lists: newList });
                 console.log('get list ' + userKey);
                 console.log(l);
                 _this.userlists[userKey] = l;
@@ -510,9 +562,8 @@ var MyAppData = (function () {
         var l = this.buildlists[lid];
         if (!l) {
             return Ember.$.getJSON('/api/list/' + lid).then(function (res) {
-                l = App.BuildListObject.create(res);
-                console.log('get list ' + lid);
-                console.log(l);
+                var l = App.BuildListObject.create(res);
+                _this.fillListBuilds(l);
                 _this.buildlists[lid] = l;
                 return l;
             });
@@ -758,30 +809,6 @@ App.ListController = Ember.ObjectController.extend({
     savedTitle: '',
     savedDescription: '',
     startLoadBuildList: false,
-    buildList: function (key, value, previousValue) {
-        var _this = this;
-        var list = [];
-        var firstCall = true;
-        var model = this.get('model');
-        //setter
-        if (arguments.length > 1) {
-            list = value;
-        }
-        else {
-            if (!this.get('startLoadBuildList')) {
-                this.set('startLoadBuildList', true);
-                model.getBuilds().then(function (data, status) {
-                    console.log(data);
-                    _this.set('buildList', data);
-                }, function (xhr, status, err) {
-                    console.log(xhr);
-                    _this.growl.error('Error getting build list: ' + xhr.responseJSON);
-                });
-            }
-        }
-        //getter
-        return list;
-    }.property('model'),
     actions: {
         removeFromList: function (bid) {
             var _this = this;
@@ -928,6 +955,33 @@ App.UserbuildsRoute = Ember.Route.extend({
     }
 });
 App.UserbuildsController = Ember.ArrayController.extend({
+    userLoginKey: function () {
+        return window['UserIdentityKey'] || '';
+    }.property('window.UserIdentityKey'),
+    //fixme async property
+    userBuildList: function (key, value, previousValue) {
+        var _this = this;
+        var userKey = this.get('userLoginKey');
+        if (arguments.length > 1) {
+            //setter
+            return value;
+        }
+        if (userKey && !value) {
+            App.Data.getUserList(userKey).then(function (data) {
+                _this.set('userBuildList', data);
+                return data;
+            }, function (xhr) {
+                console.log(xhr);
+                _this.growl.error('Error getting user build list: ' + xhr.responseJSON);
+            });
+        }
+        else {
+            console.log('Not loading userbuild list');
+            console.log(userKey);
+            console.log(value);
+        }
+        return value || [];
+    }.property('userLoginKey'),
     actions: {
         createBuild: function () {
             this.transitionToRoute('build', Gear.UUID.v4());
@@ -948,6 +1002,10 @@ App.UserlistsController = Ember.ObjectController.extend({
     actions: {
         createList: function () {
             this.transitionToRoute('list', Gear.UUID.v4());
+            // refresh the cache
+            if (window['UserIdentityKey']) {
+                App.Data.getUserList(window['UserIdentityKey']);
+            }
         }
     }
 });

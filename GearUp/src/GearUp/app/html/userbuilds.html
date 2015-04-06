@@ -14,10 +14,27 @@
 		{{#each build in model}}
 		<div class="container user-build">
 			<div class="row">
-				<div class="col-md-9">
+				<div class="col-md-4">
 					{{buildTitleAnchor build}}
 				</div>
-				<div class="col-md-3">Modified {{modifiedFrom build.modified}}</div>
+				<div class="col-md-4">
+					<div class="pull-right">Modified {{modifiedFrom build.modified}}</div>
+				</div>
+				<div class="col-md-4">
+					{{#if userLoginKey}}
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							Add to list <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							{{#each buildList in userBuildList.lists}}
+							<li><a class="clickable" {{action 'addBuildToList' buildList.id}}>{{buildList.title}}</a></li>
+
+							{{/each}}
+						</ul>
+					</div>
+					{{/if}}
+				</div>
 			</div>
 			
 			<div class="row">

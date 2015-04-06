@@ -52,6 +52,10 @@ App.ApplicationController = Ember.Controller.extend({
 		return window['UserIdentityKey'] || '';
 	}.property('window.UserIdentityKey'),
 
+
+
+
+
 	actions: {
 		setError: function (e) {
             this.set('errorMessage', e);

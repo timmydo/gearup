@@ -20,6 +20,8 @@ App.BuildRoute = Ember.Route.extend({
 });
 
 App.BuildController = Ember.ObjectController.extend({
+	needs: ["Userbuilds"],
+
 	createdTime: function () {
 		return moment(this.get('model.created')).format('ll');
 	}.property('model.created'),
@@ -47,32 +49,6 @@ App.BuildController = Ember.ObjectController.extend({
 	canEditBuild: function () {
 		return this.get('model.creator') === window['UserIdentityKey'];
 	}.property('model.creator'),
-
-	userBuildList: function (key, value, previousValue) {
-		var userKey = this.get('userLoginKey');
-
-		if (arguments.length > 1) {
-			//setter
-			return value;
-		}
-
-		if (userKey && !value) {
-			App.Data.getUserList(userKey).then((data) => {
-				this.set('userBuildList', data);
-				return data;
-			},(xhr) => {
-					console.log(xhr);
-					this.growl.error('Error getting user build list: ' + xhr.responseJSON);
-				});
-		} else {
-			console.log('Not loading userbuild list');
-			console.log(userKey);
-			console.log(value);
-		}
-
-		return value || [];
-	}.property('userLoginKey'),
-
 
 	editTitle: false,
 	editDescription: false,
