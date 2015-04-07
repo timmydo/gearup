@@ -20,6 +20,7 @@ App.UserlistsController = Ember.ObjectController.extend({
 				App.Data.getUserList(window['UserIdentityKey']);
 			}
 		}
+
 	}
 
 });

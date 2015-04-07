@@ -4261,7 +4261,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
             }
             var element1 = dom.childAt(fragment, [1, 0]);
             var morph0 = dom.createMorphAt(element1,-1,-1);
-            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.id")], {});
+            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.id"), get(env, context, "build.id")], {});
             content(env, morph0, context, "buildList.title");
             return fragment;
           }

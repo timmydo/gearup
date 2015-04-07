@@ -49,7 +49,19 @@ App.UserbuildsController = Ember.ArrayController.extend({
 	actions: {
 		createBuild: function () {
 			this.transitionToRoute('build', Gear.UUID.v4());
-		}
+		},
+
+		addBuildToList: function (listId, bid) {
+			var build = this.get('model');
+
+			App.Data.getList(listId).then((list) => {
+				list.addBuildToList(bid).then(() => {
+					this.growl.success('Build added to list');
+				},(xhr) => {
+						this.growl.error('Error adding build to list: ' + xhr.responseText);
+					});
+			});
+		},
 	}
 
 });

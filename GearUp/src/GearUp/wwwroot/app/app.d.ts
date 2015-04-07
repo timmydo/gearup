@@ -15,13 +15,15 @@ declare class MyAppData {
     builds: any;
     userlists: any;
     buildlists: any;
+    userbuilds: any;
     constructor();
-    removeFromListCache(list: any): void;
+    removeBuildFromCache(bid: any): void;
+    removeListFromCache(lid: any): void;
     getBuild(bid: any): Ember.RSVP.Promise;
     fillListBuilds(l: any): void;
     getUserList(userKey: any): Ember.RSVP.Promise;
     getList(lid: any): Ember.RSVP.Promise;
-    getUserBuilds(bid: any): JQueryXHR;
+    getUserBuilds(bid: any): Ember.RSVP.Promise;
 }
 declare class AITracker {
     track(msg: any, properties: any, metrics: any): void;
