@@ -123,11 +123,11 @@ namespace GearUp.Services
 		{
 			if (this._addImageToBuild == null)
 			{
-				await LoadStoredProcs();
+				await LoadStoredProcs(false);
 			}
 		}
 
-		private async Task<StoredProcedure> LoadStoredProc(string sprocName)
+		private async Task<StoredProcedure> ReloadStoredProc(string sprocName)
 		{
 
 			var sproc = new StoredProcedure
@@ -145,15 +145,34 @@ namespace GearUp.Services
 
 		}
 
-		private async Task LoadStoredProcs()
+		private  StoredProcedure LoadStoredProc(string name)
 		{
-			this._addImageToBuild = await this.LoadStoredProc(@"Services\js\addImageToBuild.js");
-			this._saveBuild = await this.LoadStoredProc(@"Services\js\saveBuild.js");
-			this._saveList = await this.LoadStoredProc(@"Services\js\saveList.js");
-			this._addBuildToList = await this.LoadStoredProc(@"Services\js\addBuildToList.js");
-			this._removeBuildFromList = await this.LoadStoredProc(@"Services\js\removeBuildFromList.js");
-			this._removeImageFromBuild = await this.LoadStoredProc(@"Services\js\removeImageFromBuild.js");
-			
+			StoredProcedure sp = client.CreateStoredProcedureQuery(collection.StoredProceduresLink,
+				"select * from root r where r.id = \"" + name + "\"").FirstOrDefault();
+
+			return sp;
+		}
+
+		public async Task LoadStoredProcs(bool reload)
+		{
+			if (reload)
+			{
+				this._addImageToBuild = await this.ReloadStoredProc(@"Services\js\addImageToBuild.js");
+				this._saveBuild = await this.ReloadStoredProc(@"Services\js\saveBuild.js");
+				this._saveList = await this.ReloadStoredProc(@"Services\js\saveList.js");
+				this._addBuildToList = await this.ReloadStoredProc(@"Services\js\addBuildToList.js");
+				this._removeBuildFromList = await this.ReloadStoredProc(@"Services\js\removeBuildFromList.js");
+				this._removeImageFromBuild = await this.ReloadStoredProc(@"Services\js\removeImageFromBuild.js");
+			}
+			else
+			{
+				this._addImageToBuild =  this.LoadStoredProc("addImageToBuild");
+				this._saveBuild =  this.LoadStoredProc("saveBuild");
+				this._saveList =  this.LoadStoredProc("saveList");
+				this._addBuildToList =  this.LoadStoredProc("addBuildToList");
+				this._removeBuildFromList =  this.LoadStoredProc("removeBuildFromList");
+				this._removeImageFromBuild =  this.LoadStoredProc("removeImageFromBuild");
+			}
 
 		}
 
