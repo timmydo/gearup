@@ -24,7 +24,9 @@
 		"Microsoft.AspNet.Security.Google": "1.0.0.0-beta3",
 		"Microsoft.AspNet.Security.Facebook": "1.0.0.0-beta3",
 		"WindowsAzure.Storage": "4.3.2.0-preview",
-		"Microsoft.Azure.Documents.Client": "0.9.2-preview"
+		"Microsoft.Azure.Documents.Client": "0.9.2-preview",
+		"Microsoft.Azure.Management.Redis": "0.14.1-preview",
+		"StackExchange.Redis": "1.0.414"
 
 
 	},
@@ -39,12 +41,12 @@
 		//"aspnetcore50": {		}
 	},
 	"bundleExclude": [
-        "node_modules",
-        "bower_components",
-        "**.kproj",
-        "**.user",
-        "**.vspscc"
-    ],
+		"node_modules",
+		"bower_components",
+		"**.kproj",
+		"**.user",
+		"**.vspscc"
+	],
 	"exclude": [
 		"wwwroot",
 		"node_modules",

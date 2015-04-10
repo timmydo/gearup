@@ -7,7 +7,7 @@
 <script type="text/javascript">
 	(function () {
 
-		App.ImageEndpoint = '@(ViewBag.SiteSettings.BlobEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
+		App.ImageEndpoint = '@(ViewBag.SiteSettings.CdnEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
 
 		@if (User.Identity.IsAuthenticated)
 	{

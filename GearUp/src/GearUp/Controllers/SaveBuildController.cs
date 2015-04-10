@@ -22,11 +22,13 @@ namespace GearUp.Controllers.Controllers
 
 		private readonly ILogger _logger;
 		private readonly DocumentDB _ddb;
+		private readonly RedisService _redis;
 
-		public SaveBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb)
+		public SaveBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb, RedisService redis)
 		{
 			this._logger = logger;
 			this._ddb = ddb;
+			this._redis = redis;
 		}
 
 
@@ -34,10 +36,18 @@ namespace GearUp.Controllers.Controllers
 		[HttpPost]
 		public async Task<string> Post([FromBody]Build b)
 		{
+			if (User == null)
+			{
+				throw new Exception("User is null");
+			}
+
 			if (b != null && !string.IsNullOrEmpty(b.Creator))
 			{
 				var uid = UserLogin.UserUniqueId(User.Identity);
+				this._logger.WriteInformation("SaveBuild Controller Post");
 				var newId = await this._ddb.SaveBuildAsync(b, uid);
+				var savedBuild = this._ddb.GetBuild(b.id);
+				await this._redis.CacheBuildAsync(savedBuild);
                 return newId;
 			}
 			else

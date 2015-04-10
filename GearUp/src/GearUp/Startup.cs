@@ -45,6 +45,8 @@ namespace GearUp
 			{
 				BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString"),
 				BlobEndpoint = Configuration.Get("BlobEndpoint"),
+				CdnEndpoint = Configuration.Get("CdnEndpoint"),
+				RedisEndpoint = Configuration.Get("RedisEndpoint"),
 				ImagesContainer = Configuration.Get("ImagesContainer"),
 				ServiceJSFileRoot = Configuration.Get("ServiceJSFileRoot"),
                 DocumentDatabaseId = Configuration.Get("DocumentDatabaseId"),
@@ -62,6 +64,7 @@ namespace GearUp
 			services.AddInstance<ILogger>(logger);
 			services.AddSingleton<BlobService>();
 			services.AddSingleton<DocumentDB>();
+			services.AddSingleton<RedisService>();
 
 			services.AddMvc().Configure<MvcOptions>(options =>
 			{

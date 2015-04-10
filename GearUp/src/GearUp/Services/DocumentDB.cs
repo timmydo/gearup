@@ -147,8 +147,9 @@ namespace GearUp.Services
 
 		private  StoredProcedure LoadStoredProc(string name)
 		{
+			this._logger.WriteInformation("Loading sproc " + name + " from "+ collection.StoredProceduresLink);
 			StoredProcedure sp = client.CreateStoredProcedureQuery(collection.StoredProceduresLink,
-				"select * from root r where r.id = \"" + name + "\"").FirstOrDefault();
+				"select * from root r where r.id = \"" + name + "\"").AsEnumerable().FirstOrDefault();
 
 			return sp;
 		}
@@ -157,6 +158,7 @@ namespace GearUp.Services
 		{
 			if (reload)
 			{
+				this._logger.WriteInformation("Reloading stored procs");
 				this._addImageToBuild = await this.ReloadStoredProc(@"Services\js\addImageToBuild.js");
 				this._saveBuild = await this.ReloadStoredProc(@"Services\js\saveBuild.js");
 				this._saveList = await this.ReloadStoredProc(@"Services\js\saveList.js");
@@ -166,6 +168,7 @@ namespace GearUp.Services
 			}
 			else
 			{
+				this._logger.WriteInformation("Loading stored procs from memory");
 				this._addImageToBuild =  this.LoadStoredProc("addImageToBuild");
 				this._saveBuild =  this.LoadStoredProc("saveBuild");
 				this._saveList =  this.LoadStoredProc("saveList");

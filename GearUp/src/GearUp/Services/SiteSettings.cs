@@ -6,6 +6,8 @@ namespace GearUp.Services
     {
 		public string BlobStorageConnectionString { get; set; }
 		public string BlobEndpoint { get; set; }
+		public string CdnEndpoint { get; set; }
+		public string RedisEndpoint { get; set; }
 		public string ImagesContainer { get; set; }
 
 		public string ServiceJSFileRoot { get; set; }
