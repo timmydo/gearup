@@ -21,12 +21,12 @@ namespace GearUp.Controllers.Controllers
 
 
 		private readonly ILogger _logger;
-		private readonly DocumentDB _ddb;
+		private readonly DataService _data;
 
-		public AddBuildToListController(SiteSettings settings, ILogger logger, DocumentDB ddb)
+		public AddBuildToListController(SiteSettings settings, ILogger logger, DataService data)
 		{
 			this._logger = logger;
-			this._ddb = ddb;
+			this._data = data;
 		}
 
 		public class ParamInfo
@@ -48,10 +48,10 @@ namespace GearUp.Controllers.Controllers
 				throw new Exception("User is not logged in");
 			}
 
-			var b = this._ddb.GetBuild(pi.Build);
-			var l = this._ddb.GetList(pi.List);
+			var b = this._data.GetBuild(pi.Build);
+			var l = this._data.GetList(pi.List);
 
-			await this._ddb.AddBuildToListAsync(b.id, l.id, uid);
+			await this._data.AddBuildToListAsync(b.id, l.id, uid);
 
 			return "Success";
 		}

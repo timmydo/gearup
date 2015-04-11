@@ -17,9 +17,9 @@ namespace GearUp.Controllers
     {
 
 		private readonly ILogger _logger;
-		private readonly DocumentDB _ddb;
+		private readonly DataService _ddb;
 
-		public ListController(DocumentDB ddb, ILogger logger)
+		public ListController(DataService ddb, ILogger logger)
 		{
 			this._ddb = ddb;
 			this._logger = logger;

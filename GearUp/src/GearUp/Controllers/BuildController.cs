@@ -18,11 +18,11 @@ namespace GearUp.Controllers
     {
 
 		private readonly ILogger _logger;
-		private readonly DocumentDB _ddb;
+		private readonly DataService _data;
 
-		public BuildController(DocumentDB ddb, ILogger logger)
+		public BuildController(DataService ddb, ILogger logger)
 		{
-			this._ddb = ddb;
+			this._data = ddb;
 			this._logger = logger;
 		}
 
@@ -31,7 +31,7 @@ namespace GearUp.Controllers
 		[HttpGet("{id}")]
 		public async Task<Build> GetById(string id)
 		{
-			var b = this._ddb.GetBuild(id);
+			var b = this._data.GetBuild(id);
 			if (b == null)
 			{
 				b = new Build();
@@ -44,7 +44,7 @@ namespace GearUp.Controllers
 					return b;
 				}
 				this._logger.WriteInformation("Setting creator to " + uid);
-				await this._ddb.CreateBuildAsync(b);
+				await this._data.CreateBuildAsync(b);
 			}
 			return b;
 		}
@@ -58,7 +58,7 @@ namespace GearUp.Controllers
 			var list = new List<Build>();
 			foreach (var id in bl.Builds)
 			{
-				var fullBuild = this._ddb.GetBuild(id);
+				var fullBuild = this._data.GetBuild(id);
 				if (fullBuild != null)
 				{
 					list.Add(fullBuild);

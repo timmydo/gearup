@@ -29,11 +29,11 @@ namespace GearUp.Controllers.Controllers
 
 		private readonly BlobService _blobService;
 		private readonly ILogger _logger;
-		private readonly DocumentDB _ddb;
+		private readonly DataService _ddb;
 		private readonly string _imagesContainer;
 
 
-		public UploadImageController(SiteSettings settings, ILogger logger, DocumentDB ddb, BlobService bs)
+		public UploadImageController(SiteSettings settings, ILogger logger, DataService ddb, BlobService bs)
 		{
 			this._blobService = bs;
 			this._logger = logger;

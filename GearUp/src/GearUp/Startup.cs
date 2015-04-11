@@ -65,6 +65,7 @@ namespace GearUp
 			services.AddSingleton<BlobService>();
 			services.AddSingleton<DocumentDB>();
 			services.AddSingleton<RedisService>();
+			services.AddSingleton<DataService>();
 
 			services.AddMvc().Configure<MvcOptions>(options =>
 			{

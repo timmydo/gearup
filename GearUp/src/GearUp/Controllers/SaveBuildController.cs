@@ -21,14 +21,13 @@ namespace GearUp.Controllers.Controllers
 
 
 		private readonly ILogger _logger;
-		private readonly DocumentDB _ddb;
-		private readonly RedisService _redis;
+		private readonly DataService _data;
 
-		public SaveBuildController(SiteSettings settings, ILogger logger, DocumentDB ddb, RedisService redis)
+		public SaveBuildController(SiteSettings settings, ILogger logger, DataService ddb)
 		{
 			this._logger = logger;
-			this._ddb = ddb;
-			this._redis = redis;
+			this._data = ddb;
+			
 		}
 
 
@@ -45,9 +44,7 @@ namespace GearUp.Controllers.Controllers
 			{
 				var uid = UserLogin.UserUniqueId(User.Identity);
 				this._logger.WriteInformation("SaveBuild Controller Post");
-				var newId = await this._ddb.SaveBuildAsync(b, uid);
-				var savedBuild = this._ddb.GetBuild(b.id);
-				await this._redis.CacheBuildAsync(savedBuild);
+				var newId = await this._data.SaveBuildAsync(b, uid);
                 return newId;
 			}
 			else

@@ -17,9 +17,9 @@ namespace GearUp.Controllers
     {
 
 		private readonly ILogger _logger;
-		private readonly DocumentDB _ddb;
+		private readonly DataService _ddb;
 
-		public UserBuildsController(DocumentDB ddb, ILogger logger)
+		public UserBuildsController(DataService ddb, ILogger logger)
 		{
 			this._ddb = ddb;
 			this._logger = logger;
@@ -28,7 +28,7 @@ namespace GearUp.Controllers
 
 		[Produces("application/json", "text/json")]
 		[HttpGet("{id}")]
-		public async Task<IEnumerable<Build>> GetById(string id)
+		public async Task<Build[]> GetById(string id)
 		{
 			if (string.IsNullOrEmpty(id))
 			{

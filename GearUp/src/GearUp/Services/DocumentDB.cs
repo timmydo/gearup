@@ -307,7 +307,7 @@ namespace GearUp.Services
 
 		public Build GetBuild(string id)
 		{
-			this._logger.WriteInformation("GetBuild id = " + id);
+			this._logger.WriteInformation("DocDB GetBuild id = " + id);
 			var b = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
 						.Where(d => d.id == id)
 						.AsEnumerable()
@@ -317,7 +317,7 @@ namespace GearUp.Services
 		}
 		public BuildList GetList(string id)
 		{
-			this._logger.WriteInformation("GetList id = " + id);
+			this._logger.WriteInformation("DocDB GetList id = " + id);
 			var b = Client.CreateDocumentQuery<BuildList>(Collection.DocumentsLink)
 						.Where(d => d.id == id)
 						.AsEnumerable()
