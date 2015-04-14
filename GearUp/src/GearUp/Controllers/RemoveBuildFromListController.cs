@@ -48,8 +48,8 @@ namespace GearUp.Controllers.Controllers
 				throw new Exception("User is not logged in");
 			}
 
-			var b = this._data.GetBuild(pi.Build);
-			var l = this._data.GetList(pi.List);
+			var b = await this._data.GetBuildAsync(pi.Build);
+			var l = await this._data.GetListAsync(pi.List);
 
 			await this._data.RemoveBuildFromListAsync(b.id, l.id, uid);
 

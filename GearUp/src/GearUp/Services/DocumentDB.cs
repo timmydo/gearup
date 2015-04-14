@@ -305,25 +305,32 @@ namespace GearUp.Services
 			return await Client.CreateDocumentAsync(Collection.SelfLink, item);
 		}
 
-		public Build GetBuild(string id)
+		public async Task<Build> GetBuildAsync(string id)
 		{
 			this._logger.WriteInformation("DocDB GetBuild id = " + id);
-			var b = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
+			return await Task.Run(() =>
+			{
+				var b = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
 						.Where(d => d.id == id)
 						.AsEnumerable()
 						.FirstOrDefault();
+				return b;
+			});
 
-			return b;
 		}
-		public BuildList GetList(string id)
+		public async Task<BuildList> GetListAsync(string id)
 		{
 			this._logger.WriteInformation("DocDB GetList id = " + id);
-			var b = Client.CreateDocumentQuery<BuildList>(Collection.DocumentsLink)
-						.Where(d => d.id == id)
-						.AsEnumerable()
-						.FirstOrDefault();
+			return await Task.Run(() =>
+			{
+				var b = Client.CreateDocumentQuery<BuildList>(Collection.DocumentsLink)
+							.Where(d => d.id == id)
+							.AsEnumerable()
+							.FirstOrDefault();
+				return b;
 
-			return b;
+			});
+
 		}
 
 		public async Task<IEnumerable<Build>> GetUserBuilds(string id)

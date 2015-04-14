@@ -21,15 +21,15 @@ namespace GearUp.Services
 			this.logger = logger;
 		}
 
-		public Build GetBuild(string id)
+		public async Task<Build> GetBuildAsync(string id)
 		{
-			Build b = this.redis.GetBuild(id);
+			Build b = await this.redis.GetBuildAsync(id);
 			if (b == null)
 			{
-				b = this.ddb.GetBuild(id);
+				b = await this.ddb.GetBuildAsync(id);
 				if (b != null)
 				{
-					this.redis.CacheBuild(b);
+					await this.redis.CacheBuildAsync(b);
 				}
 
 				return b;
@@ -41,15 +41,15 @@ namespace GearUp.Services
 		}
 
 
-		public BuildList GetList(string id)
+		public async Task<BuildList> GetListAsync(string id)
 		{
-			BuildList list = this.redis.GetList(id);
+			BuildList list = await this.redis.GetListAsync(id);
 			if (list == null)
 			{
-				list = this.ddb.GetList(id);
+				list = await this.ddb.GetListAsync(id);
 				if (list != null)
 				{
-					this.redis.CacheList(list);
+					await this.redis.CacheListAsync(list);
 				}
 
 				return list;
@@ -102,6 +102,7 @@ namespace GearUp.Services
 		public async Task<string> SaveBuildAsync(Build b, string uid)
 		{
 			await this.redis.ForgetAsync(b.id);
+			await this.redis.AddRecentlyModifiedAsync(b.id);
 			return await this.ddb.SaveBuildAsync(b, uid);
 		}
 

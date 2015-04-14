@@ -30,7 +30,7 @@ namespace GearUp.Controllers
 		[HttpGet("{id}")]
 		public async Task<BuildList> GetById(string id)
 		{
-			var b = this._ddb.GetList(id);
+			var b = await this._ddb.GetListAsync(id);
 			if (b == null)
 			{
 				b = new BuildList();

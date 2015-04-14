@@ -31,7 +31,7 @@ namespace GearUp.Controllers
 		[HttpGet("{id}")]
 		public async Task<Build> GetById(string id)
 		{
-			var b = this._data.GetBuild(id);
+			var b = await this._data.GetBuildAsync(id);
 			if (b == null)
 			{
 				b = new Build();
@@ -49,7 +49,7 @@ namespace GearUp.Controllers
 			return b;
 		}
 
-		public Build[] Post([FromBody]BuildList bl)
+		public async Task<Build[]> Post([FromBody]BuildList bl)
 		{
 			if (bl.Builds.Count < 1)
 			{
@@ -58,7 +58,7 @@ namespace GearUp.Controllers
 			var list = new List<Build>();
 			foreach (var id in bl.Builds)
 			{
-				var fullBuild = this._data.GetBuild(id);
+				var fullBuild = await this._data.GetBuildAsync(id);
 				if (fullBuild != null)
 				{
 					list.Add(fullBuild);

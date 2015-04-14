@@ -9,64 +9,99 @@ using Newtonsoft.Json;
 
 namespace GearUp.Services
 {
-    public class RedisService
-    {
-		private SiteSettings _settings;
-		private ILogger _logger;
-		private ConnectionMultiplexer _conn;
-		private IDatabase _db;
-		
-		public RedisService(SiteSettings settings, ILogger logger)
+	public class RedisWrapper
+	{
+		private readonly ConnectionMultiplexer _conn;
+		private readonly IDatabase _db;
+		private readonly string _keyprefix;
+
+
+		public RedisWrapper(SiteSettings settings)
 		{
-			this._settings = settings;
-			this._logger = logger;
-			logger.WriteInformation("Starting Redis");
 			this._conn = ConnectionMultiplexer.Connect(settings.RedisEndpoint);
 			this._db = this._conn.GetDatabase();
-		}
+			this._keyprefix = settings.DocumentDatabaseId + "/" + settings.DocumentCollectionId + "/";
 
-		public async Task<bool> SetAsync(string key, string data, TimeSpan? expiry = null)
-		{
-			if (this._db != null)
-			{
-				bool x = await this._db.StringSetAsync(key, data);
-				return x;
-			}
-
-			return false;
-		}
-
-		public string Get(string key)
-		{
-			return this._db.StringGet(key);
 		}
 
 		public async Task ForgetAsync(string key)
 		{
-			await this._db.KeyDeleteAsync(key);
+			await this._db.KeyDeleteAsync(this._keyprefix + key);
 		}
 
 		public async Task<string> GetAsync(string key)
 		{
-			return await this._db.StringGetAsync(key);
+			return await this._db.StringGetAsync(this._keyprefix + key);
 		}
 
-		public bool CacheBuild(Build b)
+		public async Task<bool> SetAsync(string key, string val)
+		{
+			return await this._db.StringSetAsync(this._keyprefix + key, val);
+		}
+
+
+		public async Task AddMRUAsync(string bid)
+		{
+			string key = this._keyprefix + "recent/";
+			await this._db.SortedSetAddAsync(key, bid, DateTime.Now.Ticks);
+		}
+
+		public async Task<string[]> GetMRUAsync(long count)
+		{
+			string key = this._keyprefix + "recent/";
+			var val = await this._db.SortedSetRangeByRankAsync(key, 0, count-1, Order.Descending);
+			return val.ToStringArray();
+		}
+
+	}
+
+
+	public class RedisService
+    {
+		private readonly ILogger _logger;
+		private RedisWrapper db;
+		private readonly string _dbname;
+		
+		public RedisService(SiteSettings settings, ILogger logger)
+		{
+			this._logger = logger;
+			logger.WriteInformation("Starting Redis");
+			this.db = new RedisWrapper(settings);
+        }
+
+
+		public async Task AddRecentlyModifiedAsync(string bid)
+		{
+			await this.db.AddMRUAsync(bid);
+		}
+
+		public async Task<string[]> GetRecentlyModifiedAsync(long count = 100)
+		{
+			return await this.db.GetMRUAsync(count);
+		}
+
+
+		public async Task ForgetAsync(string key)
+		{
+			await this.db.ForgetAsync(key);
+		}
+
+		public async Task<bool> CacheBuildAsync(Build b)
 		{
 			this._logger.WriteInformation("Redis caching build " + b.id);
 			var json = JsonConvert.SerializeObject(b);
-			return this._db.StringSet(b.id, json);
+			return await this.db.SetAsync(b.id, json);
 		}
-		public bool CacheList(BuildList list)
+		public async Task<bool> CacheListAsync(BuildList list)
 		{
 			this._logger.WriteInformation("Redis caching list " + list.id);
 			var json = JsonConvert.SerializeObject(list);
-			return this._db.StringSet(list.id, json);
+			return await this.db.SetAsync(list.id, json);
 		}
 
-		public Build GetBuild(string id)
+		public async Task<Build> GetBuildAsync(string id)
 		{
-			var json = this.Get(id);
+			var json = await this.db.GetAsync(id);
 			if (json == null) return null;
 
 			Build b = JsonConvert.DeserializeObject<Build>(json);
@@ -79,9 +114,9 @@ namespace GearUp.Services
 			return null;
 		}
 
-		public BuildList GetList(string id)
+		public async Task<BuildList> GetListAsync(string id)
 		{
-			var json = this.Get(id);
+			var json = await this.db.GetAsync(id);
 			if (json == null) return null;
 
 			BuildList list = JsonConvert.DeserializeObject<BuildList>(json);
@@ -97,7 +132,7 @@ namespace GearUp.Services
 
 		public async Task<Build[]> GetUserBuildsAsync(string id)
 		{
-			var json = await this.GetAsync("userbuilds/" + id);
+			var json = await this.db.GetAsync("userbuilds/" + id);
 			if (json == null) return null;
 
 			var list = JsonConvert.DeserializeObject<Build[]>(json);
@@ -110,7 +145,7 @@ namespace GearUp.Services
 
 		public async Task<BuildList[]> GetUserListsAsync(string id)
 		{
-			var json = await this.GetAsync("userlists/" + id);
+			var json = await this.db.GetAsync("userlists/" + id);
 			if (json == null) return null;
 
 			var list = JsonConvert.DeserializeObject<BuildList[]>(json);
@@ -125,13 +160,13 @@ namespace GearUp.Services
 		{
 			this._logger.WriteInformation("Redis caching user builds for " + uid);
 			var json = JsonConvert.SerializeObject(list);
-			return await this._db.StringSetAsync("userbuilds/" + uid, json);
+			return await this.db.SetAsync("userbuilds/" + uid, json);
 		}
 		public async Task<bool> CacheUserListsAsync(string uid, BuildList[] list)
 		{
 			this._logger.WriteInformation("Redis caching user lists for " + uid);
 			var json = JsonConvert.SerializeObject(list);
-			return await this._db.StringSetAsync("userlists/" + uid, json);
+			return await this.db.SetAsync("userlists/" + uid, json);
 		}
 
 
