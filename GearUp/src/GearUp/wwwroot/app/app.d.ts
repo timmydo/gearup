@@ -16,6 +16,7 @@ declare class MyAppData {
     userlists: any;
     buildlists: any;
     userbuilds: any;
+    recentbuilds: any;
     constructor();
     removeBuildFromCache(bid: any): void;
     removeListFromCache(lid: any): void;
@@ -23,6 +24,7 @@ declare class MyAppData {
     fillListBuilds(l: any): void;
     getUserList(userKey: any): Ember.RSVP.Promise;
     getList(lid: any): Ember.RSVP.Promise;
+    getRecentBuilds(): Ember.RSVP.Promise;
     getUserBuilds(bid: any): Ember.RSVP.Promise;
 }
 declare class AITracker {

@@ -3,3 +3,17 @@
 
 <h2>{{title}}</h2>
 
+<div class="container">
+	{{#each row in groupedBuilds}}
+	<div class="row">
+		{{#each build in row}}
+		<div class="col-md-4">
+			{{buildThumbnailAnchor build}}
+		</div>
+		{{/each}}
+
+	</div>
+
+	{{/each}}
+
+</div>

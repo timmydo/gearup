@@ -197,6 +197,12 @@ img.build-image-thumbnail {
 	cursor: pointer;
 }
 
+img.recent-build-image-thumbnail {
+	max-width: 100%;
+	cursor: pointer;
+}
+
+
 img.build-image-main {
 	max-width: 100%;
 	max-height: 900px;

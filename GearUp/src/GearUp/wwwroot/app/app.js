@@ -446,6 +446,7 @@ var MyAppData = (function () {
         this.userlists = {};
         this.userbuilds = {};
         this.buildlists = {};
+        this.recentbuilds = null;
     }
     MyAppData.prototype.removeBuildFromCache = function (bid) {
         if (App.Data.builds[bid]) {
@@ -607,6 +608,23 @@ var MyAppData = (function () {
             return promiseFor(l);
         }
         return;
+    };
+    MyAppData.prototype.getRecentBuilds = function () {
+        var _this = this;
+        console.log('Get Recent Builds:');
+        if (this.recentbuilds) {
+            console.log('cached recent builds');
+            return promiseFor(this.recentbuilds);
+        }
+        else {
+            return Ember.$.getJSON('/api/RecentBuilds').then(function (builds) {
+                var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+                console.log(bl);
+                _this.fillListBuilds(bl);
+                _this.recentbuilds = bl;
+                return bl;
+            });
+        }
     };
     MyAppData.prototype.getUserBuilds = function (bid) {
         var _this = this;
@@ -795,6 +813,9 @@ Ember.Handlebars.registerBoundHelper('listTitleAnchor', function (value) {
 Ember.Handlebars.registerBoundHelper('buildImageAnchor', function (value, value2) {
     return new Ember.Handlebars.SafeString('<a target="_blank" href="' + App.ImageEndpoint + '/' + value + '">' + (value2 || 'Untitled') + '</a>');
 });
+Ember.Handlebars.registerBoundHelper('buildThumbnailAnchor', function (value) {
+    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + value.images[0].guid + '" /></a>');
+});
 /// <reference path="app.ts" />
 App.ImageController = Ember.ObjectController.extend({
     editing: false,
@@ -819,12 +840,36 @@ App.ImageController = Ember.ObjectController.extend({
 });
 /// <reference path="app.ts" />
 App.IndexRoute = Ember.Route.extend({
-    setupController: function (controller) {
-        // `controller` is the instance of ApplicationController
-        controller.set('title', "Hello world!");
+    model: function (params) {
+        return App.Data.getRecentBuilds();
     }
 });
-App.IndexController = Ember.Controller.extend({});
+App.IndexController = Ember.Controller.extend({
+    groupedBuilds: function () {
+        var a = Ember.A();
+        var row = Ember.A();
+        var count = 0;
+        var builds = this.get('model.builds');
+        if (builds) {
+            builds.forEach(function (b) {
+                if (count > 4) {
+                    count = 0;
+                    a.pushObject(row);
+                    row = Ember.A();
+                }
+                // only display builds that have an image
+                if (b.images.length > 0) {
+                    count++;
+                    row.pushObject(b);
+                }
+            });
+        }
+        if (row.length > 0) {
+            a.pushObject(row);
+        }
+        return a;
+    }.property('model.builds')
+});
 /// <reference path="app.ts" />
 App.ListRoute = Ember.Route.extend({
     model: function (params) {

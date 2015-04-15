@@ -147,6 +147,11 @@ namespace GearUp.Services
 
 		private  StoredProcedure LoadStoredProc(string name)
 		{
+			if (collection.StoredProceduresLink == null)
+			{
+				this._logger.WriteInformation("SProc link is null!");
+			}
+
 			this._logger.WriteInformation("Loading sproc " + name + " from "+ collection.StoredProceduresLink);
 			StoredProcedure sp = client.CreateStoredProcedureQuery(collection.StoredProceduresLink,
 				"select * from root r where r.id = \"" + name + "\"").AsEnumerable().FirstOrDefault();

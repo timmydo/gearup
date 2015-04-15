@@ -21,6 +21,12 @@ namespace GearUp.Services
 			this.logger = logger;
 		}
 
+
+		public async Task<string[]> GetRecentlyBuildsAsync()
+		{
+			return await this.redis.GetRecentlyModifiedAsync();
+		}
+
 		public async Task<Build> GetBuildAsync(string id)
 		{
 			Build b = await this.redis.GetBuildAsync(id);

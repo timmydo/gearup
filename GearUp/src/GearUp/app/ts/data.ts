@@ -198,11 +198,14 @@ class MyAppData {
 	// a build list--- a list of builds (for a particular user)
 	userbuilds: any;
 
+	recentbuilds: any;
+
 	constructor() {
 		this.builds = {};
 		this.userlists = {};
 		this.userbuilds = {};
 		this.buildlists = {};
+		this.recentbuilds = null;
 	}
 
 
@@ -392,7 +395,22 @@ class MyAppData {
 
 
 
+	getRecentBuilds() {
+		console.log('Get Recent Builds:');
+		if (this.recentbuilds) {
+			console.log('cached recent builds');
+			return promiseFor(this.recentbuilds);
+		} else {
+			return Ember.$.getJSON('/api/RecentBuilds').then((builds) => {
+				var bl = App.BuildListObject.create({builds: Ember.A(builds)});
+				console.log(bl);
+				this.fillListBuilds(bl);
+				this.recentbuilds = bl;
 
+				return bl;
+			});
+		}
+	}
 
 
 	getUserBuilds(bid) {
