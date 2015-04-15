@@ -75,6 +75,8 @@ namespace GearUp
 						   .First()
 						   .SerializerSettings
 						   .ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+				options.Filters.Add(typeof(RequireHttpsExceptForLocalHostAttribute));
 			});
 
 			services.AddDataProtection();

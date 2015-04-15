@@ -7,8 +7,8 @@ using Microsoft.Framework.Logging;
 
 namespace GearUp.Controllers
 {
-    public class HomeController : Controller
-    {
+	public class HomeController : Controller
+	{
 
 		public SiteSettings ss { get; set; }
 		public HomeController(SiteSettings s, ILogger logger)
