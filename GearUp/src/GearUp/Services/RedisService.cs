@@ -45,6 +45,12 @@ namespace GearUp.Services
 			string key = this._keyprefix + "recent/";
 			await this._db.SortedSetAddAsync(key, bid, DateTime.Now.Ticks);
 		}
+		public async Task RemoveMRUAsync(string bid)
+		{
+			string key = this._keyprefix + "recent/";
+			await this._db.SortedSetRemoveAsync(key, bid);
+		}
+
 
 		public async Task<string[]> GetMRUAsync(long count)
 		{
@@ -73,6 +79,11 @@ namespace GearUp.Services
 		public async Task AddRecentlyModifiedAsync(string bid)
 		{
 			await this.db.AddMRUAsync(bid);
+		}
+
+		public async Task RemoveRecentlyModifiedAsync(string bid)
+		{
+			await this.db.RemoveMRUAsync(bid);
 		}
 
 		public async Task<string[]> GetRecentlyModifiedAsync(long count = 100)

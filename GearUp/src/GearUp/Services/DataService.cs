@@ -122,6 +122,7 @@ namespace GearUp.Services
 		public async Task DeleteBuildAsync(Build b, string uid)
 		{
 			await this.redis.ForgetAsync("userbuilds/" + b.Creator);
+			await this.redis.RemoveRecentlyModifiedAsync(b.id);
 			await this.ddb.DeleteBuildAsync(b, uid);
 			await this.redis.ForgetAsync(b.id);
 		}
