@@ -852,7 +852,7 @@ App.IndexController = Ember.Controller.extend({
         var builds = this.get('model.builds');
         if (builds) {
             builds.forEach(function (b) {
-                if (count > 4) {
+                if (count > 3) {
                     count = 0;
                     a.pushObject(row);
                     row = Ember.A();
