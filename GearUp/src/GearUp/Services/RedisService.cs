@@ -55,25 +55,35 @@ namespace GearUp.Services
 		public async Task<string[]> GetMRUAsync(long count)
 		{
 			string key = this._keyprefix + "recent/";
-			var val = await this._db.SortedSetRangeByRankAsync(key, 0, count-1, Order.Descending);
+			var val = await this._db.SortedSetRangeByRankAsync(key, 0, count - 1, Order.Descending);
 			return val.ToStringArray();
 		}
 
+		public async Task ClearCacheAsync()
+		{
+
+			var endpoints = this._conn.GetEndPoints();
+			foreach (var ep in endpoints)
+			{
+				var server = this._conn.GetServer(ep);
+				await server.FlushAllDatabasesAsync();
+			}
+		}
 	}
 
 
 	public class RedisService
-    {
+	{
 		private readonly ILogger _logger;
 		private RedisWrapper db;
 		private readonly string _dbname;
-		
+
 		public RedisService(SiteSettings settings, ILogger logger)
 		{
 			this._logger = logger;
 			logger.WriteInformation("Starting Redis");
 			this.db = new RedisWrapper(settings);
-        }
+		}
 
 
 		public async Task AddRecentlyModifiedAsync(string bid)
@@ -95,6 +105,11 @@ namespace GearUp.Services
 		public async Task ForgetAsync(string key)
 		{
 			await this.db.ForgetAsync(key);
+		}
+
+		public async Task ClearCacheAsync()
+		{
+			await this.db.ClearCacheAsync();
 		}
 
 		public async Task<bool> CacheBuildAsync(Build b)

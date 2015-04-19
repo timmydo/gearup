@@ -21,7 +21,7 @@
 
 
 
-	"RedisEndpoint": "gearup.redis.cache.windows.net:6380,ssl=true,password=i0coU5DgYz10G/iIFGCRCghiRuizu6Vb5S3yBVBEOZI=",
+	"RedisEndpoint": "gearup.redis.cache.windows.net:6380,allowAdmin=true,ssl=true,password=i0coU5DgYz10G/iIFGCRCghiRuizu6Vb5S3yBVBEOZI=",
 
 
 
