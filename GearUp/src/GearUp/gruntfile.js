@@ -40,7 +40,8 @@ module.exports = function (grunt) {
 			vendorcss: {
 				files: {
 					'wwwroot/css/bootstrap.css': ['bower_components/bootstrap/dist/css/bootstrap.min.css'],
-					'wwwroot/css/font-awesome.css': ['bower_components/Font-Awesome/css/font-awesome.min.css']
+					'wwwroot/css/font-awesome.css': ['bower_components/Font-Awesome/css/font-awesome.min.css'],
+					'wwwroot/css/bootstrap-slider.css': ['bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.css']
 				}
 
 			},
@@ -77,6 +78,7 @@ module.exports = function (grunt) {
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js',
                     'bower_components/bootstrap/dist/js/bootstrap.js',
+                    'bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js',
 					'bower_components/holderjs/holder.js',
 					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.js',

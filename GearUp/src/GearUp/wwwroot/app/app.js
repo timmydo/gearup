@@ -92,6 +92,26 @@ App.BuildRoute = Ember.Route.extend({
 });
 App.BuildController = Ember.ObjectController.extend({
     needs: ["Userbuilds"],
+    temperature: function () {
+        return [this.get('lowTemp') || 40, this.get('highTemp') || 70];
+    }.property('lowTemp', 'highTemp'),
+    tempUnit: function () {
+        var cel = this.get('inCelsius');
+        if (cel) {
+            return 'C';
+        }
+        else {
+            return 'F';
+        }
+    }.property('inCelsius'),
+    lowTempString: function () {
+        var lowTemp = this.get('lowTemp') || 40;
+        return '' + lowTemp;
+    }.property('lowTemp'),
+    highTempString: function () {
+        var highTemp = this.get('lowTemp') || 70;
+        return '' + highTemp;
+    }.property('lowTemp'),
     createdTime: function () {
         return moment(this.get('model.created')).format('ll');
     }.property('model.created'),
@@ -1028,6 +1048,44 @@ App.RegisterRoute = Ember.Route.extend({
     }
 });
 App.RegisterController = Ember.Controller.extend({});
+/// <reference path="app.ts" />
+App.BootstrapSliderComponent = Ember.TextField.extend({
+    classNames: ['slider'],
+    classNameBindings: ['type'],
+    attributeBindings: ['type', 'min', 'max', 'value', 'handle', 'enabled'],
+    updateValue: function () {
+        //console.log('update value');
+        //this.$().slider({
+        //	min: this.get('min'),
+        //	max: this.get('max'),
+        //	value: this.get('value'),
+        //	handle: this.get('handle'),
+        //	tooltip: 'hide'
+        //});
+    }.observes('value'),
+    didInsertElement: function () {
+        var self = this;
+        var opts = {
+            min: this.get('min'),
+            max: this.get('max'),
+            value: this.get('value'),
+            handle: this.get('handle'),
+            enabled: !!this.get('enabled')
+        };
+        console.log(opts);
+        this.$().slider(opts);
+        this.$().on('slide', function () {
+            self.set('value', this.value);
+        });
+        this.$().on('slideStop', function () {
+            self.set('value', this.value);
+        });
+    },
+    willDestroyElement: function () {
+        this.$().off('slide');
+        this.$().off('slideStop');
+    }
+});
 /// <reference path="app.ts" />
 var AITracker = (function () {
     function AITracker() {

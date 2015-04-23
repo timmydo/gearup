@@ -289,3 +289,14 @@ img.build-image-main {
 	padding: 15px;
 	width: 100%;
 }
+
+
+.build-temperature-section .slider {
+	width: 100%;
+}
+
+.build-section-label {
+	width:100%;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 10px;
+}

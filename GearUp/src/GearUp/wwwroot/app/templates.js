@@ -2798,6 +2798,31 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       dom.appendChild(el2, el3);
       var el3 = dom.createTextNode("\n\n		");
       dom.appendChild(el2, el3);
+      var el3 = dom.createElement("div");
+      dom.setAttribute(el3,"class","build-temperature-section");
+      var el4 = dom.createTextNode("\n			");
+      dom.appendChild(el3, el4);
+      var el4 = dom.createElement("div");
+      dom.setAttribute(el4,"class","build-section-label");
+      var el5 = dom.createTextNode("Temperature Range: ");
+      dom.appendChild(el4, el5);
+      var el5 = dom.createElement("span");
+      dom.setAttribute(el5,"class","temperature-range");
+      var el6 = dom.createTextNode("°");
+      dom.appendChild(el5, el6);
+      var el6 = dom.createTextNode(" – ");
+      dom.appendChild(el5, el6);
+      var el6 = dom.createTextNode("°");
+      dom.appendChild(el5, el6);
+      dom.appendChild(el4, el5);
+      dom.appendChild(el3, el4);
+      var el4 = dom.createTextNode("\n			");
+      dom.appendChild(el3, el4);
+      var el4 = dom.createTextNode("\n\n		");
+      dom.appendChild(el3, el4);
+      dom.appendChild(el2, el3);
+      var el3 = dom.createTextNode("\n\n\n		");
+      dom.appendChild(el2, el3);
       var el3 = dom.createElement("table");
       dom.setAttribute(el3,"class","table table-striped");
       var el4 = dom.createTextNode("\n			");
@@ -2905,7 +2930,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
     },
     render: function render(context, env, contextualElement) {
       var dom = env.dom;
-      var hooks = env.hooks, get = hooks.get, block = hooks.block;
+      var hooks = env.hooks, get = hooks.get, block = hooks.block, content = hooks.content, inline = hooks.inline;
       dom.detectNamespace(contextualElement);
       var fragment;
       if (env.useFragmentCache && dom.canClone) {
@@ -2931,6 +2956,8 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       var element37 = dom.childAt(element36, [1]);
       if (this.cachedFragment) { dom.repairClonedNode(element37,[1]); }
       var element38 = dom.childAt(element36, [3]);
+      var element39 = dom.childAt(element38, [1, 1]);
+      var element40 = dom.childAt(element36, [5]);
       var morph0 = dom.createMorphAt(dom.childAt(element32, [1]),0,1);
       var morph1 = dom.createMorphAt(element33,0,1);
       var morph2 = dom.createMorphAt(element33,1,2);
@@ -2939,9 +2966,14 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       var morph5 = dom.createMorphAt(element35,2,3);
       var morph6 = dom.createMorphAt(element37,0,1);
       var morph7 = dom.createMorphAt(element37,1,2);
-      var morph8 = dom.createMorphAt(dom.childAt(element38, [1, 1, 1]),0,1);
-      var morph9 = dom.createMorphAt(dom.childAt(element38, [3]),0,1);
-      var morph10 = dom.createMorphAt(dom.childAt(element36, [10, 1, 3]),0,1);
+      var morph8 = dom.createMorphAt(element39,-1,0);
+      var morph9 = dom.createMorphAt(element39,0,1);
+      var morph10 = dom.createMorphAt(element39,1,2);
+      var morph11 = dom.createMorphAt(element39,2,-1);
+      var morph12 = dom.createMorphAt(element38,2,3);
+      var morph13 = dom.createMorphAt(dom.childAt(element40, [1, 1, 1]),0,1);
+      var morph14 = dom.createMorphAt(dom.childAt(element40, [3]),0,1);
+      var morph15 = dom.createMorphAt(dom.childAt(element36, [12, 1, 3]),0,1);
       block(env, morph0, context, "if", [get(env, context, "editTitle")], {}, child0, child1);
       block(env, morph1, context, "if", [get(env, context, "userLoginKey")], {}, child2, null);
       block(env, morph2, context, "if", [get(env, context, "canEditBuild")], {}, child3, null);
@@ -2950,9 +2982,14 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       block(env, morph5, context, "each", [get(env, context, "model.images")], {"keyword": "image"}, child6, null);
       block(env, morph6, context, "if", [get(env, context, "canEditBuild")], {}, child7, null);
       block(env, morph7, context, "if", [get(env, context, "editDescription")], {}, child8, child9);
-      block(env, morph8, context, "if", [get(env, context, "canEditBuild")], {}, child10, null);
-      block(env, morph9, context, "each", [get(env, context, "model.parts")], {"itemController": "part", "keyword": "part"}, child11, null);
-      block(env, morph10, context, "each", [get(env, context, "model.images")], {"itemController": "image", "keyword": "image"}, child12, null);
+      content(env, morph8, context, "lowTempString");
+      content(env, morph9, context, "tempUnit");
+      content(env, morph10, context, "highTempString");
+      content(env, morph11, context, "tempUnit");
+      inline(env, morph12, context, "bootstrap-slider", [], {"type": "temperature", "enabled": get(env, context, "canEditBuild"), "value": get(env, context, "temperature"), "min": -50, "max": 100});
+      block(env, morph13, context, "if", [get(env, context, "canEditBuild")], {}, child10, null);
+      block(env, morph14, context, "each", [get(env, context, "model.parts")], {"itemController": "part", "keyword": "part"}, child11, null);
+      block(env, morph15, context, "each", [get(env, context, "model.images")], {"itemController": "image", "keyword": "image"}, child12, null);
       return fragment;
     }
   };
