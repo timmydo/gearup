@@ -22,6 +22,8 @@ using Newtonsoft.Json.Serialization;
 using System.Linq;
 using GearUp.Services;
 using Microsoft.AspNet.StaticFiles;
+//fixme:
+//using Microsoft.Framework.Logging.TraceSource;
 
 namespace GearUp
 {
@@ -49,7 +51,7 @@ namespace GearUp
 				RedisEndpoint = Configuration.Get("RedisEndpoint"),
 				ImagesContainer = Configuration.Get("ImagesContainer"),
 				ServiceJSFileRoot = Configuration.Get("ServiceJSFileRoot"),
-                DocumentDatabaseId = Configuration.Get("DocumentDatabaseId"),
+				DocumentDatabaseId = Configuration.Get("DocumentDatabaseId"),
 				DocumentCollectionId = Configuration.Get("DocumentCollectionId"),
 				DocumentEndpoint = Configuration.Get("DocumentEndpoint"),
 				DocumentKey = Configuration.Get("DocumentKey"),
@@ -58,6 +60,8 @@ namespace GearUp
 			services.AddInstance<SiteSettings>(mySettings);
 
 			loggerfactory.AddConsole();
+			var traceSource = new TraceProvider();
+			loggerfactory.AddProvider(traceSource);
 			var logger = loggerfactory.Create(typeof(Startup).FullName);
 			logger.WriteInformation("Creating Logger");
 
