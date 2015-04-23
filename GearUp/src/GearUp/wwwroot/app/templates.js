@@ -2799,7 +2799,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       var el3 = dom.createTextNode("\n\n		");
       dom.appendChild(el2, el3);
       var el3 = dom.createElement("div");
-      dom.setAttribute(el3,"class","build-temperature-section");
+      dom.setAttribute(el3,"class","hidden build-temperature-section");
       var el4 = dom.createTextNode("\n			");
       dom.appendChild(el3, el4);
       var el4 = dom.createElement("div");

@@ -24,7 +24,18 @@ namespace GearUp.Services
 
 		public async Task<string[]> GetRecentlyBuildsAsync()
 		{
-			return await this.redis.GetRecentlyModifiedAsync();
+			var redisRecent = await this.redis.GetRecentlyModifiedAsync();
+			if (redisRecent.Length == 0)
+			{
+				var ddbRecent = await this.ddb.GetRecentlyModifiedAsync();
+				await this.redis.SetRecentlyModifiedAsync(ddbRecent);
+				return ddbRecent;
+			}
+			else
+			{
+				return redisRecent;
+			}
+
 		}
 
 		public async Task<Build> GetBuildAsync(string id)

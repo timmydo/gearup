@@ -149,7 +149,7 @@
 			{{/if}}
 		</div>
 
-		<div class="build-temperature-section">
+		<div class="hidden build-temperature-section">
 			<div class="build-section-label">Temperature Range: <span class="temperature-range">{{lowTempString}}&deg;{{tempUnit}} &ndash; {{highTempString}}&deg;{{tempUnit}}</span></div>
 			{{bootstrap-slider type="temperature" enabled=canEditBuild value=temperature min=-50 max=100}}
 

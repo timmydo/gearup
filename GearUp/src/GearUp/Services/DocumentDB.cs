@@ -24,6 +24,8 @@ namespace GearUp.Services
 		private StoredProcedure _saveBuild;
 		private StoredProcedure _saveList;
 		private BlobService _blobService;
+
+
 		private string _imagesContainer;
 		private string _serviceJSRoot;
 
@@ -323,6 +325,23 @@ namespace GearUp.Services
 			});
 
 		}
+
+
+		public async Task<string[]> GetRecentlyModifiedAsync()
+		{
+			this._logger.WriteInformation("DocDB GetRecentlyModifiedAsync");
+			return await Task.Run(() =>
+			{
+				//fixme limit count
+				var b = Client.CreateDocumentQuery<Build>(Collection.DocumentsLink)
+					.Where(d => d.DocType == "build")
+					.Select(d => d.id)
+					.ToArray();
+				return b;
+			});
+		}
+
+
 		public async Task<BuildList> GetListAsync(string id)
 		{
 			this._logger.WriteInformation("DocDB GetList id = " + id);

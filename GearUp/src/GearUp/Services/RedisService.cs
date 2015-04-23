@@ -40,10 +40,14 @@ namespace GearUp.Services
 		}
 
 
-		public async Task AddMRUAsync(string bid)
+		public async Task AddMRUAsync(string bid, long time = 0)
 		{
+			if (time == 0)
+			{
+				time = DateTime.Now.Ticks;
+			}
 			string key = this._keyprefix + "recent/";
-			await this._db.SortedSetAddAsync(key, bid, DateTime.Now.Ticks);
+			await this._db.SortedSetAddAsync(key, bid, time);
 		}
 		public async Task RemoveMRUAsync(string bid)
 		{
@@ -57,6 +61,13 @@ namespace GearUp.Services
 			string key = this._keyprefix + "recent/";
 			var val = await this._db.SortedSetRangeByRankAsync(key, 0, count - 1, Order.Descending);
 			return val.ToStringArray();
+		}
+		public async Task SetMRUAsync(string[] items)
+		{
+			foreach (var item in items)
+			{
+				await this.AddMRUAsync(item);
+			}
 		}
 
 		public async Task ClearCacheAsync()
@@ -101,7 +112,11 @@ namespace GearUp.Services
 			return await this.db.GetMRUAsync(count);
 		}
 
-
+		// fixme get build modified date and use that when setting the items
+		public async Task SetRecentlyModifiedAsync(string[] items)
+		{
+			await this.db.SetMRUAsync(items);
+		}
 		public async Task ForgetAsync(string key)
 		{
 			await this.db.ForgetAsync(key);
