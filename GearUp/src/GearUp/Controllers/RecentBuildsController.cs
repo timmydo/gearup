@@ -27,7 +27,7 @@ namespace GearUp.Controllers
 		[Produces("application/json", "text/json")]
 		public async Task<string[]> Get()
 		{
-			return await this._data.GetRecentlyBuildsAsync();
+			return await this._data.GetRecentBuildsAsync();
 		}
 
 

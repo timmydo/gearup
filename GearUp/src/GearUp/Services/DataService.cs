@@ -22,14 +22,21 @@ namespace GearUp.Services
 		}
 
 
-		public async Task<string[]> GetRecentlyBuildsAsync()
+		public async Task<string[]> GetRecentBuildsAsync()
 		{
 			var redisRecent = await this.redis.GetRecentlyModifiedAsync();
 			if (redisRecent.Length == 0)
 			{
 				var ddbRecent = await this.ddb.GetRecentlyModifiedAsync();
 				await this.redis.SetRecentlyModifiedAsync(ddbRecent);
-				return ddbRecent;
+				if (ddbRecent.Length == 0)
+				{
+					throw new Exception("No recently modified builds");
+				}
+				else
+				{
+					return ddbRecent;
+				}
 			}
 			else
 			{

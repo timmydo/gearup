@@ -73,7 +73,8 @@ namespace GearUp.Services
 				}
 
 				var severity = logLevel.ToString().ToUpperInvariant();
-				System.Diagnostics.Trace.TraceInformation("[{0}:{1}] {2}",
+
+                System.Diagnostics.Trace.TraceInformation("[{0}:{1}] {2}",
 					severity, this.name, message);
 			}
 			private void FormatLoggerStructure(StringBuilder builder, ILoggerStructure structure, int level, bool bullet)
