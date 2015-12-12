@@ -9,9 +9,9 @@ module.exports = function (grunt) {
 				dest: 'wwwroot/app/app.js',
 				options: {
 					references: ['typings/tsd.d.ts'],
-					module: 'amd', //or commonjs 
-					target: 'es5', //or es3 
-					basePath: 'app/ts',
+					module: 'es6',
+					target: 'es5',
+					rootDir: 'app/ts',
 					sourceMap: false,
 					declaration: true
 				}

@@ -2,6 +2,7 @@
 namespace GearUp.Services
 {
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.OptionsModel;
 	using Microsoft.WindowsAzure.Storage;
 	using System.IO;
 	using System.Threading.Tasks;
@@ -14,11 +15,11 @@ namespace GearUp.Services
 		private readonly CloudStorageAccount _storageAccount;
 
 
-		public BlobService(SiteSettings settings, ILogger logger)
+		public BlobService(IOptions<SiteSettings> settings, ILogger logger)
 		{
-			this._settings = settings;
+			this._settings = settings.Value;
 			this._logger = logger;
-			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
+			this._storageAccount = CloudStorageAccount.Parse(_settings.BlobStorageConnectionString);
 
 			logger.LogInformation("BlobService creation");
 		}

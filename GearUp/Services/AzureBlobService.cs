@@ -5,18 +5,18 @@
 	using System.IO;
 	using System.Threading.Tasks;
 	using GearUp.Interfaces;
-
+	using Microsoft.Extensions.OptionsModel;
 	public class AzureBlobService : IAppBlobStorage
     {
-		private IAppSiteSettings _settings;
+		private SiteSettings _settings;
 		private ILogger _logger;
 		private readonly CloudStorageAccount _storageAccount;
 
-		public AzureBlobService(IAppSiteSettings settings, ILogger logger)
+		public AzureBlobService(IOptions<SiteSettings> settings, ILogger logger)
 		{
-			this._settings = settings;
+			this._settings = settings.Value;
 			this._logger = logger;
-			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
+			this._storageAccount = CloudStorageAccount.Parse(this._settings.BlobStorageConnectionString);
 
 			logger.LogInformation("BlobService creation");
 		}

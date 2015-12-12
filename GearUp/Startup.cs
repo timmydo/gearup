@@ -11,10 +11,12 @@
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.PlatformAbstractions;
+
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
 	{
+		private ILogger _logger;
 
 		public Startup(IApplicationEnvironment applicationEnvironment)
 		{
@@ -34,13 +36,12 @@
 
 			services.AddSingleton<BlobService>();
 			services.AddSingleton<DataService>();
-
+			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
+			_logger.LogInformation("Creating Logger");
+			services.AddSingleton<ILogger>(_logger);
 			services.AddMvc();
 #if false
-			loggerfactory.AddConsole();
-			var logger = loggerfactory.CreateLogger(typeof(Startup).FullName);
-			logger.LogInformation("Creating Logger");
-			services.AddSingleton<ILogger>(logger);
+
 
 				
 				mvcbuilder.Configure<MvcOptions>(options =>
@@ -68,7 +69,7 @@
 		}
 
 		// Configure is called after ConfigureServices is called.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
 			{

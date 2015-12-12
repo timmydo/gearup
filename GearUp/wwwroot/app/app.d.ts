@@ -20,12 +20,14 @@ declare class MyAppData {
     constructor();
     removeBuildFromCache(bid: any): void;
     removeListFromCache(lid: any): void;
-    getBuild(bid: any): Ember.RSVP.Promise;
+    getBuild(bid: any): any;
     fillListBuilds(l: any): void;
     getUserList(userKey: any): Ember.RSVP.Promise;
-    getList(lid: any): Ember.RSVP.Promise;
-    getRecentBuilds(): Ember.RSVP.Promise;
-    getUserBuilds(bid: any): Ember.RSVP.Promise;
+    getList(lid: any): any;
+    getRecentBuilds(): any;
+    getUserBuilds(bid: any): any;
+    searchIndex(text: any): Ember.RSVP.Promise;
+    searchSuggest(text: any): Ember.RSVP.Promise;
 }
 declare class AITracker {
     track(msg: any, properties: any, metrics: any): void;

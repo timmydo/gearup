@@ -1,16 +1,16 @@
 ﻿namespace GearUp.Controllers
 {
-	using GearUp.Interfaces;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
-
+	using Microsoft.Extensions.OptionsModel;
+	using Services;
 	public class HomeController : Controller
 	{
 
-		public IAppSiteSettings ss { get; set; }
-		public HomeController(IAppSiteSettings s, ILogger logger)
+		public SiteSettings ss { get; set; }
+		public HomeController(IOptions<SiteSettings> s, ILogger logger)
 		{
-			ss = s;
+			ss = s.Value;
 		}
 
         public IActionResult Index()

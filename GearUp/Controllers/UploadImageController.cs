@@ -6,6 +6,8 @@ namespace GearUp.Controllers.Controllers
 	using GearUp.Interfaces;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.OptionsModel;
+	using Services;
 	using System;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -29,12 +31,12 @@ namespace GearUp.Controllers.Controllers
 		private readonly string _imagesContainer;
 
 
-		public UploadImageController(IAppSiteSettings settings, ILogger logger, IAppDataService ddb, IAppBlobStorage bs)
+		public UploadImageController(IOptions<SiteSettings> settings, ILogger logger, IAppDataService ddb, IAppBlobStorage bs)
 		{
 			this._blobService = bs;
 			this._logger = logger;
 			this._ddb = ddb;
-			this._imagesContainer = settings.ImagesContainer;
+			this._imagesContainer = settings.Value.ImagesContainer;
 
 		}
 

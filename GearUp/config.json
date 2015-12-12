@@ -1,14 +1,13 @@
 ﻿{
-
-
   "AppSettings": {
+    "AppInsightsKey": "988f790a-d88d-411f-bd15-7fdbc37e1202",
     "LoginPath": "/login",
-
+    "SearchName": "gearbuilder",
+    "SearchIndexName": "localtest",
+    "SearchQueryKey": "ECA36C018F6E3D63C24062C94AB43082",
     "BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=gearuptest;AccountKey=H7p5WKcTiBb/uBqN3vvh2tfajMtUcrVSQjuXHK5cvLr0ZI4fXGtQK8W9JGLB4sTtyZ3lq506FAC8f56OPWpuLg==",
     "BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
     "ImagesContainer": "uploadimages",
-    "CdnEndpoint": "https://az745127.vo.msecnd.net/",
-  },
-
-
+    "CdnEndpoint": "https://az745127.vo.msecnd.net/"
+  }
 }
