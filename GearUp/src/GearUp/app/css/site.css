@@ -290,13 +290,81 @@ img.build-image-main {
 	width: 100%;
 }
 
+.build-temperature-section .slider-track {
+	background-image: linear-gradient(to bottom,#b5b5b5 0,#b9b9b9 100%);
+}
+
+.build-temperature-section .slider-selection {
+	background-image: linear-gradient(to bottom,#b5d5b5 0,#b9d9b9 100%);
+}
 
 .build-temperature-section .slider {
 	width: 100%;
 }
 
+.build-temperature-section i {
+	padding: 0 10px;
+}
+
 .build-section-label {
 	width:100%;
-	border-bottom: 1px solid #ccc;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
+
+
+
+
+.twitter-typeahead{
+width:100%;
+}
+
+.twitter-typeahead .tt-query,
+.twitter-typeahead .tt-hint {
+  margin-bottom: 0;
+}
+.tt-menu {
+  min-width: 160px;
+  margin-top: 2px;
+  padding: 5px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,.2);
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -webkit-background-clip: padding-box;
+     -moz-background-clip: padding;
+          background-clip: padding-box;
+  width:100%;        
+}
+
+.tt-suggestion {
+  display: block;
+  padding: 3px 20px;
+}
+
+.tt-suggestion:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor {
+  color: #fff;
+  background-color: #0097cf;
+
+}
+
+.tt-suggestion.tt-cursor a {
+  color: #fff;
+}
+
+.tt-suggestion p {
+  margin: 0;
+}
+

@@ -22,20 +22,23 @@ App.BootstrapSliderComponent = Ember.TextField.extend({
 		var opts = {
 			min: this.get('min'),
 			max: this.get('max'),
-			value: this.get('value'),
+			value: [this.get('low') || 0, this.get('high') || 100],
 			handle: this.get('handle'),
 			enabled: !!this.get('enabled')
 			//tooltip: 'hide'
 		};
-		console.log(opts);
+
 		this.$().slider(opts);
 
-		this.$().on('slide', function () {
-			self.set('value', this.value);
-		});
+		//this.$().on('slide', function () {
+		//	self.set('value', this.value);
+		//});
 
 		this.$().on('slideStop', function () {
-			self.set('value', this.value);
+			var temp = this.value.split(',');
+			self.set('low', parseInt(temp[0]));
+			self.set('high', parseInt(temp[1]));
+			self.set('modified', true);
 		});
 
 	},

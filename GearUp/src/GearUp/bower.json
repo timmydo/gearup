@@ -10,8 +10,10 @@
     "ember": "=1.10.0",
     "moment": "~2.9.0",
     "holderjs": "~2.5.0",
-	"ember-droplet": "~0.9.3",
-	"seiyria-bootstrap-slider": "~4.8.1"
+    "ember-droplet": "~0.9.3",
+    "seiyria-bootstrap-slider": "~4.8.1",
+    "typeahead.js": "*",
+    "es5-shim": "*"
   },
   "exportsOverride": {
     "bootstrap": {

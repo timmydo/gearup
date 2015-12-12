@@ -11,7 +11,7 @@ namespace GearUp.Models
 			id = System.Guid.NewGuid().ToString();
 			Modified = DateTime.UtcNow;
 			Created = Modified;
-			Creator = string.Empty;	//fixme set user guid
+			Creator = string.Empty;
 			DocType = "build";
 			Title = "";
 			Description = "";
@@ -32,6 +32,9 @@ namespace GearUp.Models
 		public string Description { get; set; }
 
 		public string Url { get; set; }
+		public int LowTemperature { get; set; }
+		public int HighTemperature { get; set; }
+		public bool IsCelsius { get; set; }
 
 		public List<Image> Images { get; set; }
 

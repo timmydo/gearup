@@ -21,6 +21,7 @@ App.Router.map(function () {
 	this.route('userbuilds', { path: '/userbuilds/:bid' });
 	this.route('list', { path: '/lists/:bid' });
 	this.route('userlists', { path: '/userlists/:bid' });
+	this.route('search', { path: '/search/:q' });
 });
 
 App.ApplicationRoute = Ember.Route.extend({
@@ -52,11 +53,33 @@ App.ApplicationController = Ember.Controller.extend({
 		return window['UserIdentityKey'] || '';
 	}.property('window.UserIdentityKey'),
 
+	latestSuggestionTag: '',
 
-
+	suggest: function() {
+		var q = this.get('searchQuery');
+		if (q && q.length >= 3 && q.length < 25) {
+			var tag = Gear.UUID.v4();
+			this.set('latestSuggestionTag', tag);
+			App.Data.searchSuggest(q).then((result) => {
+				// ensure that if a later request happened after this,
+				// we wait for it instead of updating now
+				if (this.get('latestSuggestionTag') === tag) {
+					console.log(result);
+				}
+			})
+		}
+	}.observes('searchQuery'),
 
 
 	actions: {
+		suggest: function(q, syncRes, asyncRes) {
+			App.Data.searchSuggest(q).then((x) => {
+				var buildlist = (x.value||[]);
+				if (asyncRes) {
+					asyncRes(buildlist);
+				}
+			});
+		},
 		setError: function (e) {
             this.set('errorMessage', e);
         },
@@ -68,7 +91,11 @@ App.ApplicationController = Ember.Controller.extend({
         },
         dismissInfo: function () {
             this.set('infoMessage', null);
-        }
+        },
+		search: function() {
+			console.log(this.get('searchQuery'));
+			this.transitionToRoute('search', this.get('searchQuery'));
+		}
     }
 });
 

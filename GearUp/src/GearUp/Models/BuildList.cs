@@ -11,7 +11,7 @@ namespace GearUp.Models
 			id = System.Guid.NewGuid().ToString();
 			Modified = DateTime.UtcNow;
 			Created = Modified;
-			Creator = string.Empty;	//fixme set user guid
+			Creator = string.Empty;
 			DocType = "list";
 			Title = "";
 			Description = "";

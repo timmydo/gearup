@@ -5,8 +5,6 @@
 	[Route("api/[controller]")]
 	public class HelloController : Controller
     {
-
-
 		public HelloController()
 		{
 		}

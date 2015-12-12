@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace GearUp.Models
 {
     public class Part

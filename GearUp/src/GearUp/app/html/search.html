@@ -1,0 +1,59 @@
+
+<div class="row">
+Search for {{model.query}}. Result count: {{model.builds.length}}	
+</div>
+
+<div class="row">
+
+	
+	<div class="col-md-12">
+		
+		{{#each build in model.builds}}
+		<div class="container user-build">
+			<div class="row">
+				<div class="col-md-4">
+					{{buildTitleAnchor build}}
+				</div>
+				<div class="col-md-4">
+					<div class="pull-right">Modified {{modifiedFrom build.modified}}</div>
+				</div>
+				<div class="col-md-4">
+					{{#if userLoginKey}}
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							Add to list <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							{{#each buildList in userBuildList.lists}}
+							<li><a class="clickable" {{action 'addBuildToList' buildList.id build.id}}>{{buildList.title}}</a></li>
+
+							{{/each}}
+						</ul>
+					</div>
+					{{/if}}
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-9">
+					{{#each image in build.images}}
+					<div class="user-build-image-thumbnail">{{buildThumbnail image.guid}}</div>
+					{{/each}}
+				</div>
+				<div class="col-md-3">
+					<ul>
+						{{#each part in build.parts}}
+						{{#if part.url}}
+						<li><a target="_blank" {{bind-attr href=part.url}}>{{part.title}}</a></li>
+						{{else}}
+						<li>{{part.title}}</li>
+						{{/if}}
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+		{{/each}}
+	</div>
+
+</div>

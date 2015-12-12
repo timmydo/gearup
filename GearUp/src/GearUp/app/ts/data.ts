@@ -1,40 +1,77 @@
 ﻿/// <reference path="app.ts" />
 
+App.getJSON = function(url) {
+	var promise = new Ember.RSVP.Promise((resolve, reject) => {
+		var client = new XMLHttpRequest();
+		client.open("GET", url);
+		client.onreadystatechange = handler;
+		var responseTypeAware = true;
+		try {
+			client.responseType = "json";
+		} catch (e) {
+			responseTypeAware = false;
+		}
+		
+		client.setRequestHeader("Accept", "application/json");
+		client.send();
+
+		function handler() {
+			if (this.readyState === this.DONE) {
+				if (this.status === 200) {
+					try {
+						
+						if (responseTypeAware && client.responseType == 'json') {
+							resolve(this.response);
+						} else {
+							var parsed = JSON.parse(this.response);
+							resolve(parsed);
+						}
+					} catch (e) {
+						reject('Error parsing:' + this.response + ' error: ' + e);
+					}
+				}
+				else { reject(this); }
+			}
+		};
+	});
+
+	return promise;
+};
 
 App.BuildObject = Ember.Object.extend({
 
-	save: function () {
+	save: function() {
 		App.Track.track("SaveBuild", { Build: this.id });
 
 		var data = JSON.stringify(this);
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/SaveBuild',
+			url: '/api/build/save',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
 		});
 	},
 
-	deleteBuild: function () {
+	deleteBuild: function() {
 		var data = JSON.stringify(this);
 		App.Track.track("DeleteBuild", { Build: this.id });
 
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/DeleteBuild',
+			url: '/api/build/delete',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
 		}).then((res) => {
 			//fixme todo does deleting a build remove it from lists???
 			App.Data.removeBuildFromCache(this.id);
-			
+
 			return res;
 		});
 	},
 
-	deleteImageFromBuild: function (guid) {
+	deleteImageFromBuild: function(guid) {
 		var opts = { Build: this.id, Image: guid };
 		var data = JSON.stringify(opts);
 		App.Track.track("DeleteImage", opts);
@@ -42,7 +79,7 @@ App.BuildObject = Ember.Object.extend({
 		var thisbuild = this;
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/DeleteImageFromBuild',
+			url: '/api/build/delete-image',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
@@ -62,14 +99,14 @@ App.BuildObject = Ember.Object.extend({
 		});
 	},
 
-	addImageToBuild: function (file, guid, progressFunc) {
+	addImageToBuild: function(file, guid, progressFunc) {
 		var thisbuild = this;
 		App.Track.track("AddImageToBuild", { Build: thisbuild.id });
 
-		return new Ember.RSVP.Promise(function (resolve, reject) {
+		return new Ember.RSVP.Promise((resolve, reject) => {
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.id, true);
-			xhr.onload = function (e) {
+			xhr.onload = function(e) {
 				if (this.status == 200) {
 					var parsed = JSON.parse(this.response);
 					thisbuild.images.pushObject(parsed);
@@ -78,10 +115,10 @@ App.BuildObject = Ember.Object.extend({
 					reject(this.response);
 				}
 			};
-			xhr.onerror = function (e) {
-				reject(e.error);
+			xhr.onerror = function(e) {
+				reject('error ' + xhr.status + ' - ' + xhr.statusText);
 			};
-			xhr.upload.onprogress = function (e) {
+			xhr.upload.onprogress = function(e) {
 				if (e.lengthComputable) {
 					var value = (e.loaded / e.total) * 100;
 
@@ -102,63 +139,63 @@ App.BuildObject = Ember.Object.extend({
 
 App.UserListsObject = Ember.Object.extend({});
 App.BuildListObject = Ember.Object.extend({
-	save: function () {
+	save: function() {
 		var data = JSON.stringify(this);
 		App.Track.track("SaveList", { List: this.id });
 		App.Data.updateCacheList(this);
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/SaveList',
+			url: '/api/list/save',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
 		});
 	},
 
-	addBuildToList: function (bid) {
+	addBuildToList: function(bid) {
 		var opts = { build: bid, list: this.id };
 		var data = JSON.stringify(opts);
 		App.Track.track("AddBuildToList", opts);
 
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/AddBuildToList',
+			url: '/api/list/add',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
 		}).then((success) => {
-				var b = App.Data.builds[bid];
-				if (!b) {
-					console.log('Add Build To List, could not find build ' + bid);
-					App.Track.track("RemoveBuildFromListError", {Build: bid});
+			var b = App.Data.builds[bid];
+			if (!b) {
+				console.log('Add Build To List, could not find build ' + bid);
+				App.Track.track("RemoveBuildFromListError", { Build: bid });
 
-				} else {
-					this.builds.pushObject(b);
-				}
+			} else {
+				this.builds.pushObject(b);
+			}
 		});
 	},
 
-	removeBuildFromList: function (bid) {
+	removeBuildFromList: function(bid) {
 		var opts = { 'build': bid, 'list': this.id };
 		var data = JSON.stringify(opts);
 		App.Track.track("RemoveBuildFromList", opts);
 
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/RemoveBuildFromList',
+			url: '/api/list/remove',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
 		}).then((success) => {
-				this.builds.removeObjects(this.builds.filter((b) => { return b.id === bid; }));
-				return success;
+			this.builds.removeObjects(this.builds.filter((b) => { return b.id === bid; }));
+			return success;
 		});
 	},
 
 
 
 
-	deleteList: function () {
+	deleteList: function() {
 		var data = JSON.stringify(this);
 		console.log('delete list');
 		console.log(this);
@@ -166,7 +203,7 @@ App.BuildListObject = Ember.Object.extend({
 		App.Data.removeListFromCache(this.id);
 		return Ember.$.ajax({
 			type: 'POST',
-			url: '/api/DeleteList',
+			url: '/api/list/delete',
 			contentType: 'application/json',
 			data: data,
 			dataType: 'text'
@@ -179,7 +216,7 @@ App.BuildListObject = Ember.Object.extend({
 });
 
 function promiseFor(val) {
-	return new Ember.RSVP.Promise(function (res) {
+	return new Ember.RSVP.Promise((res) => {
 		return res(val);
 	});
 }
@@ -243,7 +280,7 @@ class MyAppData {
 		console.log('Get Build: ' + bid);
 		var b = this.builds[bid];
 		if (!b) {
-			return Ember.$.getJSON('/api/build/' + bid).then((res) => {
+			return App.getJSON('/api/build/get/' + bid).then((res) => {
 				b = App.BuildObject.create(res);
 				console.log(b);
 				this.builds[bid] = b;
@@ -267,10 +304,10 @@ class MyAppData {
 	// so that build objects are reused and are updated together
 	fillListBuilds(l) {
 		//console.log('getList');
-		var origbuilds = l.get('builds').copy();
+		var origbuilds = l.get('builds').slice(0);
 				
 		// set builds to the ones we haven't already cached--so we can load them
-		var notCachedBuilds = l.get('builds').filter((el) => { return !App.Data.builds[el.id]; })
+		var notCachedBuilds = origbuilds.filter((el) => { return !App.Data.builds[el.id]; })
 		//console.log('filter');
 		//console.log(notCachedBuilds);
 		//console.log(App.Data.builds);
@@ -286,7 +323,7 @@ class MyAppData {
 			var postdata = JSON.stringify(l);
 			Ember.$.ajax({
 				type: 'POST',
-				url: '/api/Build',
+				url: '/api/build/get',
 				contentType: 'application/json',
 				data: postdata,
 				dataType: 'json'
@@ -314,7 +351,7 @@ class MyAppData {
 				//console.log(barray);
 
 				l.set('builds', barray);
-			},(xhr) => {
+			}, (xhr) => {
 					console.log(xhr);
 					App.Track.track("GetListError", { Message: 'Error getting user build list: ' + xhr.responseJSON });
 				});
@@ -339,11 +376,12 @@ class MyAppData {
 		console.log('Get User List: ' + userKey);
 		var l = this.userlists[userKey];
 		if (!l) {
-			return Ember.$.ajax({
-				type: 'GET',
-				url: '/api/UserLists/' + userKey,
-				dataType: 'json',
-			}).then((res) => {
+			return new Ember.RSVP.Promise((resolve, reject) => {
+				Ember.$.ajax({
+					type: 'GET',
+					url: '/api/user/lists/' + userKey,
+					dataType: 'json',
+				}).then((res) => {
 					var newList = Ember.A();
 					res.forEach((elem) => {
 						if (!App.Data.buildlists[elem.id]) {
@@ -356,8 +394,11 @@ class MyAppData {
 					console.log(l);
 
 					this.userlists[userKey] = l;
-					return l;
-			});
+					resolve(l);
+				}).fail((err) => {
+					reject(err);
+				});
+			})
 		} else {
 			console.log('cached list');
 			console.log(l);
@@ -369,7 +410,7 @@ class MyAppData {
 		console.log('Get List: ' + lid);
 		var l = this.buildlists[lid];
 		if (!l) {
-			return Ember.$.getJSON('/api/list/' + lid).then((res) => {
+			return App.getJSON('/api/list/get/' + lid).then((res) => {
 				var l = App.BuildListObject.create(res);
 				this.fillListBuilds(l);
 				this.buildlists[lid] = l;
@@ -401,13 +442,19 @@ class MyAppData {
 			console.log('cached recent builds');
 			return promiseFor(this.recentbuilds);
 		} else {
-			return Ember.$.getJSON('/api/RecentBuilds').then((builds) => {
-				var bl = App.BuildListObject.create({builds: Ember.A(builds)});
+			return App.getJSON('/api/build/recent').then((builds) => {
+				var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
 				console.log(bl);
 				this.fillListBuilds(bl);
 				this.recentbuilds = bl;
 
 				return bl;
+			}, (fail) => {
+				var bl = App.BuildListObject.create({ builds: Ember.A([]) });
+				console.log('Failure getting recent builds: ' + fail);
+				this.fillListBuilds(bl);
+				this.recentbuilds = bl;
+				App.Track.track("GetRecentError", { Message: 'Error getting recent list: ' + fail });
 			});
 		}
 	}
@@ -419,7 +466,7 @@ class MyAppData {
 			console.log('cached list');
 			return promiseFor(this.userbuilds[bid]);
 		} else {
-			return Ember.$.getJSON('/api/UserBuilds/' + bid).then((builds) => {
+			return App.getJSON('/api/user/builds/' + bid).then((builds) => {
 				var arr = Ember.A();
 				builds.forEach((b) => {
 					if (!this.builds[b.id]) {
@@ -437,6 +484,38 @@ class MyAppData {
 		}
 	}
 
+	searchIndex(text) {
+		var prom = new Ember.RSVP.Promise((resolve, reject) => {
+			// fixme rename mainindexname 
+			Ember.$.ajax({
+				url: App.SearchEndpoint+'/indexes/' + App.SearchIndexName + '/docs?api-version=2015-02-28&search='+text,
+          		type: 'GET',
+          		dataType: 'json',
+          		success: function(x) { resolve(x); },
+          		error: function(x) { reject(x); },
+          		beforeSend: function(xhr) {xhr.setRequestHeader('api-key', App.SearchQueryKey);}
+			});
+		});
+		
+		return prom;
+	}
+
+	searchSuggest(text) {
+		console.log('Suggest: ' + text);
+		var prom = new Ember.RSVP.Promise((resolve, reject) => {
+			// fixme rename mainindexname 
+			Ember.$.ajax({
+				url: App.SearchEndpoint+'/indexes/' + App.SearchIndexName + '/docs/suggest?api-version=2015-02-28&suggesterName=default&fuzzy=true&search='+text,
+          		type: 'GET',
+          		dataType: 'json',
+          		success: function(x) { resolve(x); },
+          		error: function(x) { reject(x); },
+          		beforeSend: function(xhr) {xhr.setRequestHeader('api-key', App.SearchQueryKey);}
+			});
+		});
+		
+		return prom;
+	}
 
 
 }

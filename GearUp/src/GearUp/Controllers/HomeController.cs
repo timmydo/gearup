@@ -1,17 +1,14 @@
 ﻿namespace GearUp.Controllers
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
+	using GearUp.Interfaces;
 	using Microsoft.AspNet.Mvc;
-	using GearUp.Services;
 	using Microsoft.Extensions.Logging;
 
 	public class HomeController : Controller
 	{
 
-		public SiteSettings ss { get; set; }
-		public HomeController(SiteSettings s, ILogger logger)
+		public IAppSiteSettings ss { get; set; }
+		public HomeController(IAppSiteSettings s, ILogger logger)
 		{
 			ss = s;
 		}

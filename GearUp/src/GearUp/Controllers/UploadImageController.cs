@@ -1,19 +1,19 @@
-﻿namespace GearUp.Controllers.Controllers
+﻿
+
+namespace GearUp.Controllers.Controllers
 {
-	using System;
-	using System.Threading.Tasks;
-	using System.Linq;
+	using GearUp.Auth;
+	using GearUp.Interfaces;
 	using Microsoft.AspNet.Mvc;
-	using GearUp.Services;
 	using Microsoft.Extensions.Logging;
+	using System;
+	using System.Linq;
+	using System.Threading.Tasks;
+
 
 	[Route("api/[controller]")]
 	public class UploadImageController : Controller
 	{
-		private readonly BlobService _blobService;
-		private readonly ILogger _logger;
-		private readonly DataService _ddb;
-		private readonly string _imagesContainer;
 
 		public class UploadImageResult
 		{
@@ -22,7 +22,14 @@
 
 		}
 
-		public UploadImageController(SiteSettings settings, ILogger logger, DataService ddb, BlobService bs)
+
+		private readonly IAppBlobStorage _blobService;
+		private readonly ILogger _logger;
+		private readonly IAppDataService _ddb;
+		private readonly string _imagesContainer;
+
+
+		public UploadImageController(IAppSiteSettings settings, ILogger logger, IAppDataService ddb, IAppBlobStorage bs)
 		{
 			this._blobService = bs;
 			this._logger = logger;
@@ -48,14 +55,12 @@
 			if (!ValidContentTypes.Contains(Request.ContentType))
 			{
 				result.Message = "Invalid Content Type";
-				await Task.Yield(); //fixme what do i do here?
 				return result;
 			}
 
 			if (string.IsNullOrEmpty(buildid))
 			{
 				result.Message = "Invalid Build ID";
-				await Task.Yield();	//fixme what do i do here?
 				return result;
 			}
 
@@ -66,17 +71,12 @@
 			result.Message = "Uploaded";
 
 			// add pointer to document db
-			var uid = UserLogin.UserUniqueId(User.Identity);
+			var uid = UserLogin.UserUniqueId(User?.Identity);
 			await this._ddb.AddImageToBuildAsync(buildid, result.Guid, uid);
 
 			return result;
 
 		}
 
-		// DELETE api/values/5
-		[HttpDelete("{id}")]
-		public void Delete(int id)
-		{
-		}
 	}
 }

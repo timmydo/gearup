@@ -21,27 +21,16 @@ App.BuildRoute = Ember.Route.extend({
 
 App.BuildController = Ember.ObjectController.extend({
 	needs: ["Userbuilds"],
-	temperature: function () {
 
-		return [this.get('lowTemp') || 40, this.get('highTemp') || 70];
-
-	}.property('lowTemp', 'highTemp'),
+	tempModified: false,
 	tempUnit: function () {
-		var cel = this.get('inCelsius');
+		var cel = this.get('IsCelsius');
 		if (cel) {
 			return 'C';
 		} else {
 			return 'F';
 		}
-	}.property('inCelsius'),
-	lowTempString: function () {
-		var lowTemp = this.get('lowTemp') || 40;
-		return '' + lowTemp;
-	}.property('lowTemp'),
-	highTempString: function () {
-		var highTemp = this.get('lowTemp') || 70;
-		return '' + highTemp;
-	}.property('lowTemp'),
+	}.property('IsCelsius'),
 
 	createdTime: function () {
 		return moment(this.get('model.created')).format('ll');
@@ -173,6 +162,14 @@ App.BuildController = Ember.ObjectController.extend({
 					break;
 				}
 			}
+			this.send('saveBuild');
+		},
+		changeCelsius: function () {
+			this.set('tempModified', true);
+			this.set('IsCelsius', !this.get("IsCelsius"));
+		},
+		saveTemperature: function () {
+			this.set('tempModified', false);
 			this.send('saveBuild');
 		},
 		saveDescription: function () {

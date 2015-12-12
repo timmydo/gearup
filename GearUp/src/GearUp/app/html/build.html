@@ -131,7 +131,7 @@
 
 		<div class="build-description">
 			{{#if canEditBuild}}
-			<div class="pull-right"><i class="fa fa-pencil clickable" {{action 'startEditDescription'}}></i></div>
+			<div class="pull-right"><i title="Edit the description" class="fa fa-pencil clickable" {{action 'startEditDescription'}}></i></div>
 			{{/if}}
 			{{#if editDescription}}
 				{{textarea class="form-control" placeholder="Enter description" value=description}}
@@ -149,10 +149,19 @@
 			{{/if}}
 		</div>
 
-		<div class="hidden build-temperature-section">
-			<div class="build-section-label">Temperature Range: <span class="temperature-range">{{lowTempString}}&deg;{{tempUnit}} &ndash; {{highTempString}}&deg;{{tempUnit}}</span></div>
-			{{bootstrap-slider type="temperature" enabled=canEditBuild value=temperature min=-50 max=100}}
-
+		<div class="build-temperature-section well">
+			<div class="build-section-label">Temperature Range: 
+				<span class="temperature-range">{{lowTemperature}}&deg;{{tempUnit}} &ndash; {{highTemperature}}&deg;{{tempUnit}}</span>
+				{{#if canEditBuild}}
+				<span class="pull-right"><i title="Switch between Fahrenheit and Celsius" class="fa fa-exchange clickable" {{action 'changeCelsius'}}></i></span>
+				{{#if tempModified}}
+				<span class="pull-right"><i title="Save changes" class="fa fa-save clickable" {{action 'saveTemperature'}}></i></span>
+				{{/if}}
+				{{/if}}
+			</div>
+			{{#if canEditBuild}}
+			{{bootstrap-slider type="temperature" enabled=canEditBuild low=lowTemperature high=highTemperature modified=tempModified min=-50 max=100}}
+			{{/if}}
 		</div>
 
 

@@ -4,6 +4,11 @@
 App.IndexRoute = Ember.Route.extend({
 	model: function (params) {
 		return App.Data.getRecentBuilds();
+	},
+	actions: {
+		error: function(reason) {
+			console.log(reason);
+		}
 	}
 });
 

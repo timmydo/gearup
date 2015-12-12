@@ -45,7 +45,7 @@ Ember.Handlebars.registerBoundHelper('buildImageAnchor', function (value, value2
 
 
 Ember.Handlebars.registerBoundHelper('buildThumbnailAnchor', function (value) {
-	if (!value) {
+	if (!value || !value.images || value.images.length < 1) {
 		return "";
 	}
 	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.images[0] || {guid:'empty'}).guid + '" /></a>');
