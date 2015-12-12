@@ -1,0 +1,303 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "type": "string"
+    },
+    "farmResourceGroup": {
+      "type": "string"
+    },
+    "siteName": {
+      "type": "string"
+    },
+    "redisName": {
+      "type": "string"
+    },
+    "docdbName": {
+      "type": "string"
+    },
+    "searchName": {
+      "type": "string"
+    },
+    "searchIndexName": {
+      "type": "string"
+    },
+    "storageName": {
+      "type": "string"
+    },
+    "hostingPlanName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus"
+    },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard-GRS"
+    },
+    "webSku": {
+      "type": "string",
+      "allowedValues": [
+        "Free",
+        "Shared",
+        "Basic",
+        "Standard"
+      ],
+      "defaultValue": "Basic"
+    },
+    "hostingEnvironment": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "workerSize": {
+      "type": "string",
+      "defaultValue": "small"
+    },
+    "redisSkuName": {
+      "type": "string",
+      "allowedValues": [
+        "Basic",
+        "Standard"
+      ],
+      "defaultValue": "Standard"
+    },
+    "redisFamily": {
+      "type": "string",
+      "allowedValues": [
+        "C"
+      ],
+      "defaultValue": "C"
+    },
+    "redisCapacity": {
+      "type": "int",
+      "allowedValues": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "defaultValue": 0
+    },
+    "redisVersion": {
+      "type": "string",
+      "allowedValues": [
+        "2.8"
+      ],
+      "defaultValue": "2.8"
+    },
+    "repoUrl": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('siteName')]",
+      "type": "microsoft.insights/components",
+      "location": "Central US",
+      "apiVersion": "2014-08-01",
+      "properties": {
+        "ApplicationId": "[parameters('siteName')]",
+        "Application_Type": "ASP.NET",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension"
+      }
+    },
+    {
+      "apiVersion": "2015-02-28",
+      "name": "[parameters('searchName')]",
+      "type": "Microsoft.Search/searchServices",
+      "location": "[parameters('location')]",
+      "properties": {
+		    "sku": {
+          "name": "Free"
+        },
+        "replicaCount": "1",
+		    "partitionCount": "1"
+       }
+     },
+     {
+      "type": "Microsoft.Cache/Redis",
+      "apiVersion": "2014-04-01-preview",
+      "name": "[parameters('redisName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('redisSkuName')]",
+          "family": "[parameters('redisFamily')]",
+          "capacity": "[parameters('redisCapacity')]"
+        },
+        "redisVersion": "[parameters('redisversion')]"
+      }
+    },
+    {
+      "apiVersion": "2015-04-08",
+      "type": "Microsoft.DocumentDb/databaseAccounts",
+      "name": "[parameters('docdbName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[parameters('docdbName')]",
+        "databaseAccountOfferType": "Standard"
+      }
+    },
+    {
+      "apiVersion": "2014-06-01",
+      "name": "[parameters('storageName')]",
+      "type": "Microsoft.ClassicStorage/StorageAccounts",
+      "location": "[parameters('location')]",
+      "properties": {
+        "accountType": "[parameters('storageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "2014-06-01",
+      "name": "[parameters('hostingPlanName')]",
+      "type": "Microsoft.Web/serverFarms",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[parameters('hostingPlanName')]",
+        "sku": "[parameters('webSku')]",
+        "workerSize": "[parameters('workerSize')]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "apiVersion": "2015-02-01",
+      "name": "[parameters('siteName')]",
+      "type": "Microsoft.Web/Sites",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverFarms/', parameters('hostingPlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+      },
+      "properties": {
+        "name": "[parameters('siteName')]",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('farmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "hostingEnvironment": "[parameters('hostingEnvironment')]"
+      },
+      "resources": [
+        {
+          "apiVersion": "2014-04-01",
+          "type": "config",
+          "name": "web",
+          "dependsOn": [
+            "[concat('microsoft.insights/components/', parameters('siteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('siteName'))]",
+            "[concat('Microsoft.Cache/Redis/', parameters('redisName'))]",
+            "[concat('Microsoft.DocumentDb/databaseAccounts/', parameters('docdbName'))]",
+            "[concat('Microsoft.ClassicStorage/storageAccounts/', parameters('storageName'))]"
+          ],
+          "properties": {
+            "appSettings": [
+              {
+                "name": "RedisEndpoint",
+                "value": "[concat(parameters('redisName'), '.redis.cache.windows.net:6380,allowAdmin=true,ssl=true,password=', listKeys(resourceId('Microsoft.Cache/Redis', parameters('redisName')), '2015-03-01').primaryKey)]"
+              },
+              {
+                "name": "BlobStorageConnectionString",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.ClassicStorage/storageAccounts', parameters('storageName')), '2014-06-01').primaryKey)]"
+              },
+              {
+                "name": "LoginPath",
+                "value": "/login"
+              },
+              {
+                "name": "AppInsightsKey",
+                //"value": "[listKeys(resourceId('microsoft.insights/components', parameters('siteName')), '2014-08-01').primaryKey]"
+                "value": "fixme"
+              },
+              {
+                "name": "GoogleClientId",
+                "value": "fixme"
+              },
+              {
+                "name": "GoogleClientSecret",
+                "value": "fixme"
+              },
+              {
+                "name": "FacebookClientId",
+                "value": "fixme"
+              },
+              {
+                "name": "FacebookClientSecret",
+                "value": "fixme"
+              },
+              {
+                "name": "SearchName",
+                "value": "[parameters('searchName')]"
+              },
+              {
+                "name": "SearchIndexName",
+                "value": "[parameters('searchIndexName')]"
+              },
+              {
+                "name": "SearchApiKey",
+                "value": "fixme"
+              },
+              {
+                "name": "SearchQueryKey",
+                "value": "fixme"
+              },
+              {
+                "name": "BlobEndpoint",
+                "value": "[concat('https://', parameters('storageName'), '.blob.core.windows.net/')]"
+              },
+              {
+                "name": "ImagesContainer",
+                "value": "uploadimages"
+              },
+              {
+                "name": "ServiceJSFileRoot",
+                "value": "D:\\home\\site\\approot\\src\\GearUp"
+              },
+              {
+                "name": "CdnEndpoint",
+                "value": "[concat('https://', parameters('storageName'), '.blob.core.windows.net/')]"
+              },
+              {
+                "name": "DocumentDatabaseId",
+                "value": "[parameters('docdbName')]"
+              },
+              {
+                "name": "DocumentCollectionId",
+                "value": "main"
+              },
+              {
+                "name": "DocumentKey",
+                "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('docdbName')), '2014-04-01').primaryMasterKey]"
+              },
+              {
+                "name": "DocumentEndpoint",
+                "value": "[concat('https://', parameters('docdbName'), '.documents.azure.com/')]"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-05-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('siteName'), '/config/web')]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('repoUrl')]",
+            "branch": "[parameters('branch')]",
+            "IsManualIntegration": true
+          }
+        }
+      ]
+    }
+  ]
+}

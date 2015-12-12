@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{62ECF645-B515-4BE5-910C-F84508642CEE}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "GearUp", "src\GearUp\GearUp.xproj", "{F3271280-82C8-47B1-A32F-4DF682AF7C89}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "GearUp", "GearUp\GearUp.xproj", "{F3271280-82C8-47B1-A32F-4DF682AF7C89}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0215FFED-BAE4-492A-92F9-64F89CED3913}"
 	ProjectSection(SolutionItems) = preProject

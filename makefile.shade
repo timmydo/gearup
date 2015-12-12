@@ -1,0 +1,7 @@
+var VERSION='0.1'
+var FULL_VERSION='0.1'
+var AUTHORS='Timmy Douglas'
+
+use-standard-lifecycle
+k-standard-goals
+
