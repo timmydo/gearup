@@ -9,8 +9,8 @@ module.exports = function (grunt) {
 				dest: 'wwwroot/app/app.js',
 				options: {
 					references: ['typings/tsd.d.ts'],
-					module: 'es6',
-					target: 'es5',
+					module: 'es6', //or commonjs 
+					target: 'es5', //or es3 
 					rootDir: 'app/ts',
 					sourceMap: false,
 					declaration: true
@@ -74,29 +74,29 @@ module.exports = function (grunt) {
 		},
 		concat: {
 			devjs: {
-				src: ['bower_components/jquery/dist/jquery.js',
+				nonull: true,
+				src: ['bower_components/es5-shim/es5-shim.js',
+					'bower_components/jquery/dist/jquery.js',
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js',
                     'bower_components/bootstrap/dist/js/bootstrap.js',
                     'bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js',
+					"bower_components/typeahead.js/dist/typeahead.jquery.js",
 					'bower_components/holderjs/holder.js',
 					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.js',
                     'bower_components/ember/ember.debug.js'],
 				dest: 'wwwroot/lib/vendor-dev.js'
-			}
-
-		},
-		uglify: {
-			options: {
-				//compress: true  
 			},
 			applib: {
-				src: [
+				nonull: true,
+				src: ['bower_components/es5-shim/es5-shim.min.js',
                     'bower_components/jquery/dist/jquery.min.js',
                     'bower_components/jquery-validation/jquery.validate.js',
                     'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
                     'bower_components/bootstrap/dist/js/bootstrap.min.js',
+                    'bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js',
+					"bower_components/typeahead.js/dist/typeahead.jquery.min.js",
 					'bower_components/holderjs/holder.min.js',
 					'bower_components/moment/moment.js',
                     'bower_components/handlebars/handlebars.min.js',
@@ -104,8 +104,16 @@ module.exports = function (grunt) {
 				],
 				dest: 'wwwroot/lib/vendor.js'
 			}
-		},
 
+		},
+		/*
+		uglify: {
+			options: {
+			},
+			
+		},
+		*/
+		
 		/*
 		bower: {
 			install: {
@@ -167,13 +175,12 @@ module.exports = function (grunt) {
 	});
 
 	// This command registers the default task which will install bower packages into wwwroot/lib
-	grunt.registerTask("default", ["clean", "typescript", "copy", "uglify", "concat", "cssmin", "emberTemplates"]);
+	grunt.registerTask("default", ["clean", "typescript", "copy", "concat", "cssmin", "emberTemplates"]);
 
 	// The following line loads the grunt plugins.
 	// This line needs to be at the end of this this file.
 	grunt.loadNpmTasks("grunt-bower-task");
 	grunt.loadNpmTasks('grunt-typescript');
-	grunt.loadNpmTasks('grunt-tsd');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-copy');
