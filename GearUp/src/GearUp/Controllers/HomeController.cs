@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNet.Mvc;
-using GearUp.Services;
-using Microsoft.Framework.Logging;
-
-namespace GearUp.Controllers
+﻿namespace GearUp.Controllers
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Microsoft.AspNet.Mvc;
+	using GearUp.Services;
+	using Microsoft.Extensions.Logging;
+
 	public class HomeController : Controller
 	{
 

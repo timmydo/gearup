@@ -1,44 +1,39 @@
 {
-	/* Click to learn more about project.json  http://go.microsoft.com/fwlink/?LinkID=517074 */
-	//"WindowsAzure.Storage": "4.3.0.0",
-
 	"webroot": "wwwroot",
 	"version": "1.0.0-*",
-	"dependencies": {
-		"Microsoft.AspNet.Mvc": "6.0.0.0-beta3",
-		"Microsoft.AspNet.Diagnostics": "1.0.0-beta3",
-		"Microsoft.AspNet.Diagnostics.Entity": "7.0.0-beta3",
-		"Microsoft.AspNet.Http": "1.0.0.0-beta3",
-		"Microsoft.AspNet.Hosting": "1.0.0.0-beta3",
-		"Microsoft.AspNet.Identity.EntityFramework": "3.0.0.0-beta3",
-		"Microsoft.AspNet.Security.Cookies": "1.0.0.0-beta3",
-		"Microsoft.AspNet.Server.IIS": "1.0.0-beta3",
-		"Microsoft.AspNet.Server.WebListener": "1.0.0-beta3",
-		"Microsoft.AspNet.StaticFiles": "1.0.0-beta3",
-		"Microsoft.Framework.OptionsModel": "1.0.0-beta3",
-		"Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta3",
-		"Microsoft.Framework.CodeGenerators.Mvc": "1.0.0-beta3",
-		"Microsoft.Framework.Logging": "1.0.0-beta3",
-		"Microsoft.Framework.Logging.Console": "1.0.0-beta3",
-		"Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta3",
-		"Microsoft.AspNet.Security.Google": "1.0.0.0-beta3",
-		"Microsoft.AspNet.Security.Facebook": "1.0.0.0-beta3",
-		"WindowsAzure.Storage": "4.3.2.0-preview",
-		"Microsoft.Azure.Documents.Client": "0.9.2-preview",
-		"Microsoft.Azure.Management.Redis": "0.14.1-preview",
-		"StackExchange.Redis": "1.0.414"
-
-
-	},
-	"commands": {
-		/* Change the port number when you are self hosting this application */
-		"web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
-		"gen": "Microsoft.Framework.CodeGeneration",
-		"ef": "EntityFramework.Commands"
-	},
+  "dependencies": {
+    "Microsoft.AspNet.Authentication.Cookies": "1.0.0.0-*",
+    "Microsoft.AspNet.Authentication.Facebook": "1.0.0-*",
+    "Microsoft.AspNet.Authentication.Google": "1.0.0-*",
+    "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-*",
+    "Microsoft.AspNet.Hosting": "1.0.0-*",
+    "Microsoft.AspNet.Http": "1.0.0.0-*",
+    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0.0-*",
+    "Microsoft.AspNet.Mvc": "6.0.0-*",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-*",
+    "Microsoft.AspNet.Mvc.Formatters.Json": "6.0.0-*",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
+    "Microsoft.AspNet.Session": "1.0.0-*",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-*",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-*",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-*",
+    "WindowsAzure.Storage": "6.2.2-preview"
+  },
+  "commands": {
+    "run": "run server.urls=http://localhost:5003",
+    "web": "Microsoft.AspNet.Server.Kestrel",
+    "webl": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
+    "gen": "Microsoft.Extensions.CodeGeneration",
+    "ef": "EntityFramework.Commands"
+  },
 	"frameworks": {
-		"aspnet50": { } //,
-		//"aspnetcore50": {		}
+		"dnx46": { }
 	},
 	"bundleExclude": [
 		"node_modules",

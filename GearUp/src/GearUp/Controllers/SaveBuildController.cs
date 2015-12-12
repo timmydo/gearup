@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Http;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.Framework.Logging;
-using System.IO;
-using GearUp.Services;
-using GearUp.Models;
-using Newtonsoft.Json;
-
-namespace GearUp.Controllers.Controllers
+﻿namespace GearUp.Controllers.Controllers
 {
+	using System;
+	using System.Threading.Tasks;
+	using Microsoft.AspNet.Mvc;
+	using GearUp.Services;
+	using GearUp.Models;
+	using Microsoft.Extensions.Logging;
+
+
 	[Route("api/[controller]")]
 	public class SaveBuildController : Controller
 	{
@@ -43,7 +36,7 @@ namespace GearUp.Controllers.Controllers
 			if (b != null && !string.IsNullOrEmpty(b.Creator))
 			{
 				var uid = UserLogin.UserUniqueId(User.Identity);
-				this._logger.WriteInformation("SaveBuild Controller Post");
+				this._logger.LogInformation("SaveBuild Controller Post");
 				var newId = await this._data.SaveBuildAsync(b, uid);
                 return newId;
 			}
@@ -52,6 +45,5 @@ namespace GearUp.Controllers.Controllers
 				throw new Exception("Invalid Build");
 			}
 		}
-
 	}
 }

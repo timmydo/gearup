@@ -7,14 +7,10 @@ namespace GearUp.Services
 		public string BlobStorageConnectionString { get; set; }
 		public string BlobEndpoint { get; set; }
 		public string CdnEndpoint { get; set; }
-		public string RedisEndpoint { get; set; }
 		public string ImagesContainer { get; set; }
-
-		public string ServiceJSFileRoot { get; set; }
-
-		public string DocumentDatabaseId { get; set; }
-		public string DocumentCollectionId { get; set; }
-		public string DocumentEndpoint { get; set; }
-		public string DocumentKey { get; set; }
+		public string GoogleClientId { get; set; }
+		public string GoogleClientSecret { get; set; }
+		public string FacebookClientId { get; set; }
+		public string FacebookClientSecret { get; set; }
 	}
 }

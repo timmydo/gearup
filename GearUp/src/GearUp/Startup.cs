@@ -1,77 +1,49 @@
-﻿using System;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Diagnostics;
-using Microsoft.AspNet.Diagnostics.Entity;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Security.Cookies;
-using Microsoft.Data.Entity;
-using Microsoft.Framework.ConfigurationModel;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.OptionsModel;
-using Microsoft.Framework.Logging;
-using Microsoft.Framework.Logging.Console;
-//using GearUp.Models;
-using Microsoft.AspNet.Http.Security;
-using Microsoft.AspNet.Security;
-using Microsoft.AspNet.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Linq;
-using GearUp.Services;
-using Microsoft.AspNet.StaticFiles;
-//fixme:
-//using Microsoft.Framework.Logging.TraceSource;
-
-namespace GearUp
+﻿namespace GearUp
 {
+	using System;
+	using GearUp.Services;
+	using Microsoft.AspNet.Builder;
+	using Microsoft.AspNet.Hosting;
+	using Microsoft.AspNet.Http;
+	using Microsoft.AspNet.Http.Authentication;
+	using Microsoft.AspNet.Identity.EntityFramework;
+	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.DependencyInjection;
+	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.PlatformAbstractions;
+	public class ApplicationUser : IdentityUser { }
+
 	public class Startup
 	{
-		public Startup(IHostingEnvironment env)
+
+		public Startup(IApplicationEnvironment applicationEnvironment)
 		{
-			// Setup configuration sources.
-			Configuration = new Configuration()
+			var builder = new ConfigurationBuilder()
+				.SetBasePath(applicationEnvironment.ApplicationBasePath)
 				.AddJsonFile("config.json")
 				.AddEnvironmentVariables();
+			Configuration = builder.Build();
 		}
 
 		public IConfiguration Configuration { get; set; }
 
 		// This method gets called by the runtime.
-		public void ConfigureServices(IServiceCollection services, ILoggerFactory loggerfactory)
+		public void ConfigureServices(IServiceCollection services)
 		{
+			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
-			var mySettings = new SiteSettings()
-			{
-				BlobStorageConnectionString = Configuration.Get("BlobStorageConnectionString"),
-				BlobEndpoint = Configuration.Get("BlobEndpoint"),
-				CdnEndpoint = Configuration.Get("CdnEndpoint"),
-				RedisEndpoint = Configuration.Get("RedisEndpoint"),
-				ImagesContainer = Configuration.Get("ImagesContainer"),
-				ServiceJSFileRoot = Configuration.Get("ServiceJSFileRoot"),
-				DocumentDatabaseId = Configuration.Get("DocumentDatabaseId"),
-				DocumentCollectionId = Configuration.Get("DocumentCollectionId"),
-				DocumentEndpoint = Configuration.Get("DocumentEndpoint"),
-				DocumentKey = Configuration.Get("DocumentKey"),
-			};
-
-			services.AddInstance<SiteSettings>(mySettings);
-
-			loggerfactory.AddConsole();
-			var traceSource = new TraceProvider();
-			loggerfactory.AddProvider(traceSource);
-			var logger = loggerfactory.Create(typeof(Startup).FullName);
-			logger.WriteInformation("Creating Logger");
-
-			services.AddInstance<ILogger>(logger);
 			services.AddSingleton<BlobService>();
-			services.AddSingleton<DocumentDB>();
-			services.AddSingleton<RedisService>();
 			services.AddSingleton<DataService>();
 
-			services.AddMvc().Configure<MvcOptions>(options =>
+			services.AddMvc();
+#if false
+			loggerfactory.AddConsole();
+			var logger = loggerfactory.CreateLogger(typeof(Startup).FullName);
+			logger.LogInformation("Creating Logger");
+			services.AddSingleton<ILogger>(logger);
+
+				
+				mvcbuilder.Configure<MvcOptions>(options =>
 			{
 				options.OutputFormatters
 						   .Where(f => f.Instance is JsonOutputFormatter)
@@ -82,60 +54,107 @@ namespace GearUp
 
 				options.Filters.Add(typeof(RequireHttpsExceptForLocalHostAttribute));
 			});
+#endif
 
 			services.AddDataProtection();
+			services.AddSession();
+			services.AddCaching();
 
-
-			services.Configure<ExternalAuthenticationOptions>(options =>
+			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
-				options.SignInAsAuthenticationType = CookieAuthenticationDefaults.AuthenticationType;
-			});
-
-		}
-
-		public class CustomContentTypeProvider : FileExtensionContentTypeProvider
-		{
-			public CustomContentTypeProvider()
-			{
-				Mappings.Add(".woff2", "application/font-woff2");
-			}
+				options.Cookies.ApplicationCookie.AccessDeniedPath = "/Home/AccessDenied";
+			})
+				   .AddDefaultTokenProviders();
 		}
 
 		// Configure is called after ConfigureServices is called.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerfactory)
 		{
-			// Add the following to the request pipeline only in development environment.
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
 			{
-				//app.UseBrowserLink();
-				//app.UseErrorPage(ErrorPageOptions.ShowAll);
-				app.Use(next => new SimpleErrorPage(next, loggerfactory.Create("SimpleErrorPage")).Invoke);
-				app.UseDatabaseErrorPage(DatabaseErrorPageOptions.ShowAll);
+				app.UseDeveloperExceptionPage();
+				app.UseRuntimeInfoPage();
 			}
 			else
 			{
-				// Add Error handling middleware which catches all application specific errors and
-				// send the request to the following path or controller action.
-				app.UseErrorHandler("/Home/Error");
+				app.UseExceptionHandler("/Home/Error");
 			}
 
-
-			// Add static files to the request pipeline.
-			var sfopts = new StaticFileOptions();
-			sfopts.ContentTypeProvider = new CustomContentTypeProvider();
-			app.UseStaticFiles(sfopts);
-			//app.UseStaticFiles();
-
-			// Add cookie-based authentication to the request pipeline.
+			app.UseSession();
+			app.UseStaticFiles();
 			app.UseIdentity();
 
 			app.UseCookieAuthentication(options =>
 			{
-				options.LoginPath = new PathString(Configuration.Get("LoginPath"));
+				options.LoginPath = new PathString("/login");
 			});
 
-			ExternalLogin.Setup(app, Configuration);
+			app.UseGoogleAuthentication(options =>
+			{
+				options.ClientId = "332102071004-38tstqp212sbssfgkn5fil5s2qhs9upl.apps.googleusercontent.com";
+				options.ClientSecret = "1HBAvwhVIeZF6Jo0O71XeJud";
+			});
 
+			app.UseFacebookAuthentication(options =>
+			{
+				options.ClientId = "1524415717839570";
+				options.ClientSecret = "ddce01745ef5275c31eea6c2c1b9dea8";
+			});
+
+			// Choose an authentication type
+			app.Map("/login", signoutApp =>
+			{
+				signoutApp.Run(async context =>
+				{
+					string authType = context.Request.Query["authtype"];
+					if (!string.IsNullOrEmpty(authType))
+					{
+						// By default the client will be redirect back to the URL that issued the challenge (/login?authtype=foo),
+						// send them to the home page instead (/).
+						await context.Authentication.ChallengeAsync(authType, new AuthenticationProperties() { RedirectUri = "/" });
+						return;
+					}
+
+					context.Response.ContentType = "text/html";
+					await context.Response.WriteAsync("<html><body>");
+					await context.Response.WriteAsync("Choose an authentication type: <br>");
+					foreach (var type in context.Authentication.GetAuthenticationSchemes())
+					{
+						await context.Response.WriteAsync("<a href=\"?authtype=" + type.AuthenticationScheme + "\">" + (type.DisplayName ?? "(suppressed)") + "</a><br>");
+					}
+					await context.Response.WriteAsync("</body></html>");
+				});
+			});
+
+			// Sign-out to remove the user cookie.
+			app.Map("/logout", signoutApp =>
+			{
+				signoutApp.Run(async context =>
+				{
+					await context.Authentication.SignOutAsync("OpenIdConnect");
+					context.Response.ContentType = "text/html";
+					await context.Response.WriteAsync("<html><body>");
+					await context.Response.WriteAsync("You have been logged out. Goodbye " + context.User.Identity.Name + "<br>");
+					await context.Response.WriteAsync("<a href=\"/\">Home</a>");
+					await context.Response.WriteAsync("</body></html>");
+				});
+			});
+
+			app.Map("/me", meApp =>
+			{
+				meApp.Run(async context =>
+				{
+					context.Response.ContentType = "text/html";
+					await context.Response.WriteAsync("<html><body>");
+					await context.Response.WriteAsync("Hello " + context.User.Identity.Name + "<br>");
+					foreach (var claim in context.User.Claims)
+					{
+						await context.Response.WriteAsync(claim.Type + ": " + claim.Value + "<br>");
+					}
+					await context.Response.WriteAsync("<a href=\"/logout\">Logout</a>");
+					await context.Response.WriteAsync("</body></html>");
+				});
+			});
 			// Add MVC to the request pipeline.
 			app.UseMvc(routes =>
 			{

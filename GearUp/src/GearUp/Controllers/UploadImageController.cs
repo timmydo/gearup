@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Http;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.Framework.Logging;
-using System.IO;
-using GearUp.Services;
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace GearUp.Controllers.Controllers
+﻿namespace GearUp.Controllers.Controllers
 {
+	using System;
+	using System.Threading.Tasks;
+	using System.Linq;
+	using Microsoft.AspNet.Mvc;
+	using GearUp.Services;
+	using Microsoft.Extensions.Logging;
+
 	[Route("api/[controller]")]
 	public class UploadImageController : Controller
 	{
+		private readonly BlobService _blobService;
+		private readonly ILogger _logger;
+		private readonly DataService _ddb;
+		private readonly string _imagesContainer;
 
 		public class UploadImageResult
 		{
@@ -25,13 +21,6 @@ namespace GearUp.Controllers.Controllers
 			public string Guid {get; set;}
 
 		}
-
-
-		private readonly BlobService _blobService;
-		private readonly ILogger _logger;
-		private readonly DataService _ddb;
-		private readonly string _imagesContainer;
-
 
 		public UploadImageController(SiteSettings settings, ILogger logger, DataService ddb, BlobService bs)
 		{
@@ -70,7 +59,7 @@ namespace GearUp.Controllers.Controllers
 				return result;
 			}
 
-			_logger.WriteInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
+			_logger.LogInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
 
 			// upload stream
 			await this._blobService.UploadFile(stream, Request.ContentType, this._imagesContainer, result.Guid);

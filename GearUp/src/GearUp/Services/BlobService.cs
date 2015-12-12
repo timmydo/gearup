@@ -1,12 +1,13 @@
-﻿using Microsoft.Framework.Logging;
-using Microsoft.WindowsAzure.Storage;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
+﻿
 namespace GearUp.Services
 {
-    public class BlobService
+	using Microsoft.Extensions.Logging;
+	using Microsoft.WindowsAzure.Storage;
+	using System.IO;
+	using System.Threading.Tasks;
+
+
+	public class BlobService
     {
 		private SiteSettings _settings;
 		private ILogger _logger;
@@ -19,7 +20,7 @@ namespace GearUp.Services
 			this._logger = logger;
 			this._storageAccount = CloudStorageAccount.Parse(settings.BlobStorageConnectionString);
 
-			logger.WriteInformation("BlobService creation");
+			logger.LogInformation("BlobService creation");
 		}
 
 

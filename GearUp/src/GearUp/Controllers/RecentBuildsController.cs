@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.Framework.Logging;
-using GearUp.Models;
-using System.Threading.Tasks;
-using GearUp.Services;
-using System.Security.Claims;
-using System;
-using System.Collections.Generic;
-
-
-
-namespace GearUp.Controllers
+﻿namespace GearUp.Controllers
 {
+	using GearUp.Services;
+	using Microsoft.AspNet.Mvc;
+	using Microsoft.Extensions.Logging;
+	using System.Threading.Tasks;
+
 
 	[Route("api/[controller]")]
 	public class RecentBuildsController

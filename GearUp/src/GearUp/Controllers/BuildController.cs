@@ -1,21 +1,15 @@
-﻿
-
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
-using Microsoft.AspNet.Mvc;
-using Microsoft.Framework.Logging;
-using GearUp.Models;
-using System.Threading.Tasks;
-using GearUp.Services;
-using System.Security.Claims;
-using System;
-using System.Collections.Generic;
-
-namespace GearUp.Controllers
+﻿namespace GearUp.Controllers
 {
+	using Microsoft.AspNet.Mvc;
+	using GearUp.Models;
+	using System.Threading.Tasks;
+	using GearUp.Services;
+	using System.Collections.Generic;
+	using Microsoft.Extensions.Logging;
+
 	[Route("api/[controller]")]
 	public class BuildController : Controller
-    {
+	{
 
 		private readonly ILogger _logger;
 		private readonly DataService _data;
@@ -43,7 +37,7 @@ namespace GearUp.Controllers
 					b.Title = "Must log in to create builds";
 					return b;
 				}
-				this._logger.WriteInformation("Setting creator to " + uid);
+				this._logger.LogInformation("Setting creator to " + uid);
 				await this._data.CreateBuildAsync(b);
 			}
 			return b;

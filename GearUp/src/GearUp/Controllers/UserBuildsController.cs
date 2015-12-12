@@ -1,17 +1,11 @@
-﻿
-
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
-using Microsoft.AspNet.Mvc;
-using Microsoft.Framework.Logging;
-using GearUp.Models;
-using System.Threading.Tasks;
-using GearUp.Services;
-using System.Security.Claims;
-using System.Collections.Generic;
-
-namespace GearUp.Controllers
+﻿namespace GearUp.Controllers
 {
+	using Microsoft.AspNet.Mvc;
+	using GearUp.Models;
+	using System.Threading.Tasks;
+	using GearUp.Services;
+	using Microsoft.Extensions.Logging;
+
 	[Route("api/[controller]")]
 	public class UserBuildsController : Controller
     {
@@ -25,7 +19,6 @@ namespace GearUp.Controllers
 			this._logger = logger;
 		}
 
-
 		[Produces("application/json", "text/json")]
 		[HttpGet("{id}")]
 		public async Task<Build[]> GetById(string id)
@@ -34,11 +27,9 @@ namespace GearUp.Controllers
 			{
 				return new Build[0];
 			}
-			var b = await this._ddb.GetUserBuilds(id);
+			var b = await this._ddb.GetUserBuildsAsync(id);
 
 			return b;
 		}
-
-
 	}
 }

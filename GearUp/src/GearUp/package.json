@@ -1,4 +1,4 @@
-﻿{
+{
 	"version": "0.0.0",
 	"name": "GearUp",
 	"devDependencies": {
@@ -17,8 +17,8 @@
 		"grunt-tslint": "^2.0.0",
 		"grunt-typescript": "^0.6.1",
 		"handlebars": "2.0.0",
-		"tsd": "^0.5.7",
-		"tslint": "^2.0",
-		"typescript": "^1.4.1"
+		"tsd": "^0.6.5",
+		"tslint": "^3.2.0",
+		"typescript": "^1.7.3"
 	}
 }
