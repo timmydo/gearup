@@ -111,7 +111,7 @@
 
         [HttpGet("recent")]
         [Produces("application/json", "text/json")]
-        public async Task<string[]> Get()
+        public async Task<string[]> GetRecent()
         {
             return await this._data.GetRecentBuildsAsync();
         }
