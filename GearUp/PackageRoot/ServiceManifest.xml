@@ -1,30 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="GearUpPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+<ServiceManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 Name="FE" Version="1.0.0"
+				 xmlns="http://schemas.microsoft.com/2011/01/fabric">
 	<ServiceTypes>
-		<StatelessServiceType ServiceTypeName="GearUpType">
-			<Extensions>
-				<Extension Name="__GeneratedServiceType__">
-					<GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
-						<DefaultService Name="GearUpService" />
-						<ServiceEndpoint Name="GearUpTypeEndpoint" />
-					</GeneratedNames>
-				</Extension>
-			</Extensions>
-		</StatelessServiceType>
+		<StatelessServiceType ServiceTypeName="FEType" />
 	</ServiceTypes>
 	<CodePackage Name="C" Version="1.0.0">
 		<EntryPoint>
 			<ExeHost>
-				<Program>approot\runtimes\dnx-clr-win-x64.1.0.0-rc2-16294\bin\dnx.exe</Program>
-				<Arguments>--appbase approot\src\GearUp Microsoft.Dnx.ApplicationHost Microsoft.ServiceFabric.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener</Arguments>
-				<WorkingFolder>CodePackage</WorkingFolder>
-				<ConsoleRedirection FileRetentionCount="5" FileMaxSizeInKb="2048" />
+				<Program>approot\web.cmd</Program>
 			</ExeHost>
 		</EntryPoint>
 	</CodePackage>
 	<Resources>
 		<Endpoints>
-			<Endpoint Name="GearUpTypeEndpoint" Protocol="http" Type="Input" />
+			<Endpoint Name="FEEndpoint" Protocol="http" Type="Input" Port="8088"/>
 		</Endpoints>
 	</Resources>
 </ServiceManifest>

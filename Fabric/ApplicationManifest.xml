@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="DataBackendType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="GearUpType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
    <Parameters>
       <Parameter Name="GearUpBackend_MinReplicaSetSize" DefaultValue="2" />
       <Parameter Name="GearUpBackend_PartitionCount" DefaultValue="1" />
       <Parameter Name="GearUpBackend_TargetReplicaSetSize" DefaultValue="3" />
    </Parameters>
    <ServiceManifestImport>
-      <ServiceManifestRef ServiceManifestName="GearUpPkg" ServiceManifestVersion="1.0.0" />
+      <ServiceManifestRef ServiceManifestName="FE" ServiceManifestVersion="1.0.0" />
       <ConfigOverrides />
    </ServiceManifestImport>
    <ServiceManifestImport>
-      <ServiceManifestRef ServiceManifestName="GearUpBackendPkg" ServiceManifestVersion="1.0.0" />
+      <ServiceManifestRef ServiceManifestName="BE" ServiceManifestVersion="1.0.0" />
       <ConfigOverrides />
    </ServiceManifestImport>
    <DefaultServices>
-      <Service Name="GearUpBackend">
-         <StatefulService ServiceTypeName="GearUpBackendType" TargetReplicaSetSize="[GearUpBackend_TargetReplicaSetSize]" MinReplicaSetSize="[GearUpBackend_MinReplicaSetSize]">
+      <Service Name="BE">
+         <StatefulService ServiceTypeName="BEType" TargetReplicaSetSize="[GearUpBackend_TargetReplicaSetSize]" MinReplicaSetSize="[GearUpBackend_MinReplicaSetSize]">
             <UniformInt64Partition PartitionCount="[GearUpBackend_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
          </StatefulService>
       </Service>
-      <Service Name="GearUp">
-         <StatelessService ServiceTypeName="GearUpType" InstanceCount="-1">
+      <Service Name="FE">
+         <StatelessService ServiceTypeName="FEType" InstanceCount="-1">
             <SingletonPartition />
          </StatelessService>
       </Service>

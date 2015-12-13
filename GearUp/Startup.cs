@@ -36,7 +36,7 @@
 			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
 			services.AddSingleton<BlobService>();
-			services.AddSingleton<IAppDataService>(ServiceProxy.Create<IAppDataService>(new Uri("fabric:/GearUp/Backend")));
+			services.AddSingleton<IAppDataService>(ServiceProxy.Create<IAppDataService>(new Uri("fabric:/GearUp/BE")));
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);
