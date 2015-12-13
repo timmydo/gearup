@@ -27,7 +27,7 @@
             {
                 return new Build[0];
             }
-            var b = await this._ddb.GetUserBuilds(id);
+            var b = await this._ddb.GetUserBuildsAsync(id);
 
             return b;
         }
@@ -40,7 +40,7 @@
             {
                 return new BuildList[0];
             }
-            var b = await this._ddb.GetUserLists(id);
+            var b = await this._ddb.GetUserListsAsync(id);
 
             return b;
         }

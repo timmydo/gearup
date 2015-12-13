@@ -1,13 +1,13 @@
 ﻿namespace GearUp.Services
 {
 	using System;
+	using GearUp.Interfaces;
 	using GearUp.Models;
 	using System.Threading.Tasks;
 	using System.Collections.Generic;
-	using System.Linq;
 	using Microsoft.Extensions.Logging;
-
-	public class DataService
+	using Microsoft.ServiceFabric.Services.Remoting.Client;
+	public class DataService : IAppDataService
     {
 		private readonly ILogger logger;
 

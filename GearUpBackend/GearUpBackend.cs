@@ -6,14 +6,92 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GearUp.Interfaces;
+using GearUp.Models;
+using Microsoft.ServiceFabric.Services.Remoting;
 
 namespace GearUpBackend
 {
 	/// <summary>
 	/// The FabricRuntime creates an instance of this class for each service type instance.
 	/// </summary>
-	internal sealed class GearUpBackend : StatefulService
+	public class GearUpBackend : StatefulService, IAppDataService, IService
 	{
+		public Task AddBuildToListAsync(string buildGuid, string listGuid, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task AddImageToBuildAsync(string buildGuid, string imageGuid, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task CreateBuildAsync(Build item)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task CreateListAsync(BuildList item)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteBuildAsync(Build b, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteImageFromBuildAsync(string buildGuid, string imageGuid, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteListAsync(BuildList b, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<Build> GetBuildAsync(string id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<BuildList> GetListAsync(string id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<string[]> GetRecentBuildsAsync()
+		{
+			return Task.FromResult(new string[0]);
+		}
+
+		public Task<Build[]> GetUserBuildsAsync(string id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<IEnumerable<BuildList>> GetUserListsAsync(string id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task RemoveBuildFromListAsync(string buildGuid, string listGuid, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<string> SaveBuildAsync(Build b, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<string> SaveListAsync(BuildList l, string uid)
+		{
+			throw new NotImplementedException();
+		}
+
 		/// <summary>
 		/// Optional override to create listeners (like tcp, http) for this service replica.
 		/// </summary>

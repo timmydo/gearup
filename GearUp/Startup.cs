@@ -1,7 +1,8 @@
-﻿namespace GearUp
+﻿namespace GearUp.Web
 {
 	using System;
 	using GearUp.Services;
+	using GearUp.Interfaces;
 	using Microsoft.AspNet.Builder;
 	using Microsoft.AspNet.Hosting;
 	using Microsoft.AspNet.Http;
@@ -11,7 +12,7 @@
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.PlatformAbstractions;
-
+	using Microsoft.ServiceFabric.Services.Remoting.Client;
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
@@ -35,7 +36,7 @@
 			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
 			services.AddSingleton<BlobService>();
-			services.AddSingleton<DataService>();
+			services.AddSingleton<IAppDataService>(ServiceProxy.Create<IAppDataService>(new Uri("fabric:/GearUp/Backend")));
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);

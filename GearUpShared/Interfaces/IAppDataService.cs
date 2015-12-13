@@ -1,12 +1,11 @@
-using System.Threading.Tasks;
-using GearUp.Models;
-using System.Collections.Generic;
-
-
 namespace GearUp.Interfaces
 {
-    public interface IAppDataService
-    {
+	using System.Threading.Tasks;
+	using GearUp.Models;
+	using System.Collections.Generic;
+
+	public interface IAppDataService : Microsoft.ServiceFabric.Services.Remoting.IService
+	{
 		 Task<string[]> GetRecentBuildsAsync();
 
 		 Task<Build> GetBuildAsync(string id);
@@ -29,8 +28,8 @@ namespace GearUp.Interfaces
 		 Task DeleteListAsync(BuildList b, string uid);
 
 
-		 Task<Build[]> GetUserBuilds(string id);
-		 Task<IEnumerable<BuildList>> GetUserLists(string id);
+		 Task<Build[]> GetUserBuildsAsync(string id);
+		 Task<IEnumerable<BuildList>> GetUserListsAsync(string id);
 
     }
 
