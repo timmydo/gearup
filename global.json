@@ -1,6 +1,12 @@
-﻿{
-  "sources": [ "src", "test" ],
+{
+  "sources": [
+    "src",
+    "test"
+  ],
   "sdk": {
     "version": "1.0.0-rc2-16294"
-  }
+  },
+  "projects": [
+    "wrap"
+  ]
 }

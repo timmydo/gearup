@@ -23,7 +23,9 @@
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
     "Microsoft.Extensions.Logging.Console": "1.0.0-*",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-*",
-    "WindowsAzure.Storage": "6.2.2-preview"
+    "WindowsAzure.Storage": "6.2.2-preview",
+    "Microsoft.ServiceFabric": "4.4.87-preview",
+    "Microsoft.ServiceFabric.Services": "1.4.87-preview"
   },
   "commands": {
     "run": "run server.urls=http://localhost:5003",
@@ -33,7 +35,11 @@
     "ef": "EntityFramework.Commands"
   },
 	"frameworks": {
-		"dnx46": { }
+    "dnx46": {
+      "dependencies": {
+        "GearUpShared": "1.0.0-*"
+      }
+    }
 	},
 	"bundleExclude": [
 		"node_modules",
