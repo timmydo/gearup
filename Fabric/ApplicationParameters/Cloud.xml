@@ -1,8 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/DataBackend" xmlns="http://schemas.microsoft.com/2011/01/fabric">
-   <Parameters>
-      <Parameter Name="GearUpBackend_PartitionCount" Value="1" />
-      <Parameter Name="GearUpBackend_MinReplicaSetSize" Value="2" />
-      <Parameter Name="GearUpBackend_TargetReplicaSetSize" Value="3" />
-   </Parameters>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/GearUpFabric" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+   <Parameters />
 </Application>

@@ -6,7 +6,7 @@
 	using System.Threading.Tasks;
 	using System.Collections.Generic;
 	using Microsoft.Extensions.Logging;
-	using Microsoft.ServiceFabric.Services.Remoting.Client;
+
 	public class DataService : IAppDataService
     {
 		private readonly ILogger logger;

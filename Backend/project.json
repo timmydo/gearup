@@ -1,0 +1,24 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Backend Console Application",
+  "authors": [ "work" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "Shared": "1.0.0-*"
+  },
+
+  "commands": {
+    "Backend": "Backend"
+  },
+
+  "frameworks": {
+    "dnx46": { }
+  }
+}

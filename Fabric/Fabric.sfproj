@@ -14,7 +14,7 @@
     <None Include="Scripts\Deploy-FabricApplication.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GearUpBackend\GearUpBackend.csproj" />
+    <ProjectReference Include="..\Backend\Backend.xproj" />
     <ProjectReference Include="..\GearUp\GearUp.xproj" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Service Fabric Tools\Microsoft.VisualStudio.Azure.Fabric.ApplicationProject.targets" />

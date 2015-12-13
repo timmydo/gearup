@@ -25,19 +25,17 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-*",
     "WindowsAzure.Storage": "6.2.2-preview",
     "Microsoft.ServiceFabric": "4.4.87-preview",
-    "Microsoft.ServiceFabric.Services": "1.4.87-preview"
+    "Microsoft.ServiceFabric.Services": "1.4.87-preview",
+    "Shared": "1.0.0-*"
   },
   "commands": {
     "run": "run server.urls=http://localhost:5003",
     "web": "Microsoft.AspNet.Server.Kestrel",
-    "webl": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
     "gen": "Microsoft.Extensions.CodeGeneration",
-    "ef": "EntityFramework.Commands"
   },
 	"frameworks": {
     "dnx46": {
       "dependencies": {
-        "GearUpShared": "1.0.0-*"
       }
     }
 	},

@@ -6,7 +6,7 @@
       <Parameter Name="GearUpBackend_TargetReplicaSetSize" DefaultValue="3" />
    </Parameters>
    <ServiceManifestImport>
-      <ServiceManifestRef ServiceManifestName="GearUp" ServiceManifestVersion="1.0.0" />
+      <ServiceManifestRef ServiceManifestName="GearUpPkg" ServiceManifestVersion="1.0.0" />
       <ConfigOverrides />
    </ServiceManifestImport>
    <ServiceManifestImport>
