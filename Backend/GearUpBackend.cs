@@ -140,7 +140,7 @@ namespace GearUpBackend
 				}
 
 				// Pause for 1 second before continue processing.
-				await Task.Delay(TimeSpan.FromSeconds(1), cancelServicePartitionReplica);
+				await Task.Delay(TimeSpan.FromSeconds(10), cancelServicePartitionReplica);
 			}
 		}
 	}

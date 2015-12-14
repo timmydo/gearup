@@ -22,7 +22,7 @@ namespace GearUp.Services
             { Microsoft.Extensions.Logging.LogLevel.Critical, "critical" },
             { Microsoft.Extensions.Logging.LogLevel.Debug, "debug" },
             { Microsoft.Extensions.Logging.LogLevel.Error, "error" },
-            { Microsoft.Extensions.Logging.LogLevel.Trace, "trace" },
+            //{ Microsoft.Extensions.Logging.LogLevel.Trace, "trace" },
             { Microsoft.Extensions.Logging.LogLevel.Warning, "warning" }
         };
         

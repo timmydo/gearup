@@ -21,6 +21,8 @@
 
 		public Startup(IApplicationEnvironment applicationEnvironment)
 		{
+			Console.WriteLine("Application startup");
+
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(applicationEnvironment.ApplicationBasePath)
 				.AddJsonFile("config.json")
@@ -36,11 +38,14 @@
 			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
 			services.AddSingleton<BlobService>();
-			services.AddSingleton<IAppDataService>(ServiceProxy.Create<IAppDataService>(new Uri("fabric:/GearUp/BE")));
+			
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
-			services.AddSingleton<ILogger>(_logger);
+			//services.AddSingleton<ILogger>(_logger);
+			services.AddInstance<ILogger>(_logger);
+
 			services.AddMvc();
+
 #if false
 
 

@@ -20,7 +20,7 @@
          </StatefulService>
       </Service>
       <Service Name="FE">
-         <StatelessService ServiceTypeName="FEType" InstanceCount="-1">
+         <StatelessService ServiceTypeName="FEType">
             <SingletonPartition />
          </StatelessService>
       </Service>

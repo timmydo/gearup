@@ -5,6 +5,7 @@
 	using GearUp.Models;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
+	using Microsoft.ServiceFabric.Services.Remoting.Client;
 	using System;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
@@ -25,9 +26,8 @@
         }
 
 
-        public BuildController(IAppDataService ddb, ILogger logger)
+        public BuildController(ILogger logger)
         {
-            this._data = ddb;
             this._logger = logger;
         }
 
@@ -113,7 +113,9 @@
         [Produces("application/json", "text/json")]
         public async Task<string[]> GetRecent()
         {
-            return await this._data.GetRecentBuildsAsync();
+			var proxy = ServiceProxy.Create<IAppDataService>(1, new Uri("fabric:/GearUp/BE"));
+
+			return await proxy.GetRecentBuildsAsync();
         }
 
 
