@@ -1,10 +1,7 @@
 ﻿
 # Gear Up
 
-Gear up is a website I created to learn EmberJS, ASP.NET v5, and Azure DocumentDB. The code and design isn't production quality, but it might help you figure out how to do something.
-
-It also uses Bootstrap, TypeScript, Grunt, NPM, Bower, Azure PaaS (WebApp, CDN, DocumentDB, Blob, Redis, App Insights), and OAuth2.
-
+Gear up is a website I created to play with ASP.NET v5.
 
 [https://gearbuilder.azurewebsites.net/](https://gearbuilder.azurewebsites.net/)
 
@@ -12,7 +9,7 @@ It also uses Bootstrap, TypeScript, Grunt, NPM, Bower, Azure PaaS (WebApp, CDN, 
 
 ## Deploy yourself
 
-**Still working on this**:
+**Still working on this--not ready yet**:
 
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
