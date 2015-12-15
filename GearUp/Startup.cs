@@ -84,7 +84,8 @@
 			}
 			else
 			{
-				app.UseExceptionHandler("/Home/Error");
+				app.UseDeveloperExceptionPage();
+				app.UseRuntimeInfoPage();
 			}
 
 			app.UseSession();

@@ -1,7 +1,9 @@
-﻿
-namespace GearUp.Models
+﻿namespace GearUp.Models
 {
-    public class Part
+	using System.Runtime.Serialization;
+
+	[DataContract]
+	public class Part
     {
 		//public string Url { get; set; }
 		//public string Price { get; set; }

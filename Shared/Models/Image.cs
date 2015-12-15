@@ -1,5 +1,9 @@
-﻿namespace GearUp.Models
+﻿
+namespace GearUp.Models
 {
+	using System.Runtime.Serialization;
+
+	[DataContract]
 	public class Image
 	{
 		public string Guid { get; set;  }

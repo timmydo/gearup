@@ -15,7 +15,7 @@ namespace GearUpBackend
 	/// <summary>
 	/// The FabricRuntime creates an instance of this class for each service type instance.
 	/// </summary>
-	public class GearUpBackend : StatefulService, IAppDataService, IService
+	public class GearUpBackend : StatefulService, IAppDataService
 	{
 		public Task AddBuildToListAsync(string buildGuid, string listGuid, string uid)
 		{

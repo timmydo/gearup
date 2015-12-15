@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace GearUp.Models
 {
+	[DataContract]
 	public class Build
 	{
 		public Build()

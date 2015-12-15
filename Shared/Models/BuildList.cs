@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GearUp.Models
+﻿namespace GearUp.Models
 {
+	using System;
+	using System.Runtime.Serialization;
+	using System.Collections.Generic;
+
+	[DataContract]
 	public class BuildList
 	{
 		public BuildList()
