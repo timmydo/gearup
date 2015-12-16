@@ -9,7 +9,8 @@
 	<CodePackage Name="C" Version="1.0.0">
 		<EntryPoint>
 			<ExeHost>
-				<Program>approot\run.cmd</Program>
+				<Program>approot\runtimes\dnx-clr-win-x64.1.0.0-rc2-16312\bin\dnx.exe</Program>
+				<Arguments>--appbase approot\src\GearUp Microsoft.Dnx.ApplicationHost run</Arguments>
 				<WorkingFolder>CodePackage</WorkingFolder>
 				<ConsoleRedirection FileRetentionCount="5" FileMaxSizeInKb="2048"/>
 			</ExeHost>

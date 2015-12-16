@@ -25,7 +25,10 @@
 
 			var config = new ConfigurationBuilder()
 				.AddJsonFile("config.json")
-				.AddCommandLine(new string[] { "--server", "Microsoft.AspNet.Server.WebListener", "--server.urls", uriPrefix })
+				.AddCommandLine(new string[] { "--detailedErrors", "true",
+					"--webroot", "../../../wwwroot",
+					"--server", "Microsoft.AspNet.Server.WebListener",
+					"--server.urls", uriPrefix })
 				.AddEnvironmentVariables().Build();
 
 			ServiceEventSource.Current.ServiceMessage(this.svc, "Building engine");

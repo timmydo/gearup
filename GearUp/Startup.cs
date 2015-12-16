@@ -12,7 +12,7 @@
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.PlatformAbstractions;
-	using Microsoft.ServiceFabric.Services.Remoting.Client;
+
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
@@ -41,8 +41,8 @@
 			
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
-			//services.AddSingleton<ILogger>(_logger);
-			services.AddInstance<ILogger>(_logger);
+			services.AddSingleton<ILogger>(_logger);
+			//services.AddInstance<ILogger>(_logger);
 
 			services.AddMvc();
 
