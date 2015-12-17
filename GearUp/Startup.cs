@@ -12,7 +12,7 @@
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.PlatformAbstractions;
-
+	using Shared.Interfaces;
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
@@ -43,6 +43,8 @@
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);
 			//services.AddInstance<ILogger>(_logger);
+			var dict = new ServiceFabricPartitionedKeyValueDictionary(new Uri("fabric:/GearUp/BE"));
+			services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
 
 			services.AddMvc();
 

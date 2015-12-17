@@ -8,6 +8,7 @@ namespace GearUp.Controllers.Controllers
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.OptionsModel;
 	using Services;
+	using Shared.Interfaces;
 	using System;
 	using System.Linq;
 	using System.Threading.Tasks;
@@ -27,11 +28,11 @@ namespace GearUp.Controllers.Controllers
 
 		private readonly IAppBlobStorage _blobService;
 		private readonly ILogger _logger;
-		private readonly IAppDataService _ddb;
+		private readonly IPartitionedKeyValueDictionary _ddb;
 		private readonly string _imagesContainer;
 
 
-		public UploadImageController(IOptions<SiteSettings> settings, ILogger logger, IAppDataService ddb, IAppBlobStorage bs)
+		public UploadImageController(IOptions<SiteSettings> settings, ILogger logger, IPartitionedKeyValueDictionary ddb, IAppBlobStorage bs)
 		{
 			this._blobService = bs;
 			this._logger = logger;
@@ -72,9 +73,9 @@ namespace GearUp.Controllers.Controllers
 			await this._blobService.UploadFile(stream, Request.ContentType, this._imagesContainer, result.Guid);
 			result.Message = "Uploaded";
 
-			// add pointer to document db
+			// FIXME
 			var uid = UserLogin.UserUniqueId(User?.Identity);
-			await this._ddb.AddImageToBuildAsync(buildid, result.Guid, uid);
+			//await this._ddb.AddImageToBuildAsync(buildid, result.Guid, uid);
 
 			return result;
 

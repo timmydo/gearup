@@ -4,6 +4,7 @@
 	using GearUp.Models;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
+	using Shared.Interfaces;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
@@ -11,9 +12,9 @@
     public class UserController : Controller
     {
         private readonly ILogger _logger;
-        private readonly IAppDataService _ddb;
+        private readonly IPartitionedKeyValueDictionary _ddb;
 
-        public UserController(IAppDataService ddb, ILogger logger)
+        public UserController(IPartitionedKeyValueDictionary ddb, ILogger logger)
         {
             this._ddb = ddb;
             this._logger = logger;
@@ -21,28 +22,26 @@
 
         [Produces("application/json", "text/json")]
         [HttpGet("builds/{id}")]
-        public async Task<Build[]> UserBuilds(string id)
+        public async Task<string> UserBuilds(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return new Build[0];
+                return "[]";
             }
-            var b = await this._ddb.GetUserBuildsAsync(id);
 
-            return b;
+            return await this._ddb.GetKeyAsync("user/builds/" + id);
         }
 
         [Produces("application/json", "text/json")]
         [HttpGet("lists/{id}")]
-        public async Task<IEnumerable<BuildList>> UserLists(string id)
+        public async Task<string> UserLists(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return new BuildList[0];
+				return "[]";
             }
-            var b = await this._ddb.GetUserListsAsync(id);
 
-            return b;
+            return await this._ddb.GetKeyAsync("/user/lists/" + id);
         }
     }
 }

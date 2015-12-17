@@ -6,8 +6,11 @@
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.ServiceFabric.Services.Remoting.Client;
+	using Newtonsoft.Json.Linq;
+	using Shared.Interfaces;
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Threading.Tasks;
 
 
@@ -16,7 +19,7 @@
     {
 
         private readonly ILogger _logger;
-        private readonly IAppDataService _data;
+        private readonly IPartitionedKeyValueDictionary _data;
 
         public class DeleteImageParamInfo
         {
@@ -26,42 +29,36 @@
         }
 
 
-        public BuildController(ILogger logger)
+        public BuildController(ILogger logger, IPartitionedKeyValueDictionary data)
         {
             this._logger = logger;
+			this._data = data;
         }
 
 
         [Produces("application/json", "text/json")]
         [HttpGet("get/{id}")]
-        public async Task<Build> GetById(string id)
+        public async Task<string> GetById(string id)
         {
-            var b = await this._data.GetBuildAsync(id);
-            if (b == null)
-            {
-                b = new Build();
-                b.id = id;
-                var uid = UserLogin.UserUniqueId(User?.Identity);
-                
-                b.Creator = uid;
-                if (string.IsNullOrEmpty(uid))
-                {
-                    b.Title = "Must log in to create builds";
-                    return b;
-                }
-                this._logger.LogInformation("Setting creator to " + uid);
-                await this._data.CreateBuildAsync(b);
-            }
+            var b = await this._data.GetKeyAsync("builds/" + id);
+            
             return b;
         }
 
         [HttpPost("delete")]
-        public async Task<string> DeleteBuild([FromBody]Build b)
+        public async Task<string> DeleteBuild([FromBody]string b)
         {
-            if (b != null)
+            if (!string.IsNullOrEmpty(b))
             {
                 var uid = UserLogin.UserUniqueId(User?.Identity);
-                await this._data.DeleteBuildAsync(b, uid);
+				var jo = JObject.Parse(b);
+				var buildid = jo.GetValue("id").ToObject<string>();
+				var actualBuild = JObject.Parse(await this._data.GetKeyAsync(buildid));
+				if (uid == actualBuild.GetValue("uid").ToObject<string>())
+				{
+					await this._data.DeleteKeyAsync(buildid);
+				}
+                
                 return "Deleted";
             }
             else
@@ -71,25 +68,26 @@
         }
 
 
+        [Produces("application/json", "text/json")]
         [HttpPost("get")]
-        public async Task<Build[]> GetMultiple([FromBody]BuildList bl)
+		public async Task<string> GetMultiple([FromBody]BuildList bl)
         {
             this._logger.LogInformation("Get builds, count: " + bl.Builds.Count);
             if (bl.Builds.Count < 1)
             {
-                return new Build[0];
+                return "[]";
             }
-            var list = new List<Build>();
+            var list = new JArray();
             foreach (var id in bl.Builds)
             {
-                var fullBuild = await this._data.GetBuildAsync(id);
+                var fullBuild = await this._data.GetKeyAsync("builds/" + id);
                 if (fullBuild != null)
                 {
                     list.Add(fullBuild);
                 }
             }
 
-            return list.ToArray();
+            return list.ToString();
         }
 
 
@@ -103,7 +101,29 @@
                 throw new Exception("User is not logged in");
             }
 
-            await this._data.DeleteImageFromBuildAsync(pi.Build, pi.Image, uid);
+			var b = await this._data.GetKeyAsync("builds/" + pi.Build);
+			if (string.IsNullOrEmpty(b))
+			{
+				HttpContext.Response.StatusCode = 400;
+				return "build not found";
+			}
+
+			var bobj = JObject.Parse(b);
+
+			var buid = bobj.GetValue("Creator").ToObject<string>();
+			if (buid != uid)
+			{
+				HttpContext.Response.StatusCode = 403;
+				return "cannot modify other user's build";
+			}
+
+			var imgList = bobj["img"] as JArray;
+			if (imgList != null)
+			{
+				var newList = imgList.Where(i => i["Guid"].ToObject<string>() != pi.Image);
+				bobj["img"] = JArray.FromObject(newList);
+				await this._data.UpdateKeyAsync("builds/" + pi.Build, bobj.ToString(), "timestamp");
+			}
 
             return "Success";
         }
@@ -111,11 +131,10 @@
 
         [HttpGet("recent")]
         [Produces("application/json", "text/json")]
-        public async Task<string[]> GetRecent()
+        public async Task<string> GetRecent()
         {
-			var proxy = ServiceProxy.Create<IAppDataService>(1, new Uri("fabric:/GearUp/BE"));
 
-			return await proxy.GetRecentBuildsAsync();
+			return await Task.FromResult("[]");
         }
 
 
@@ -131,14 +150,21 @@
             if (b != null && !string.IsNullOrEmpty(b.Creator))
             {
                 var uid = UserLogin.UserUniqueId(User?.Identity);
-                
+				if (uid != b.Creator)
+				{
+					HttpContext.Response.StatusCode = 403;
+					return "not your build";
+				}
+
                 this._logger.LogInformation("SaveBuild Controller Post");
-                var newId = await this._data.SaveBuildAsync(b, uid);
-                return newId;
+				var bobj = JObject.FromObject(b);
+                await this._data.UpdateKeyAsync("builds/" + b.id, bobj.ToString(), "timestamp");
+                return "saved";
             }
             else
             {
-                throw new Exception("Invalid Build");
+				HttpContext.Response.StatusCode = 400;
+                return "Invalid Build";
             }
         }
 

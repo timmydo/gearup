@@ -2,7 +2,7 @@
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="GearUpType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
    <Parameters>
       <Parameter Name="GearUpBackend_MinReplicaSetSize" DefaultValue="2" />
-      <Parameter Name="GearUpBackend_PartitionCount" DefaultValue="1" />
+      <Parameter Name="GearUpBackend_PartitionCount" DefaultValue="5" />
       <Parameter Name="GearUpBackend_TargetReplicaSetSize" DefaultValue="3" />
       <Parameter Name="Web_InstanceCount" DefaultValue="1" />
    </Parameters>

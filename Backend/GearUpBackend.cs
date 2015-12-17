@@ -9,87 +9,64 @@ using System.Threading.Tasks;
 using GearUp.Interfaces;
 using GearUp.Models;
 using Microsoft.ServiceFabric.Services.Remoting;
+using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+using Shared.Interfaces;
 
 namespace GearUpBackend
 {
 	/// <summary>
 	/// The FabricRuntime creates an instance of this class for each service type instance.
 	/// </summary>
-	public class GearUpBackend : StatefulService, IAppDataService
+	public class GearUpBackend : StatefulService, IPartitionedKeyValueDictionary, IService
 	{
-		public Task AddBuildToListAsync(string buildGuid, string listGuid, string uid)
+		private IReliableDictionary<string, string> _dict;
+
+		public async Task AddKeyAsync(string key, string value)
 		{
-			throw new NotImplementedException();
+			if (_dict == null) throw new NullReferenceException(nameof(_dict));
+			using (var tx = this.StateManager.CreateTransaction())
+			{
+				await _dict.AddAsync(tx, key, value);
+				await tx.CommitAsync();
+			}
 		}
 
-		public Task AddImageToBuildAsync(string buildGuid, string imageGuid, string uid)
+		public async Task DeleteKeyAsync(string key)
 		{
-			throw new NotImplementedException();
+			if (_dict == null) throw new NullReferenceException(nameof(_dict));
+			using (var tx = this.StateManager.CreateTransaction())
+			{
+				await _dict.TryRemoveAsync(tx, key);
+				await tx.CommitAsync();
+			}
 		}
 
-		public Task CreateBuildAsync(Build item)
+		public async Task<string> GetKeyAsync(string key)
 		{
-			throw new NotImplementedException();
+			if (_dict == null) throw new NullReferenceException(nameof(_dict));
+			using (var tx = this.StateManager.CreateTransaction())
+			{
+				var result = await _dict.TryGetValueAsync(tx, key);
+				return result.HasValue ? result.Value : string.Empty;
+			}
 		}
 
-		public Task CreateListAsync(BuildList item)
+		public async Task UpdateKeyAsync(string key, string value, string updateFunc)
 		{
-			throw new NotImplementedException();
-		}
+			if (_dict == null) throw new NullReferenceException(nameof(_dict));
+			if (updateFunc == null) updateFunc = string.Empty;
+			using (var tx = this.StateManager.CreateTransaction())
+			{
+				switch (updateFunc)
+				{
+					case "overwrite":
+					default:
+						await _dict.AddOrUpdateAsync(tx, key, value, (k, v) => value);
+						break;
+				}
 
-		public Task DeleteBuildAsync(Build b, string uid)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task DeleteImageFromBuildAsync(string buildGuid, string imageGuid, string uid)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task DeleteListAsync(BuildList b, string uid)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<Build> GetBuildAsync(string id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<BuildList> GetListAsync(string id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<string[]> GetRecentBuildsAsync()
-		{
-			return Task.FromResult(new string[0]);
-		}
-
-		public Task<Build[]> GetUserBuildsAsync(string id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<IEnumerable<BuildList>> GetUserListsAsync(string id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task RemoveBuildFromListAsync(string buildGuid, string listGuid, string uid)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<string> SaveBuildAsync(Build b, string uid)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<string> SaveListAsync(BuildList l, string uid)
-		{
-			throw new NotImplementedException();
+				await tx.CommitAsync();
+			}
 		}
 
 		/// <summary>
@@ -98,8 +75,7 @@ namespace GearUpBackend
 		/// <returns>The collection of listeners.</returns>
 		protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
 		{
-			// TODO: If your service needs to handle user requests, return a list of ServiceReplicaListeners here.
-			return new ServiceReplicaListener[0];
+			return new[] { new ServiceReplicaListener(parameters => new ServiceRemotingListener<GearUpBackend>(parameters, this)) };
 		}
 
 		/// <summary>
@@ -109,39 +85,7 @@ namespace GearUpBackend
 		/// <param name="cancelServicePartitionReplica">Canceled when Service Fabric terminates this partition's replica.</param>
 		protected override async Task RunAsync(CancellationToken cancelServicePartitionReplica)
 		{
-			// TODO: Replace the following sample code with your own logic.
-
-			// Gets (or creates) a replicated dictionary called "myDictionary" in this partition.
-			var myDictionary = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, long>>("myDictionary");
-
-			// This partition's replica continues processing until the replica is terminated.
-			while (!cancelServicePartitionReplica.IsCancellationRequested)
-			{
-
-				// Create a transaction to perform operations on data within this partition's replica.
-				using (var tx = this.StateManager.CreateTransaction())
-				{
-
-					// Try to read a value from the dictionary whose key is "Counter-1".
-					var result = await myDictionary.TryGetValueAsync(tx, "Counter-1");
-
-					// Log whether the value existed or not.
-					ServiceEventSource.Current.ServiceMessage(this, "Current Counter Value: {0}",
-						result.HasValue ? result.Value.ToString() : "Value does not exist.");
-
-					// If the "Counter-1" key doesn't exist, set its value to 0
-					// else add 1 to its current value.
-					await myDictionary.AddOrUpdateAsync(tx, "Counter-1", 0, (k, v) => ++v);
-
-					// Committing the transaction serializes the changes and writes them to this partition's secondary replicas.
-					// If an exception is thrown before calling CommitAsync, the transaction aborts, all changes are 
-					// discarded, and nothing is sent to this partition's secondary replicas.
-					await tx.CommitAsync();
-				}
-
-				// Pause for 1 second before continue processing.
-				await Task.Delay(TimeSpan.FromSeconds(10), cancelServicePartitionReplica);
-			}
+			this._dict = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, string>>("myDictionary");
 		}
 	}
 }
