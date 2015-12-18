@@ -44,7 +44,9 @@ namespace GearUp.Controllers
         [HttpPost("add")]
         public async Task<string> AddBuild([FromBody]ParamInfo pi)
         {
-            var uid = UserLogin.UserUniqueId(User?.Identity);
+			await Task.FromResult(0);
+
+			var uid = UserLogin.UserUniqueId(User?.Identity);
 
             if (string.IsNullOrEmpty(uid))
             {
@@ -64,6 +66,8 @@ namespace GearUp.Controllers
 		[HttpPost("remove")]
 		public async Task<string> RemoveBuild([FromBody]ParamInfo pi)
 		{
+			await Task.FromResult(0);
+
 			var uid = UserLogin.UserUniqueId(User?.Identity);
 
 			if (string.IsNullOrEmpty(uid))

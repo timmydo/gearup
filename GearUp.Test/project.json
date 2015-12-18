@@ -1,0 +1,18 @@
+﻿{
+  "compilationOptions": {
+    "warningsAsErrors": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Logging.Testing": "1.0.0-*",
+    "GearUp": "",
+    "Shared": "",
+    "Microsoft.ServiceFabric.Services": "1.4.87-preview",
+    "xunit.runner.aspnet": "2.0.0-aspnet-*"
+  },
+  "commands": {
+    "test": "xunit.runner.aspnet"
+  },
+  "frameworks": {
+    "dnx451": { }
+  }
+}

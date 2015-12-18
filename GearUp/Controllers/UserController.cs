@@ -13,6 +13,8 @@
     {
         private readonly ILogger _logger;
         private readonly IPartitionedKeyValueDictionary _ddb;
+		public readonly string UserBuildNamespace = "ub/";
+		public readonly string UserListNamespace = "ul/";
 
         public UserController(IPartitionedKeyValueDictionary ddb, ILogger logger)
         {
@@ -29,7 +31,7 @@
                 return "[]";
             }
 
-            return await this._ddb.GetKeyAsync("user/builds/" + id);
+            return await this._ddb.GetKeyAsync(UserBuildNamespace + id);
         }
 
         [Produces("application/json", "text/json")]
@@ -41,7 +43,7 @@
 				return "[]";
             }
 
-            return await this._ddb.GetKeyAsync("/user/lists/" + id);
+            return await this._ddb.GetKeyAsync(UserListNamespace + id);
         }
     }
 }

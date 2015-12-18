@@ -20,6 +20,7 @@
 
         private readonly ILogger _logger;
         private readonly IPartitionedKeyValueDictionary _data;
+		public readonly string BuildNamespace = "b/";
 
         public class DeleteImageParamInfo
         {
@@ -40,26 +41,51 @@
         [HttpGet("get/{id}")]
         public async Task<string> GetById(string id)
         {
-            var b = await this._data.GetKeyAsync("builds/" + id);
-            
+            var b = await this._data.GetKeyAsync(BuildNamespace + id);
+			if (string.IsNullOrEmpty(b))
+			{
+				HttpContext.Response.StatusCode = 404;
+			}
+
             return b;
         }
 
-        [HttpPost("delete")]
+
+		[HttpPost("create")]
+		public async Task<string> CreateBuild()
+		{
+			var guid = System.Guid.NewGuid().ToString("N");
+            var uid = UserLogin.UserUniqueId(User?.Identity);
+			var ownerstr = uid == null ? "null" : "\"" + uid + "\"";
+
+			await this._data.AddKeyAsync(BuildNamespace + guid, 
+				string.Format("{{'id': '{0}', owner: {1}}}", guid, ownerstr));
+			return guid;
+		}
+
+		[HttpPost("delete")]
         public async Task<string> DeleteBuild([FromBody]string b)
         {
             if (!string.IsNullOrEmpty(b))
             {
                 var uid = UserLogin.UserUniqueId(User?.Identity);
-				var jo = JObject.Parse(b);
-				var buildid = jo.GetValue("id").ToObject<string>();
-				var actualBuild = JObject.Parse(await this._data.GetKeyAsync(buildid));
-				if (uid == actualBuild.GetValue("uid").ToObject<string>())
+				var bdata = await this._data.GetKeyAsync(BuildNamespace + b);
+				if (string.IsNullOrEmpty(bdata))
 				{
-					await this._data.DeleteKeyAsync(buildid);
+					HttpContext.Response.StatusCode = 404;
+					return "not found";
 				}
-                
-                return "Deleted";
+				else
+				{
+					var jo = JObject.Parse(bdata);
+					var actualBuild = JObject.Parse(await this._data.GetKeyAsync(BuildNamespace + b));
+					if (uid == actualBuild.GetValue("owner").ToObject<string>())
+					{
+						await this._data.DeleteKeyAsync(BuildNamespace + b);
+					}
+
+					return "Deleted";
+				}
             }
             else
             {
@@ -80,7 +106,7 @@
             var list = new JArray();
             foreach (var id in bl.Builds)
             {
-                var fullBuild = await this._data.GetKeyAsync("builds/" + id);
+                var fullBuild = await this._data.GetKeyAsync(BuildNamespace + id);
                 if (fullBuild != null)
                 {
                     list.Add(fullBuild);
@@ -101,7 +127,7 @@
                 throw new Exception("User is not logged in");
             }
 
-			var b = await this._data.GetKeyAsync("builds/" + pi.Build);
+			var b = await this._data.GetKeyAsync(BuildNamespace + pi.Build);
 			if (string.IsNullOrEmpty(b))
 			{
 				HttpContext.Response.StatusCode = 400;
@@ -122,7 +148,7 @@
 			{
 				var newList = imgList.Where(i => i["Guid"].ToObject<string>() != pi.Image);
 				bobj["img"] = JArray.FromObject(newList);
-				await this._data.UpdateKeyAsync("builds/" + pi.Build, bobj.ToString(), "timestamp");
+				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, bobj.ToString(), "timestamp");
 			}
 
             return "Success";
@@ -158,7 +184,7 @@
 
                 this._logger.LogInformation("SaveBuild Controller Post");
 				var bobj = JObject.FromObject(b);
-                await this._data.UpdateKeyAsync("builds/" + b.id, bobj.ToString(), "timestamp");
+                await this._data.UpdateKeyAsync(BuildNamespace + b.id, bobj.ToString(), "timestamp");
                 return "saved";
             }
             else
