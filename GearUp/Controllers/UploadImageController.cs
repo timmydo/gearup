@@ -1,12 +1,13 @@
 ﻿
 
-namespace GearUp.Controllers.Controllers
+namespace GearUp.Controllers
 {
 	using GearUp.Auth;
 	using GearUp.Interfaces;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.OptionsModel;
+	using Models;
 	using Services;
 	using Shared.Interfaces;
 	using System;
@@ -43,7 +44,6 @@ namespace GearUp.Controllers.Controllers
 
 		public readonly string[] ValidContentTypes = { "image/png", "image/jpeg", "image/gif"};
 
-		// POST api/values
 		[HttpPost]
 		[Produces("application/json", "text/json")]
 		public async Task<UploadImageResult> Post([FromQuery]string buildid)

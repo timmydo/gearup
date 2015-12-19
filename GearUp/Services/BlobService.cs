@@ -4,6 +4,7 @@ namespace GearUp.Services
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.OptionsModel;
 	using Microsoft.WindowsAzure.Storage;
+	using Models;
 	using System.IO;
 	using System.Threading.Tasks;
 

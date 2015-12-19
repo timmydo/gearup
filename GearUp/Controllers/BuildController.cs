@@ -83,6 +83,11 @@
 					{
 						await this._data.DeleteKeyAsync(BuildNamespace + b);
 					}
+					else
+					{
+						HttpContext.Response.StatusCode = 403;
+						return "you are not the owner";
+					}
 
 					return "Deleted";
 				}

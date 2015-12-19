@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GearUp.Services
+namespace GearUp.Models
 {
     public class SiteSettings
 	{

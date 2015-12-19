@@ -7,6 +7,8 @@ namespace GearUp.Models
 	[DataContract]
 	public class Build
 	{
+		public const string CreatorField = "Creator";
+
 		public Build()
 		{
 			Version = 1;

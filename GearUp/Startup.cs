@@ -13,6 +13,7 @@
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.PlatformAbstractions;
 	using Shared.Interfaces;
+	using Models;
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup

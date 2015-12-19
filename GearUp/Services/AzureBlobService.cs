@@ -6,6 +6,7 @@
 	using System.Threading.Tasks;
 	using GearUp.Interfaces;
 	using Microsoft.Extensions.OptionsModel;
+	using Models;
 	public class AzureBlobService : IAppBlobStorage
     {
 		private SiteSettings _settings;
