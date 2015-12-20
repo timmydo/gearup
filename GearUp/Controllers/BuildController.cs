@@ -112,9 +112,10 @@
             foreach (var id in bl.Builds)
             {
                 var fullBuild = await this._data.GetKeyAsync(BuildNamespace + id);
-                if (fullBuild != null)
+                if (!string.IsNullOrEmpty(fullBuild))
                 {
-                    list.Add(fullBuild);
+					var jobj = JObject.Parse(fullBuild);
+					list.Add(jobj);
                 }
             }
 

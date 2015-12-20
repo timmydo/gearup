@@ -7,8 +7,8 @@ namespace GearUp.Models
 	[DataContract]
 	public class Build
 	{
-		public const string CreatorField = "Creator";
-
+		public const string CreatorField = nameof(Creator);
+		public const string IdField = nameof(id);
 		public Build()
 		{
 			Version = 1;
@@ -16,7 +16,6 @@ namespace GearUp.Models
 			Modified = DateTime.UtcNow;
 			Created = Modified;
 			Creator = string.Empty;
-			DocType = "build";
 			Title = "";
 			Description = "";
 			Url = string.Empty;

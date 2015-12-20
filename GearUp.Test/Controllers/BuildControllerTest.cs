@@ -30,7 +30,7 @@ namespace GearUp.Test.Controllers
 			_serviceProvider = services.BuildServiceProvider();
 		}
 
-		private BuildController GetController()
+		public BuildController GetController()
 		{
 			var bc = new BuildController(_serviceProvider.GetRequiredService<ILogger>(),
 				_serviceProvider.GetRequiredService<IPartitionedKeyValueDictionary>());
@@ -92,10 +92,10 @@ namespace GearUp.Test.Controllers
 			Assert.True(string.IsNullOrEmpty(result3));
 		}
 
-		private void setupUser(Controller c)
+		private void setupUser(Controller c, string name = "user")
 		{
 			var claims = new List<Claim> {
-				new Claim(ClaimTypes.NameIdentifier, "user"),
+				new Claim(ClaimTypes.NameIdentifier, name),
 				new Claim("urn:google:something", "asdf")};
 
 			c.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
@@ -122,30 +122,67 @@ namespace GearUp.Test.Controllers
 		public async Task Build_GetMultiple()
 		{
 			var c = GetController();
+
 			var result = await c.CreateBuild();
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+
+			var result2 = await c.CreateBuild();
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+
+			var bl = new BuildList();
+			bl.Builds = new List<string>()
+			{
+				result,
+				result2
+			};
+
+			var result3 = await c.GetMultiple(bl);
+			var arr = JArray.Parse(result3);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(arr[0][Build.IdField].ToObject<string>().Equals(result));
+			Assert.True(arr[1][Build.IdField].ToObject<string>().Equals(result2));
 		}
 
 		[Fact]
 		public async Task Build_GetMultiple_EmptyList()
 		{
 			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.False(true);
+
+			var bl = new BuildList();
+			bl.Builds = new List<string>()
+			{
+			};
+
+			var result3 = await c.GetMultiple(bl);
+			var arr = JArray.Parse(result3);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(arr.Count == 0);
 		}
 
 		[Fact]
 		public async Task Build_GetMultiple_NotExist()
 		{
 			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.False(true);
+
+			var bl = new BuildList();
+			bl.Builds = new List<string>()
+			{
+				"abc"
+			};
+
+			var result3 = await c.GetMultiple(bl);
+			var arr = JArray.Parse(result3);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(arr.Count == 0);
 		}
 
 		[Fact]
 		public async Task BuildDeleteImage()
 		{
 			var c = GetController();
+			setupUser(c);
 			var result = await c.CreateBuild();
+			
 			Assert.False(true);
 		}
 
