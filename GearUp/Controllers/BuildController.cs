@@ -20,6 +20,8 @@
 
         private readonly ILogger _logger;
         private readonly IPartitionedKeyValueDictionary _data;
+		private readonly IAppBlobStorage _blobService;
+
 		public readonly string BuildNamespace = "b/";
 
         public class DeleteImageParamInfo
@@ -30,10 +32,11 @@
         }
 
 
-        public BuildController(ILogger logger, IPartitionedKeyValueDictionary data)
+        public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService)
         {
             this._logger = logger;
 			this._data = data;
+			this._blobService = blobService;
         }
 
 
@@ -59,7 +62,7 @@
 			var ownerstr = uid == null ? "null" : "\"" + uid + "\"";
 
 			await this._data.AddKeyAsync(BuildNamespace + guid, 
-				string.Format("{{'id': '{0}', owner: {1}}}", guid, ownerstr));
+				string.Format("{{'id': '{0}', '{1}': {2}}}", guid, Build.CreatorFieldName, ownerstr));
 			return guid;
 		}
 
@@ -79,7 +82,7 @@
 				{
 					var jo = JObject.Parse(bdata);
 					var actualBuild = JObject.Parse(await this._data.GetKeyAsync(BuildNamespace + b));
-					if (uid == actualBuild.GetValue("owner").ToObject<string>())
+					if (uid == actualBuild.GetValue(Build.CreatorFieldName).ToObject<string>())
 					{
 						await this._data.DeleteKeyAsync(BuildNamespace + b);
 					}
@@ -123,14 +126,76 @@
         }
 
 
-        [HttpPost("delete-image")]
+		public readonly List<string> ValidContentTypes = new List<string>() { "image/png", "image/jpeg", "image/gif" };
+
+		[HttpPost("add-image")]
+		[Produces("application/json", "text/json")]
+		public async Task<string> AddImage([FromQuery]string buildid)
+		{
+			var stream = Request.Body;
+			var uid = UserLogin.UserUniqueId(User?.Identity);
+
+			if (string.IsNullOrEmpty(uid))
+			{
+				HttpContext.Response.StatusCode = 401;
+				return "User is not logged in";
+			}
+
+			if (!ValidContentTypes.Contains(Request.ContentType))
+			{
+				HttpContext.Response.StatusCode = 400;
+				return "Invalid Content Type";
+			}
+
+			if (string.IsNullOrEmpty(buildid))
+			{
+				HttpContext.Response.StatusCode = 404;
+				return "Invalid Build ID";
+			}
+
+			var b = await this._data.GetKeyAsync(BuildNamespace + buildid);
+			if (string.IsNullOrEmpty(b))
+			{
+				HttpContext.Response.StatusCode = 400;
+				return "build not found";
+			}
+
+			_logger.LogInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
+
+			// upload stream
+			var imageGuid = await this._blobService.UploadUserImage(stream, Request.ContentType);
+
+			var bobj = JObject.Parse(b);
+			var arr = bobj[Build.ImageFieldName] as JArray;
+			if (arr == null)
+			{
+				arr = JArray.Parse("[]");
+			}
+
+			arr.Add(JToken.Parse(string.Format("{{'{0}':'{1}'}}", Image.GuidFieldName, imageGuid)));
+			bobj[Build.ImageFieldName] = arr;
+
+			var success = await this._data.UpdateKeyAsync(BuildNamespace + buildid, bobj.ToString(), "timestamp");
+
+			if (!success)
+			{
+				//FIXME, try again?
+				HttpContext.Response.StatusCode = 500;
+				return "cannot update build";
+			}
+
+			return imageGuid;
+		}
+
+		[HttpPost("delete-image")]
         public async Task<string> DeleteImage([FromBody]DeleteImageParamInfo pi)
         {
             var uid = UserLogin.UserUniqueId(User?.Identity);
 
             if (string.IsNullOrEmpty(uid))
             {
-                throw new Exception("User is not logged in");
+				HttpContext.Response.StatusCode = 401;
+                return "User is not logged in";
             }
 
 			var b = await this._data.GetKeyAsync(BuildNamespace + pi.Build);
@@ -142,18 +207,18 @@
 
 			var bobj = JObject.Parse(b);
 
-			var buid = bobj.GetValue("Creator").ToObject<string>();
+			var buid = bobj.GetValue(Build.CreatorFieldName).ToObject<string>();
 			if (buid != uid)
 			{
 				HttpContext.Response.StatusCode = 403;
 				return "cannot modify other user's build";
 			}
 
-			var imgList = bobj["img"] as JArray;
+			var imgList = bobj[Build.ImageFieldName] as JArray;
 			if (imgList != null)
 			{
-				var newList = imgList.Where(i => i["Guid"].ToObject<string>() != pi.Image);
-				bobj["img"] = JArray.FromObject(newList);
+				var newList = imgList.Where(i => i[Image.GuidFieldName].ToObject<string>() != pi.Image);
+				bobj[Build.ImageFieldName] = JArray.FromObject(newList);
 				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, bobj.ToString(), "timestamp");
 			}
 

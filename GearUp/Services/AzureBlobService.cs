@@ -7,6 +7,8 @@
 	using GearUp.Interfaces;
 	using Microsoft.Extensions.OptionsModel;
 	using Models;
+	using System;
+
 	public class AzureBlobService : IAppBlobStorage
     {
 		private SiteSettings _settings;
@@ -22,7 +24,7 @@
 			logger.LogInformation("BlobService creation");
 		}
 
-		public async Task UploadFile(Stream stream, string contentType, string containerName, string uid)
+		private async Task UploadFile(Stream stream, string contentType, string containerName, string uid)
 		{
 			var client = this._storageAccount.CreateCloudBlobClient();
 			var container = client.GetContainerReference(containerName);
@@ -39,6 +41,13 @@
 			var container = client.GetContainerReference(containerName);
 			var blob = container.GetBlockBlobReference(uid);
 			return await blob.DeleteIfExistsAsync();
+		}
+
+		public async Task<string> UploadUserImage(Stream stream, string contentType)
+		{
+			string guid = Guid.NewGuid().ToString("N");
+			await this.UploadFile(stream, contentType, this._settings.ImagesContainer, guid);
+			return guid;
 		}
 	}
 }

@@ -6,6 +6,8 @@ namespace GearUp.Models
 	[DataContract]
 	public class Image
 	{
+		public const string GuidFieldName = nameof(Guid);
+
 		public string Guid { get; set;  }
 		public string Title { get; set; }
 

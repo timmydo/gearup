@@ -51,7 +51,7 @@ namespace GearUpBackend
 			}
 		}
 
-		public async Task UpdateKeyAsync(string key, string value, string updateFunc)
+		public async Task<bool> UpdateKeyAsync(string key, string value, string updateFunc)
 		{
 			if (_dict == null) throw new NullReferenceException(nameof(_dict));
 			if (updateFunc == null) updateFunc = string.Empty;
@@ -67,6 +67,8 @@ namespace GearUpBackend
 
 				await tx.CommitAsync();
 			}
+
+			return true;
 		}
 
 		/// <summary>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GearUp.Test
+namespace GearUp.Test.Mocks
 {
 	public class MockDictionary : IPartitionedKeyValueDictionary
 	{
@@ -39,10 +39,11 @@ namespace GearUp.Test
 			return _dict[key];
 		}
 
-		public async Task UpdateKeyAsync(string key, string value, string updateMethod)
+		public async Task<bool> UpdateKeyAsync(string key, string value, string updateMethod)
 		{
 			await Task.FromResult(0);
 			_dict[key] = value;
+			return true;
 		}
 	}
 }

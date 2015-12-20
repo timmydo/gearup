@@ -7,8 +7,9 @@ namespace GearUp.Models
 	[DataContract]
 	public class Build
 	{
-		public const string CreatorField = nameof(Creator);
-		public const string IdField = nameof(id);
+		public const string CreatorFieldName = nameof(Creator);
+		public const string IdFieldName = nameof(id);
+		public const string ImageFieldName = nameof(Images);
 		public Build()
 		{
 			Version = 1;
