@@ -6,7 +6,7 @@ namespace GearUp.Interfaces
     public interface IAppBlobStorage
     {
 		Task<string> UploadUserImage(Stream stream, string contentType);
-		Task<bool> DeleteFile(string containerName, string uid);
+		Task<bool> DeleteImage(string uid);
 
     }
 

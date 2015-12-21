@@ -42,119 +42,92 @@
 			return c;
 		}
 
-
 		[Fact]
-		public async Task ListAddBuild_ListNotFound()
+		public async Task ListCreate_NotLoggedIn()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			var l = await c.CreateList();
+			Assert.True(c.HttpContext.Response.StatusCode == 401);
 		}
 
 		[Fact]
-		public async Task ListAddBuild_BuildNotFound()
+		public async Task ListCreateGet_Success()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
-		}
-
-		[Fact]
-		public async Task ListAddBuild_NotUsersList()
-		{
-			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
-		}
-
-		[Fact]
-		public async Task ListAddBuild_Success()
-		{
-			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
-		}
-
-		[Fact]
-		public async Task ListRemoveBuild_Success()
-		{
-			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
-		}
-
-		[Fact]
-		public async Task ListRemoveBuild_ListNotFound()
-		{
-			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
-		}
-
-		[Fact]
-		public async Task ListRemoveBuild_BuildNotFound()
-		{
-			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
-		}
-
-		[Fact]
-		public async Task ListRemoveBuild_NotUsersList()
-		{
-			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			TestHelper.SetupUser(c);
+			var l = await c.CreateList();
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			var result = await c.GetById(l.Id);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(result.Id == l.Id);
 		}
 
 		[Fact]
 		public async Task ListDelete_Success()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			TestHelper.SetupUser(c);
+			var l = await c.CreateList();
+			var result = await c.Delete(l.Id);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
 		}
 
 		[Fact]
 		public async Task ListDelete_NotOwner()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			TestHelper.SetupUser(c, "1");
+			var l = await c.CreateList();
+			TestHelper.SetupUser(c, "2");
+			var result = await c.Delete(l.Id);
+			Assert.True(c.HttpContext.Response.StatusCode == 403);
 		}
 
 		[Fact]
 		public async Task ListDelete_NotFound()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			var result = await c.Delete("abc");
+			Assert.True(c.HttpContext.Response.StatusCode == 404);
 		}
 
 		[Fact]
 		public async Task ListSave_Success()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			TestHelper.SetupUser(c);
+			var l = await c.CreateList();
+			l.Title = "1";
+			l.Description = "2";
+			await c.Save(l);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			var l2 = await c.GetById(l.Id);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(l2.Id == l.Id);
+			Assert.True(l2.Title == l.Title);
+			Assert.True(l2.Description == l.Description);
 		}
 
 		[Fact]
 		public async Task ListSave_NotOwner()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			TestHelper.SetupUser(c, "1");
+			var l = await c.CreateList();
+			TestHelper.SetupUser(c, "2");
+			await c.Save(l);
+			Assert.True(c.HttpContext.Response.StatusCode == 403);
 		}
 
 		[Fact]
 		public async Task ListSave_ListNotFound()
 		{
 			var c = GetController();
-			var result = await c.GetById("123");
-			Assert.False(true);
+			TestHelper.SetupUser(c);
+			var l = await c.CreateList();
+			l.Id = "a";
+			await c.Save(l);
+			Assert.True(c.HttpContext.Response.StatusCode == 404);
 		}
-
-
 	}
 }

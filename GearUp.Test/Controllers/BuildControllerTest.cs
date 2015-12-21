@@ -16,8 +16,9 @@ namespace GearUp.Test.Controllers
 	using System.Collections.Generic;
 	using System.Security.Claims;
 	using System.Threading.Tasks;
+	using System.Linq;
 	using Xunit;
-
+	using Newtonsoft.Json;
 	public class BuildControllerTest
 	{
 		private readonly IServiceProvider _serviceProvider;
@@ -52,7 +53,7 @@ namespace GearUp.Test.Controllers
 			var result = await c.GetById("123");
 
 			Assert.True(c.HttpContext.Response.StatusCode == 404);
-			Assert.True(string.IsNullOrEmpty(result));
+			Assert.True(result == null);
 		}
 
 		[Fact]
@@ -60,10 +61,10 @@ namespace GearUp.Test.Controllers
 		{
 			var c = GetController();
 			c.HttpContext.User = new ClaimsPrincipal();
-			var result = await c.CreateBuild();
+			var b = await c.CreateBuild();
 
 			Assert.True(c.HttpContext.Response.StatusCode == 401);
-			Assert.True(string.IsNullOrEmpty(result));
+			Assert.True(b == null);
 		}
 
 		[Fact]
@@ -71,40 +72,32 @@ namespace GearUp.Test.Controllers
 		{
 			var c = GetController();
 
-			setupUser(c);
+			TestHelper.SetupUser(c);
 			
 			var uuid = UserLogin.UserUniqueId(c.HttpContext.User.Identity);
-			var result = await c.CreateBuild();
+			var build = await c.CreateBuild();
 
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
-			Assert.False(string.IsNullOrEmpty(result));
+			Assert.True(build != null);
 
-			var result2 = await c.GetById(result);
+			var result2 = await c.GetById(build.Id);
 
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
-			Assert.False(string.IsNullOrEmpty(result2));
+			Assert.True(result2 != null);
+			Assert.True(result2.Id == build.Id);
+			Assert.True(result2.Creator == uuid);
+			Assert.True(result2.Creator == build.Creator);
 
-			var bobj = JObject.Parse(result2);
-			Assert.True(bobj[Build.CreatorFieldName].ToObject<string>() == uuid);
-
-
-			await c.DeleteBuild(result);
+			await c.DeleteBuild(build.Id);
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 
-			var result3 = await c.GetById(result);
+			var result3 = await c.GetById(build.Id);
 
 			Assert.True(c.HttpContext.Response.StatusCode == 404);
-			Assert.True(string.IsNullOrEmpty(result3));
+			Assert.True(result3 == null);
 		}
 
-		private void setupUser(Controller c, string name = "user")
-		{
-			var claims = new List<Claim> {
-				new Claim(ClaimTypes.NameIdentifier, name),
-				new Claim("urn:google:something", "asdf")};
 
-			c.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-		}
 
 		[Fact]
 		public async Task DeleteBuild_NotFound()
@@ -118,34 +111,34 @@ namespace GearUp.Test.Controllers
 		public async Task DeleteBuild_NotOwner()
 		{
 			var c = GetController();
+			TestHelper.SetupUser(c, "1");
 			var result = await c.CreateBuild();
-			await c.DeleteBuild(result);
-			Assert.True(c.HttpContext.Response.StatusCode == 404);
+			TestHelper.SetupUser(c, "2");
+			await c.DeleteBuild(result.Id);
+			Assert.True(c.HttpContext.Response.StatusCode == 403);
 		}
 
 		[Fact]
 		public async Task Build_GetMultiple()
 		{
 			var c = GetController();
-
+			TestHelper.SetupUser(c);
 			var result = await c.CreateBuild();
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 
 			var result2 = await c.CreateBuild();
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 
-			var bl = new BuildList();
-			bl.Builds = new List<string>()
+			var bl = new List<string>()
 			{
-				result,
-				result2
+				result.Id,
+				result2.Id
 			};
 
 			var result3 = await c.GetMultiple(bl);
-			var arr = JArray.Parse(result3);
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
-			Assert.True(arr[0][Build.IdFieldName].ToObject<string>().Equals(result));
-			Assert.True(arr[1][Build.IdFieldName].ToObject<string>().Equals(result2));
+			Assert.True(result3[0].Id.Equals(result.Id));
+			Assert.True(result3[1].Id.Equals(result2.Id));
 		}
 
 		[Fact]
@@ -153,15 +146,13 @@ namespace GearUp.Test.Controllers
 		{
 			var c = GetController();
 
-			var bl = new BuildList();
-			bl.Builds = new List<string>()
+			var bl = new List<string>()
 			{
 			};
 
 			var result3 = await c.GetMultiple(bl);
-			var arr = JArray.Parse(result3);
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
-			Assert.True(arr.Count == 0);
+			Assert.True(result3.Count == 0);
 		}
 
 		[Fact]
@@ -169,24 +160,22 @@ namespace GearUp.Test.Controllers
 		{
 			var c = GetController();
 
-			var bl = new BuildList();
-			bl.Builds = new List<string>()
+			var bl = new List<string>()
 			{
 				"abc"
 			};
 
 			var result3 = await c.GetMultiple(bl);
-			var arr = JArray.Parse(result3);
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
-			Assert.True(arr.Count == 0);
+			Assert.True(result3.Count == 0);
 		}
 
 		[Fact]
 		public async Task BuildAddImage_DeleteImage_Success()
 		{
 			var c = GetController();
-			setupUser(c);
-			var bresult = await c.CreateBuild();
+			TestHelper.SetupUser(c);
+			var bresult = (await c.CreateBuild()).Id;
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 
 			c.Request.HttpContext.Request.ContentType = c.ValidContentTypes[0];
@@ -195,9 +184,7 @@ namespace GearUp.Test.Controllers
 
 			// check to see if the image exists
 			var newb = await c.GetById(bresult);
-			var bobj = JObject.Parse(newb);
-			var images = bobj[Build.ImageFieldName] as JArray;
-			Assert.True(images[0][Image.GuidFieldName].ToObject<string>() == iresult);
+			Assert.True(newb.Images[0].Id == iresult);
 
 			var dpi = new BuildController.DeleteImageParamInfo
 			{
@@ -213,7 +200,7 @@ namespace GearUp.Test.Controllers
 		public async Task BuildAddImage_BuildNotFound()
 		{
 			var c = GetController();
-			setupUser(c);
+			TestHelper.SetupUser(c);
 			c.Request.HttpContext.Request.ContentType = c.ValidContentTypes[0];
 			var result = await c.AddImage("abc");
 
@@ -224,10 +211,10 @@ namespace GearUp.Test.Controllers
 		public async Task BuildAddImage_NotOwner()
 		{
 			var c = GetController();
-			setupUser(c);
-			var bresult = await c.CreateBuild();
+			TestHelper.SetupUser(c, "1");
+			var bresult = (await c.CreateBuild()).Id;
 			c.Request.HttpContext.Request.ContentType = c.ValidContentTypes[0];
-			setupUser(c, "asdf");
+			TestHelper.SetupUser(c, "2");
 			var iresult = await c.AddImage(bresult);
 
 			Assert.True(c.HttpContext.Response.StatusCode == 403);
@@ -237,8 +224,8 @@ namespace GearUp.Test.Controllers
 		public async Task BuildAddImage_BadContentType()
 		{
 			var c = GetController();
-			setupUser(c);
-			var bresult = await c.CreateBuild();
+			TestHelper.SetupUser(c);
+			var bresult = (await c.CreateBuild()).Id;
 			c.Request.HttpContext.Request.ContentType = "asdf";
 			var result = await c.AddImage(bresult);
 			Assert.True(c.HttpContext.Response.StatusCode == 400);
@@ -248,8 +235,8 @@ namespace GearUp.Test.Controllers
 		public async Task BuildDeleteImage_NotOwner()
 		{
 			var c = GetController();
-			setupUser(c);
-			var bresult = await c.CreateBuild();
+			TestHelper.SetupUser(c);
+			var bresult = (await c.CreateBuild()).Id;
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 
 			c.Request.HttpContext.Request.ContentType = c.ValidContentTypes[0];
@@ -261,7 +248,7 @@ namespace GearUp.Test.Controllers
 				Build = bresult,
 				Image = iresult
 			};
-			setupUser(c, "abc");
+			TestHelper.SetupUser(c, "abc");
 			var dresult = await c.DeleteImage(dpi);
 			Assert.True(c.HttpContext.Response.StatusCode == 403);
 		}
@@ -270,50 +257,72 @@ namespace GearUp.Test.Controllers
 		public async Task BuildDeleteImage_BadImage()
 		{
 			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.True(false);
+			TestHelper.SetupUser(c);
+			var bresult = (await c.CreateBuild()).Id;
+			c.Request.HttpContext.Request.ContentType = c.ValidContentTypes[0];
+
+			var dpi = new BuildController.DeleteImageParamInfo
+			{
+				Build = bresult,
+				Image = "asdf"
+			};
+
+			var dresult = await c.DeleteImage(dpi);
+			Assert.True(c.HttpContext.Response.StatusCode == 400);
 		}
 
 		[Fact]
 		public async Task BuildDeleteImage_BadBuild()
 		{
 			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.True(false);
+			TestHelper.SetupUser(c);
+			var dpi = new BuildController.DeleteImageParamInfo
+			{
+				Build = "asdf",
+				Image = "asdf"
+			};
+
+			var dresult = await c.DeleteImage(dpi);
+			Assert.True(c.HttpContext.Response.StatusCode == 404);
 		}
 
 		[Fact]
 		public async Task BuildGetRecent_AfterCreate()
 		{
 			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.True(false);
+			TestHelper.SetupUser(c);
+			var bresult = await c.CreateBuild();
+			var recent = await c.GetRecent();
+			Assert.True(recent.Contains(bresult.Id));
 		}
 
 		[Fact]
 		public async Task BuildSave()
 		{
 			var c = GetController();
+			TestHelper.SetupUser(c);
 			var result = await c.CreateBuild();
-			Assert.True(false);
+			result.Title = "test";
+			result.Description = "test2";
+			await c.Save(result);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			var b2 = await c.GetById(result.Id);
+
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(b2.Id == b2.Id);
+			Assert.True(b2.Title == b2.Title);
+			Assert.True(b2.Description == b2.Description);
 		}
 
 		[Fact]
 		public async Task BuildSave_NotOwner()
 		{
 			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.True(false);
+			TestHelper.SetupUser(c);
+			var build = await c.CreateBuild();
+			TestHelper.SetupUser(c, "u2");
+			await c.Save(build);
+			Assert.True(c.HttpContext.Response.StatusCode == 403);
 		}
-
-		[Fact]
-		public async Task BuildSave_NotLLoggedIn()
-		{
-			var c = GetController();
-			var result = await c.CreateBuild();
-			Assert.True(false);
-		}
-
-
 	}
 }

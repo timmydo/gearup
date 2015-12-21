@@ -6,6 +6,7 @@
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.ServiceFabric.Services.Remoting.Client;
+	using Newtonsoft.Json;
 	using Newtonsoft.Json.Linq;
 	using Shared.Interfaces;
 	using System;
@@ -15,63 +16,76 @@
 
 
 	[Route("api/[controller]")]
-    public class BuildController : Controller
-    {
+	public class BuildController : Controller
+	{
 
-        private readonly ILogger _logger;
-        private readonly IPartitionedKeyValueDictionary _data;
+		private readonly ILogger _logger;
+		private readonly IPartitionedKeyValueDictionary _data;
 		private readonly IAppBlobStorage _blobService;
 
 		public readonly string BuildNamespace = "b/";
 
-        public class DeleteImageParamInfo
-        {
-            public string Build { get; set; }
-            public string Image { get; set; }
+		public class DeleteImageParamInfo
+		{
+			public string Build { get; set; }
+			public string Image { get; set; }
 
-        }
+		}
 
 
-        public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService)
-        {
-            this._logger = logger;
+		public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService)
+		{
+			this._logger = logger;
 			this._data = data;
 			this._blobService = blobService;
-        }
+		}
 
 
-        [Produces("application/json", "text/json")]
-        [HttpGet("get/{id}")]
-        public async Task<string> GetById(string id)
-        {
-            var b = await this._data.GetKeyAsync(BuildNamespace + id);
+		[Produces("application/json", "text/json")]
+		[HttpGet("get/{id}")]
+		public async Task<Build> GetById(string id)
+		{
+			var b = await this._data.GetKeyAsync(BuildNamespace + id);
 			if (string.IsNullOrEmpty(b))
 			{
 				HttpContext.Response.StatusCode = 404;
+				return null;
 			}
-
-            return b;
-        }
+			var build = JsonConvert.DeserializeObject<Build>(b);
+			return build;
+		}
 
 
 		[HttpPost("create")]
-		public async Task<string> CreateBuild()
+		public async Task<Build> CreateBuild()
 		{
-			var guid = System.Guid.NewGuid().ToString("N");
-            var uid = UserLogin.UserUniqueId(User?.Identity);
-			var ownerstr = uid == null ? "null" : "\"" + uid + "\"";
+			var uid = UserLogin.UserUniqueId(User?.Identity);
 
-			await this._data.AddKeyAsync(BuildNamespace + guid, 
-				string.Format("{{'id': '{0}', '{1}': {2}}}", guid, Build.CreatorFieldName, ownerstr));
-			return guid;
+			if (string.IsNullOrEmpty(uid))
+			{
+				HttpContext.Response.StatusCode = 401;
+				return null;
+			}
+
+			var b = new Build
+			{
+				Id = System.Guid.NewGuid().ToString("N"),
+				Creator = UserLogin.UserUniqueId(User?.Identity),
+				Created = DateTime.UtcNow,
+				Modified = DateTime.UtcNow
+			};
+
+			var bstr = JsonConvert.SerializeObject(b);
+			await this._data.AddKeyAsync(BuildNamespace + b.Id, bstr);
+			return b;
 		}
 
 		[HttpPost("delete")]
-        public async Task<string> DeleteBuild([FromBody]string b)
-        {
-            if (!string.IsNullOrEmpty(b))
-            {
-                var uid = UserLogin.UserUniqueId(User?.Identity);
+		public async Task<string> DeleteBuild([FromBody]string b)
+		{
+			if (!string.IsNullOrEmpty(b))
+			{
+				var uid = UserLogin.UserUniqueId(User?.Identity);
 				var bdata = await this._data.GetKeyAsync(BuildNamespace + b);
 				if (string.IsNullOrEmpty(bdata))
 				{
@@ -80,9 +94,8 @@
 				}
 				else
 				{
-					var jo = JObject.Parse(bdata);
-					var actualBuild = JObject.Parse(await this._data.GetKeyAsync(BuildNamespace + b));
-					if (uid == actualBuild.GetValue(Build.CreatorFieldName).ToObject<string>())
+					var build = JsonConvert.DeserializeObject<Build>(await this._data.GetKeyAsync(BuildNamespace + b));
+					if (uid == build.Creator)
 					{
 						await this._data.DeleteKeyAsync(BuildNamespace + b);
 					}
@@ -94,42 +107,40 @@
 
 					return "Deleted";
 				}
-            }
-            else
-            {
-                throw new Exception("Invalid Build");
-            }
-        }
+			}
+			else
+			{
+				throw new Exception("Invalid Build");
+			}
+		}
 
 
-        [Produces("application/json", "text/json")]
-        [HttpPost("get")]
-		public async Task<string> GetMultiple([FromBody]BuildList bl)
-        {
-            this._logger.LogInformation("Get builds, count: " + bl.Builds.Count);
-            if (bl.Builds.Count < 1)
-            {
-                return "[]";
-            }
-            var list = new JArray();
-            foreach (var id in bl.Builds)
-            {
-                var fullBuild = await this._data.GetKeyAsync(BuildNamespace + id);
-                if (!string.IsNullOrEmpty(fullBuild))
-                {
-					var jobj = JObject.Parse(fullBuild);
-					list.Add(jobj);
-                }
-            }
+		[Produces("application/json", "text/json")]
+		[HttpPost("get")]
+		public async Task<List<Build>> GetMultiple([FromBody]List<string> bl)
+		{
+			this._logger.LogInformation("Get builds, count: " + bl.Count);
+			if (bl.Count < 1)
+			{
+				return new List<Build>();
+			}
+			var list = new List<Build>();
+			foreach (var id in bl)
+			{
+				var fullBuild = await this._data.GetKeyAsync(BuildNamespace + id);
+				if (!string.IsNullOrEmpty(fullBuild))
+				{
+					list.Add(JsonConvert.DeserializeObject<Build>(fullBuild));
+				}
+			}
 
-            return list.ToString();
-        }
+			return list;
+		}
 
 
 		public readonly List<string> ValidContentTypes = new List<string>() { "image/png", "image/jpeg", "image/gif" };
 
 		[HttpPost("add-image")]
-		[Produces("application/json", "text/json")]
 		public async Task<string> AddImage([FromQuery]string buildid)
 		{
 			var stream = Request.Body;
@@ -153,34 +164,39 @@
 				return "Invalid Build ID";
 			}
 
-			var b = await this._data.GetKeyAsync(BuildNamespace + buildid);
-			if (string.IsNullOrEmpty(b))
+			var bdata = await this._data.GetKeyAsync(BuildNamespace + buildid);
+			if (string.IsNullOrEmpty(bdata))
 			{
-				HttpContext.Response.StatusCode = 400;
+				HttpContext.Response.StatusCode = 404;
 				return "build not found";
+			}
+
+			var build = JsonConvert.DeserializeObject<Build>(bdata);
+
+			if (build.Creator != uid)
+			{
+				HttpContext.Response.StatusCode = 403;
+				return "cannot modify other user's build";
 			}
 
 			_logger.LogInformation("Upload Image, Content Type: " + Request.ContentType + " Build ID: " + buildid);
 
-			// upload stream
 			var imageGuid = await this._blobService.UploadUserImage(stream, Request.ContentType);
 
-			var bobj = JObject.Parse(b);
-			var arr = bobj[Build.ImageFieldName] as JArray;
-			if (arr == null)
+			if (build.Images == null)
 			{
-				arr = JArray.Parse("[]");
+				build.Images = new List<Image>();
 			}
 
-			arr.Add(JToken.Parse(string.Format("{{'{0}':'{1}'}}", Image.GuidFieldName, imageGuid)));
-			bobj[Build.ImageFieldName] = arr;
+			build.Images.Add(new Image { Id = imageGuid });
 
-			var success = await this._data.UpdateKeyAsync(BuildNamespace + buildid, bobj.ToString(), "timestamp");
+			var success = await this._data.UpdateKeyAsync(BuildNamespace + buildid, JsonConvert.SerializeObject(build), "timestamp");
 
 			if (!success)
 			{
 				//FIXME, try again?
 				HttpContext.Response.StatusCode = 500;
+				await this._blobService.DeleteImage(imageGuid);
 				return "cannot update build";
 			}
 
@@ -188,82 +204,96 @@
 		}
 
 		[HttpPost("delete-image")]
-        public async Task<string> DeleteImage([FromBody]DeleteImageParamInfo pi)
-        {
-            var uid = UserLogin.UserUniqueId(User?.Identity);
+		public async Task<string> DeleteImage([FromBody]DeleteImageParamInfo pi)
+		{
+			var uid = UserLogin.UserUniqueId(User?.Identity);
 
-            if (string.IsNullOrEmpty(uid))
-            {
-				HttpContext.Response.StatusCode = 401;
-                return "User is not logged in";
-            }
-
-			var b = await this._data.GetKeyAsync(BuildNamespace + pi.Build);
-			if (string.IsNullOrEmpty(b))
+			if (string.IsNullOrEmpty(uid))
 			{
-				HttpContext.Response.StatusCode = 400;
+				HttpContext.Response.StatusCode = 401;
+				return "User is not logged in";
+			}
+
+			var bstr = await this._data.GetKeyAsync(BuildNamespace + pi.Build);
+			if (string.IsNullOrEmpty(bstr))
+			{
+				HttpContext.Response.StatusCode = 404;
 				return "build not found";
 			}
 
-			var bobj = JObject.Parse(b);
+			var b = JsonConvert.DeserializeObject<Build>(bstr);
 
-			var buid = bobj.GetValue(Build.CreatorFieldName).ToObject<string>();
-			if (buid != uid)
+			if (b.Creator != uid)
 			{
 				HttpContext.Response.StatusCode = 403;
 				return "cannot modify other user's build";
 			}
 
-			var imgList = bobj[Build.ImageFieldName] as JArray;
-			if (imgList != null)
+			if (b.Images != null)
 			{
-				var newList = imgList.Where(i => i[Image.GuidFieldName].ToObject<string>() != pi.Image);
-				bobj[Build.ImageFieldName] = JArray.FromObject(newList);
-				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, bobj.ToString(), "timestamp");
+				var newList = b.Images.Where(i => i.Id != pi.Image);
+				if (newList.Count() == b.Images.Count)
+				{
+					HttpContext.Response.StatusCode = 404;
+					return "image not found";
+				}
+
+				b.Images = newList.ToList();
+				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, JsonConvert.SerializeObject(b), "timestamp");
+			}
+			else
+			{
+				HttpContext.Response.StatusCode = 400;
+				return "no images to delete";
 			}
 
-            return "Success";
-        }
+			return "Success";
+		}
 
 
-        [HttpGet("recent")]
-        [Produces("application/json", "text/json")]
-        public async Task<string> GetRecent()
-        {
+		[HttpGet("recent")]
+		[Produces("application/json", "text/json")]
+		public async Task<List<string>> GetRecent()
+		{
+			//FIXME
+			return await Task.FromResult(new List<string>());
+		}
 
-			return await Task.FromResult("[]");
-        }
 
 
+		[HttpPost("save")]
+		public async Task<string> Save([FromBody]Build b)
+		{
+			if (b != null && !string.IsNullOrEmpty(b.Creator))
+			{
+				var uid = UserLogin.UserUniqueId(User?.Identity);
+				if (string.IsNullOrEmpty(uid))
+				{
+					HttpContext.Response.StatusCode = 401;
+					return "login first";
+				}
 
-        [HttpPost("save")]
-        public async Task<string> Save([FromBody]Build b)
-        {
-            if (User == null)
-            {
-                throw new Exception("User is null");
-            }
-
-            if (b != null && !string.IsNullOrEmpty(b.Creator))
-            {
-                var uid = UserLogin.UserUniqueId(User?.Identity);
 				if (uid != b.Creator)
 				{
 					HttpContext.Response.StatusCode = 403;
 					return "not your build";
 				}
 
-                this._logger.LogInformation("SaveBuild Controller Post");
-				var bobj = JObject.FromObject(b);
-                await this._data.UpdateKeyAsync(BuildNamespace + b.id, bobj.ToString(), "timestamp");
-                return "saved";
-            }
-            else
-            {
-				HttpContext.Response.StatusCode = 400;
-                return "Invalid Build";
-            }
-        }
+				var actual = await this.GetById(b.Id);
 
-    }
+				// do not allow update of creator or images
+				b.Creator = actual.Creator;
+				b.Images = actual.Images;
+
+				await this._data.UpdateKeyAsync(BuildNamespace + b.Id, JsonConvert.SerializeObject(b), "timestamp");
+				return "saved";
+			}
+			else
+			{
+				HttpContext.Response.StatusCode = 400;
+				return "Invalid Build";
+			}
+		}
+
+	}
 }

@@ -42,6 +42,10 @@
 			var blob = container.GetBlockBlobReference(uid);
 			return await blob.DeleteIfExistsAsync();
 		}
+		public async Task<bool> DeleteImage(string uid)
+		{
+			return await this.DeleteFile(this._settings.ImagesContainer, uid);
+		}
 
 		public async Task<string> UploadUserImage(Stream stream, string contentType)
 		{

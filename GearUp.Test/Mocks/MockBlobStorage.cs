@@ -11,7 +11,7 @@
 	{
 		private HashSet<string> _images = new HashSet<string>();
 
-		public async Task<bool> DeleteFile(string containerName, string uid)
+		public async Task<bool> DeleteImage(string uid)
 		{
 			if (_images.Contains(uid))
 			{
