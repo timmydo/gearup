@@ -21,7 +21,9 @@
 		private readonly IPartitionedKeyValueDictionary _data;
 		private readonly IAppBlobStorage _blobService;
 
-		public readonly string BuildNamespace = "b/";
+		public readonly static string BuildNamespace = "b/";
+		public readonly static string RecentBuildNamespace = "rb/";
+		public readonly static string RecentBuildName = "*";
 
 		public class DeleteImageParamInfo
 		{
@@ -77,6 +79,7 @@
 			await this._data.AddKeyAsync(BuildNamespace + b.Id, bstr);
 
 			await ListHelper.AddToList(_data, UserController.UserBuildNamespace, uid, b.Id);
+			await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
 
 			return b;
 		}
@@ -107,6 +110,7 @@
 
 			await this._data.DeleteKeyAsync(BuildNamespace + build.Id);
 			await ListHelper.RemoveFromList(_data, UserController.UserBuildNamespace, uid, build.Id);
+			await ListHelper.RemoveFromQueue(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, build.Id);
 
 			return "Deleted";
 
@@ -254,7 +258,13 @@
 		public async Task<List<string>> GetRecent()
 		{
 			//FIXME
-			return await Task.FromResult(new List<string>());
+			var r = await this._data.GetKeyAsync(RecentBuildNamespace + RecentBuildName);
+			if (string.IsNullOrEmpty(r))
+			{
+				throw new Exception("No recent builds");
+			}
+
+			return JsonConvert.DeserializeObject<List<string>>(r);
 		}
 
 
@@ -284,6 +294,8 @@
 				b.Images = actual.Images;
 
 				await this._data.UpdateKeyAsync(BuildNamespace + b.Id, JsonConvert.SerializeObject(b));
+				await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
+
 				return "saved";
 			}
 			else

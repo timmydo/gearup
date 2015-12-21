@@ -11,14 +11,10 @@ namespace GearUp.Services
 	{
 		private Uri uri;
 
-
-
-
 		public ServiceFabricPartitionedKeyValueDictionary(Uri uri)
 		{
 			this.uri = uri;
 		}
-
 
 		public async Task AddKeyAsync(string key, string value)
 		{

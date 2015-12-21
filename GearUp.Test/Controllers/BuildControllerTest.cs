@@ -287,13 +287,16 @@ namespace GearUp.Test.Controllers
 		}
 
 		[Fact]
-		public async Task BuildGetRecent_AfterCreate()
+		public async Task BuildGetRecent_AfterCreateAndDelete()
 		{
 			var c = GetController();
 			TestHelper.SetupUser(c);
 			var bresult = await c.CreateBuild();
 			var recent = await c.GetRecent();
 			Assert.True(recent.Contains(bresult.Id));
+			await c.DeleteBuild(bresult.Id);
+			var r2 = await c.GetRecent();
+			Assert.True(!r2.Contains(bresult.Id));
 		}
 
 		[Fact]
