@@ -4,46 +4,56 @@
 	using GearUp.Models;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
+	using Newtonsoft.Json;
 	using Shared.Interfaces;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
 	[Route("api/[controller]")]
-    public class UserController : Controller
-    {
-        private readonly ILogger _logger;
-        private readonly IPartitionedKeyValueDictionary _ddb;
-		public readonly string UserBuildNamespace = "ub/";
-		public readonly string UserListNamespace = "ul/";
+	public class UserController : Controller
+	{
+		private readonly ILogger _logger;
+		private readonly IPartitionedKeyValueDictionary _ddb;
+		public static readonly string UserBuildNamespace = "ub/";
+		public static readonly string UserListNamespace = "ul/";
 
-        public UserController(IPartitionedKeyValueDictionary ddb, ILogger logger)
-        {
-            this._ddb = ddb;
-            this._logger = logger;
-        }
+		public UserController(IPartitionedKeyValueDictionary ddb, ILogger logger)
+		{
+			this._ddb = ddb;
+			this._logger = logger;
+		}
 
-        [Produces("application/json", "text/json")]
-        [HttpGet("builds/{id}")]
-        public async Task<string> UserBuilds(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return "[]";
-            }
+		private async Task<List<string>> GetList(string ns, string id)
+		{
+			if (string.IsNullOrEmpty(id))
+			{
+				HttpContext.Response.StatusCode = 400;
+				return null;
+			}
 
-            return await this._ddb.GetKeyAsync(UserBuildNamespace + id);
-        }
+			var data = await this._ddb.GetKeyAsync(ns + id);
+			if (string.IsNullOrEmpty(data))
+			{
+				HttpContext.Response.StatusCode = 404;
+				return null;
+			}
 
-        [Produces("application/json", "text/json")]
-        [HttpGet("lists/{id}")]
-        public async Task<string> UserLists(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-				return "[]";
-            }
+			var list = JsonConvert.DeserializeObject<List<string>>(data);
+			return list;
+		}
 
-            return await this._ddb.GetKeyAsync(UserListNamespace + id);
-        }
-    }
+		[Produces("application/json", "text/json")]
+		[HttpGet("builds/{id}")]
+		public async Task<List<string>> UserBuilds(string id)
+		{
+			return await GetList(UserBuildNamespace, id);
+		}
+
+		[Produces("application/json", "text/json")]
+		[HttpGet("lists/{id}")]
+		public async Task<List<string>> UserLists(string id)
+		{
+			return await GetList(UserListNamespace, id);
+		}
+	}
 }

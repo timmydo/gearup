@@ -5,9 +5,7 @@
 	using GearUp.Models;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
-	using Microsoft.ServiceFabric.Services.Remoting.Client;
 	using Newtonsoft.Json;
-	using Newtonsoft.Json.Linq;
 	using Shared.Interfaces;
 	using System;
 	using System.Collections.Generic;
@@ -77,41 +75,41 @@
 
 			var bstr = JsonConvert.SerializeObject(b);
 			await this._data.AddKeyAsync(BuildNamespace + b.Id, bstr);
+
+			await ListHelper.AddToList(_data, UserController.UserBuildNamespace, uid, b.Id);
+
 			return b;
 		}
 
 		[HttpPost("delete")]
 		public async Task<string> DeleteBuild([FromBody]string b)
 		{
-			if (!string.IsNullOrEmpty(b))
+			if (string.IsNullOrEmpty(b))
 			{
-				var uid = UserLogin.UserUniqueId(User?.Identity);
-				var bdata = await this._data.GetKeyAsync(BuildNamespace + b);
-				if (string.IsNullOrEmpty(bdata))
-				{
-					HttpContext.Response.StatusCode = 404;
-					return "not found";
-				}
-				else
-				{
-					var build = JsonConvert.DeserializeObject<Build>(await this._data.GetKeyAsync(BuildNamespace + b));
-					if (uid == build.Creator)
-					{
-						await this._data.DeleteKeyAsync(BuildNamespace + b);
-					}
-					else
-					{
-						HttpContext.Response.StatusCode = 403;
-						return "you are not the owner";
-					}
+				HttpContext.Response.StatusCode = 400;
+				return "bad build";
+			}
 
-					return "Deleted";
-				}
-			}
-			else
+			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var bdata = await this._data.GetKeyAsync(BuildNamespace + b);
+			if (string.IsNullOrEmpty(bdata))
 			{
-				throw new Exception("Invalid Build");
+				HttpContext.Response.StatusCode = 404;
+				return "not found";
 			}
+
+			var build = JsonConvert.DeserializeObject<Build>(await this._data.GetKeyAsync(BuildNamespace + b));
+			if (uid != build.Creator)
+			{
+				HttpContext.Response.StatusCode = 403;
+				return "you are not the owner";
+			}
+
+			await this._data.DeleteKeyAsync(BuildNamespace + build.Id);
+			await ListHelper.RemoveFromList(_data, UserController.UserBuildNamespace, uid, build.Id);
+
+			return "Deleted";
+
 		}
 
 
@@ -190,7 +188,7 @@
 
 			build.Images.Add(new Image { Id = imageGuid });
 
-			var success = await this._data.UpdateKeyAsync(BuildNamespace + buildid, JsonConvert.SerializeObject(build), "timestamp");
+			var success = await this._data.UpdateKeyAsync(BuildNamespace + buildid, JsonConvert.SerializeObject(build));
 
 			if (!success)
 			{
@@ -239,7 +237,7 @@
 				}
 
 				b.Images = newList.ToList();
-				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, JsonConvert.SerializeObject(b), "timestamp");
+				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, JsonConvert.SerializeObject(b));
 			}
 			else
 			{
@@ -285,7 +283,7 @@
 				b.Creator = actual.Creator;
 				b.Images = actual.Images;
 
-				await this._data.UpdateKeyAsync(BuildNamespace + b.Id, JsonConvert.SerializeObject(b), "timestamp");
+				await this._data.UpdateKeyAsync(BuildNamespace + b.Id, JsonConvert.SerializeObject(b));
 				return "saved";
 			}
 			else

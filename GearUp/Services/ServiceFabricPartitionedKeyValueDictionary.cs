@@ -38,10 +38,10 @@ namespace GearUp.Services
 			return await proxy.GetKeyAsync(key);
 		}
 
-		public async Task<bool> UpdateKeyAsync(string key, string value, string updateFunc)
+		public async Task<bool> UpdateKeyAsync(string key, string value)
 		{
 			var proxy = ServiceProxy.Create<IPartitionedKeyValueDictionary>(FNV.Hash64(key), this.uri);
-			return await proxy.UpdateKeyAsync(key, value, updateFunc);
+			return await proxy.UpdateKeyAsync(key, value);
 		}
 	}
 }

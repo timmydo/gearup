@@ -60,39 +60,40 @@ namespace GearUp.Controllers
 
 			await this._data.AddKeyAsync(ListNamespace + bl.Id, JsonConvert.SerializeObject(bl));
 
+			await ListHelper.AddToList(_data, UserController.UserListNamespace, uid, bl.Id);
+
 			return bl;
 		}
 
 		[HttpPost("delete")]
-		public async Task<string> Delete([FromBody]string id)
+		public async Task<string> DeleteList([FromBody]string id)
 		{
-			if (!string.IsNullOrEmpty(id))
-			{
-				var uid = UserLogin.UserUniqueId(User?.Identity);
-
-				var ldata = await this._data.GetKeyAsync(ListNamespace + id);
-				if (string.IsNullOrEmpty(ldata))
-				{
-					HttpContext.Response.StatusCode = 404;
-					return "not found";
-				}
-
-				var list = JsonConvert.DeserializeObject<BuildList>(ldata);
-				if (list.Creator != uid)
-				{
-					HttpContext.Response.StatusCode = 403;
-					return "must be owner to edit list";
-				}
-
-
-				await this._data.DeleteKeyAsync(ListNamespace + id);
-				return "Deleted";
-			}
-			else
+			if (string.IsNullOrEmpty(id))
 			{
 				HttpContext.Response.StatusCode = 400;
 				return "invalid list";
 			}
+			var uid = UserLogin.UserUniqueId(User?.Identity);
+
+			var ldata = await this._data.GetKeyAsync(ListNamespace + id);
+			if (string.IsNullOrEmpty(ldata))
+			{
+				HttpContext.Response.StatusCode = 404;
+				return "not found";
+			}
+
+			var list = JsonConvert.DeserializeObject<BuildList>(ldata);
+			if (list.Creator != uid)
+			{
+				HttpContext.Response.StatusCode = 403;
+				return "must be owner to edit list";
+			}
+
+
+			await this._data.DeleteKeyAsync(ListNamespace + id);
+			await ListHelper.RemoveFromList(_data, UserController.UserListNamespace, uid, list.Id);
+
+			return "Deleted";
 		}
 
 		[HttpPost("save")]
@@ -130,7 +131,7 @@ namespace GearUp.Controllers
 				bl.Builds = new List<string>();
 			}
 
-			if (await this._data.UpdateKeyAsync(ListNamespace + bl.Id, JsonConvert.SerializeObject(bl), "timestamp"))
+			if (await this._data.UpdateKeyAsync(ListNamespace + bl.Id, JsonConvert.SerializeObject(bl)))
 			{
 				return "success";
 			}

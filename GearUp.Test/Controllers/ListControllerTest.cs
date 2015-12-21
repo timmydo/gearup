@@ -68,7 +68,7 @@
 			var c = GetController();
 			TestHelper.SetupUser(c);
 			var l = await c.CreateList();
-			var result = await c.Delete(l.Id);
+			var result = await c.DeleteList(l.Id);
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 		}
 
@@ -79,7 +79,7 @@
 			TestHelper.SetupUser(c, "1");
 			var l = await c.CreateList();
 			TestHelper.SetupUser(c, "2");
-			var result = await c.Delete(l.Id);
+			var result = await c.DeleteList(l.Id);
 			Assert.True(c.HttpContext.Response.StatusCode == 403);
 		}
 
@@ -87,7 +87,7 @@
 		public async Task ListDelete_NotFound()
 		{
 			var c = GetController();
-			var result = await c.Delete("abc");
+			var result = await c.DeleteList("abc");
 			Assert.True(c.HttpContext.Response.StatusCode == 404);
 		}
 

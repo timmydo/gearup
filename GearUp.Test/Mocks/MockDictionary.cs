@@ -39,7 +39,7 @@ namespace GearUp.Test.Mocks
 			return _dict[key];
 		}
 
-		public async Task<bool> UpdateKeyAsync(string key, string value, string updateMethod)
+		public async Task<bool> UpdateKeyAsync(string key, string value)
 		{
 			await Task.FromResult(0);
 			_dict[key] = value;

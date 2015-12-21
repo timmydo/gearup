@@ -51,20 +51,13 @@ namespace GearUpBackend
 			}
 		}
 
-		public async Task<bool> UpdateKeyAsync(string key, string value, string updateFunc)
+		public async Task<bool> UpdateKeyAsync(string key, string value)
 		{
 			if (_dict == null) throw new NullReferenceException(nameof(_dict));
-			if (updateFunc == null) updateFunc = string.Empty;
 			using (var tx = this.StateManager.CreateTransaction())
 			{
-				switch (updateFunc)
-				{
-					case "overwrite":
-					default:
-						await _dict.AddOrUpdateAsync(tx, key, value, (k, v) => value);
-						break;
-				}
-
+				//FIXME handle timestamp
+				await _dict.AddOrUpdateAsync(tx, key, value, (k, v) => value);
 				await tx.CommitAsync();
 			}
 

@@ -12,6 +12,6 @@ namespace Shared.Interfaces
 		Task<string> GetKeyAsync(string key);
 		Task DeleteKeyAsync(string key);
 		Task AddKeyAsync(string key, string value);
-		Task<bool> UpdateKeyAsync(string key, string value, string updateMethod);
+		Task<bool> UpdateKeyAsync(string key, string value);
     }
 }
