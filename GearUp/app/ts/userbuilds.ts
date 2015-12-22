@@ -10,7 +10,7 @@ App.UserbuildsRoute = Ember.Route.extend({
 	}
 });
 
-App.UserbuildsController = Ember.ArrayController.extend({
+App.UserbuildsController = Ember.ObjectController.extend({
 
 	userLoginKey: function () {
 		return window['UserIdentityKey'] || '';
@@ -48,7 +48,9 @@ App.UserbuildsController = Ember.ArrayController.extend({
 
 	actions: {
 		createBuild: function () {
-			this.transitionToRoute('build', Gear.UUID.v4());
+			App.Data.createBuild().then((bid) => {
+				this.transitionToRoute('build', bid.Id);
+			});
 		},
 
 		addBuildToList: function (listId, bid) {

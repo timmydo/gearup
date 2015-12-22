@@ -2,18 +2,14 @@
 {
 	using Auth;
 	using GearUp.Controllers;
+	using GearUp.Services;
 	using Interfaces;
 	using Microsoft.AspNet.Http.Internal;
-	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Mocks;
-	using Models;
-	using Newtonsoft.Json.Linq;
 	using Shared.Interfaces;
 	using System;
-	using System.Collections.Generic;
-	using System.Security.Claims;
 	using System.Threading.Tasks;
 	using Xunit;
 
@@ -25,7 +21,7 @@
 		{
 			var services = new ServiceCollection();
 			var lf = new LoggerFactory();
-			services.AddScoped<IPartitionedKeyValueDictionary>((sp) => new MockDictionary());
+			services.AddScoped<IPartitionedKeyValueDictionary>((sp) => new LocalDictionary());
 			services.AddScoped<ILogger>((sp) => lf.CreateLogger(string.Empty));
 			services.AddScoped<IAppBlobStorage>((sp) => new MockBlobStorage());
 

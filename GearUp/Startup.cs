@@ -38,15 +38,23 @@
 		{
 			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
-			services.AddSingleton<BlobService>();
-			
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);
-			//services.AddInstance<ILogger>(_logger);
-			var dict = new ServiceFabricPartitionedKeyValueDictionary(new Uri("fabric:/GearUp/BE"));
-			services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
 
+			//FIXME
+			if (true)
+			{
+				services.AddSingleton<IAppBlobStorage, AzureBlobService>();
+				var dict = new LocalDictionary();
+				services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
+			}
+			else
+			{
+				services.AddSingleton<AzureBlobService>();
+				var dict = new ServiceFabricPartitionedKeyValueDictionary(new Uri("fabric:/GearUp/BE"));
+				services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
+			}
 			services.AddMvc();
 
 #if false

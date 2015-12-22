@@ -20,6 +20,7 @@ declare class MyAppData {
     constructor();
     removeBuildFromCache(bid: any): void;
     removeListFromCache(lid: any): void;
+    createBuild(): JQueryXHR;
     getBuild(bid: any): any;
     fillListBuilds(l: any): void;
     getUserList(userKey: any): Ember.RSVP.Promise;

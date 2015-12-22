@@ -33,20 +33,20 @@ App.BuildController = Ember.ObjectController.extend({
 	}.property('IsCelsius'),
 
 	createdTime: function () {
-		return moment(this.get('model.created')).format('ll');
-	}.property('model.created'),
+		return moment(this.get('model.Created')).format('ll');
+	}.property('model.Created'),
 	selectedImage: function () {
-		var i = this.get('model.images');
+		var i = this.get('model.Images');
 		if (i && i.length > 0) {
-			return i[0].guid;
+			return i[0].Id;
 		}
 	}.property('model.images'),
 	selectedImageCaption: function () {
-		var images = this.get('model.images');
+		var images = this.get('model.Images');
 		var guid = this.get('selectedImage');
 		for (var i = 0; i < images.length; i++) {
-			if (images[i].guid === guid) {
-				return images[i].title;
+			if (images[i].Id === guid) {
+				return images[i].Title;
 			}
 		}
 		return "No caption found";
@@ -57,8 +57,8 @@ App.BuildController = Ember.ObjectController.extend({
 	}.property('window.UserIdentityKey'),
 
 	canEditBuild: function () {
-		return this.get('model.creator') === window['UserIdentityKey'];
-	}.property('model.creator'),
+		return this.get('model.Creator') === window['UserIdentityKey'];
+	}.property('model.Creator'),
 
 	editTitle: false,
 	editDescription: false,
@@ -75,7 +75,7 @@ App.BuildController = Ember.ObjectController.extend({
 			var build = this.get('model');
 			
 			App.Data.getList(listId).then((list) => {
-				list.addBuildToList(build.id).then(() => {
+				list.addBuildToList(build.Id).then(() => {
 					this.growl.success('Build added to list');
 				}, (xhr) => {
 					this.growl.error('Error adding build to list: ' + xhr.responseText);
@@ -83,7 +83,7 @@ App.BuildController = Ember.ObjectController.extend({
 			});
 		},
 		deletePart: function (part) {
-			var parts = this.get('parts');
+			var parts = this.get('Parts');
 			parts.removeObject(part);
 			this.send('saveBuild');
 		},
@@ -95,9 +95,9 @@ App.BuildController = Ember.ObjectController.extend({
 			console.log(b);
 			console.log(image);
 			b.deleteImageFromBuild(image).then((x) => {
-				var i = this.get('model.images');
+				var i = this.get('model.Images');
 				if (i && i.length > 0) {
-					this.set('selectedImage', i[0].guid);
+					this.set('selectedImage', i[0].Id);
 				}
 				this.growl.success('Image deleted');
 
@@ -109,7 +109,7 @@ App.BuildController = Ember.ObjectController.extend({
 		addPart: function () {
 
 			if (this.get('canEditBuild')) {
-				this.get('parts').pushObject({ title: '' });
+				this.get('Parts').pushObject({ Title: '' });
 			}
 		},
 		tryDeleteBuild: function () {
@@ -120,7 +120,7 @@ App.BuildController = Ember.ObjectController.extend({
 			var model = this.get('model');
 			model.deleteBuild().then((data) => {
 				console.log(data);
-				this.transitionToRoute('userbuilds', model.creator);
+				this.transitionToRoute('userbuilds', model.Creator);
 			}, (xhr) => {
 				console.log(xhr);
 				this.growl.error('Error deleting build: ' + xhr.responseText);
@@ -128,7 +128,7 @@ App.BuildController = Ember.ObjectController.extend({
 		},
 		startEditTitle: function () {
 			if (this.get('canEditBuild')) {
-				this.savedTitle = this.get('title');
+				this.savedTitle = this.get('Title');
 				this.set('editTitle', true);
 			}
 		},
@@ -140,25 +140,25 @@ App.BuildController = Ember.ObjectController.extend({
 		},
 		startEditDescription: function () {
 			if (this.get('canEditBuild')) {
-				this.savedDescription = this.get('description');
+				this.savedDescription = this.get('Description');
 				this.set('editDescription', true);
 			}
 		},
 		discardDescription: function () {
 			this.set('editDescription', false);
-			this.set('title', this.savedDescription);
+			this.set('Title', this.savedDescription);
 		},
 		saveImageCaption: function () {
 			this.set('editCaption', false);
 			var c = this.get('imageCaption');
 			var si = this.get('selectedImage');
-			var images = this.get('images');
+			var images = this.get('Images');
 			console.log(c);
 			console.log(si);
 			console.log(images);
 			for (var i = 0; i < images.length; i++) {
-				if (images[i].guid === si) {
-					Ember.set(images[i], 'title', c);
+				if (images[i].Id === si) {
+					Ember.set(images[i], 'Title', c);
 					break;
 				}
 			}
@@ -182,7 +182,7 @@ App.BuildController = Ember.ObjectController.extend({
 		},
 		discardTitle: function () {
 			this.set('editTitle', false);
-			this.set('title', this.savedTitle);
+			this.set('Title', this.savedTitle);
 		},
 		saveTitle: function () {
 			this.set('editTitle', false);

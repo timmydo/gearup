@@ -895,7 +895,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         var element32 = dom.childAt(element31, [1]);
         var element33 = dom.childAt(element31, [3]);
         var morph0 = dom.createMorphAt(dom.childAt(element30, [1]),0,1);
-        inline(env, morph0, context, "input", [], {"type": "text", "class": "form-control", "insert-newline": "saveTitle", "placeholder": "Enter title", "value": get(env, context, "title"), "size": "50"});
+        inline(env, morph0, context, "input", [], {"type": "text", "class": "form-control", "insert-newline": "saveTitle", "placeholder": "Enter title", "value": get(env, context, "Title"), "size": "50"});
         element(env, element32, context, "action", ["saveTitle"], {"on": "click"});
         element(env, element33, context, "action", ["discardTitle"], {"on": "click"});
         return fragment;
@@ -939,7 +939,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-            content(env, morph0, context, "title");
+            content(env, morph0, context, "Title");
             return fragment;
           }
         };
@@ -1027,7 +1027,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           var element29 = dom.childAt(fragment, [1, 1]);
           var morph0 = dom.createMorphAt(element29,0,1);
           element(env, element29, context, "action", ["startEditTitle"], {"on": "click"});
-          block(env, morph0, context, "if", [get(env, context, "title")], {}, child0, child1);
+          block(env, morph0, context, "if", [get(env, context, "Title")], {}, child0, child1);
           return fragment;
         }
       };
@@ -1069,7 +1069,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-          content(env, morph0, context, "title");
+          content(env, morph0, context, "Title");
           return fragment;
         }
       };
@@ -1156,8 +1156,8 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           }
           var element28 = dom.childAt(fragment, [1, 0]);
           var morph0 = dom.createMorphAt(element28,-1,-1);
-          element(env, element28, context, "action", ["addBuildToList", get(env, context, "buildList.id")], {});
-          content(env, morph0, context, "buildList.title");
+          element(env, element28, context, "action", ["addBuildToList", get(env, context, "buildList.Id")], {});
+          content(env, morph0, context, "buildList.Title");
           return fragment;
         }
       };
@@ -1759,7 +1759,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         }
         if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-        block(env, morph0, context, "unless", [get(env, context, "model.images")], {}, child0, child1);
+        block(env, morph0, context, "unless", [get(env, context, "model.Images")], {}, child0, child1);
         return fragment;
       }
     };
@@ -1935,8 +1935,8 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         }
         var element17 = dom.childAt(fragment, [1]);
         var morph0 = dom.createMorphAt(element17,-1,-1);
-        element(env, element17, context, "action", ["selectImage", get(env, context, "image.guid")], {});
-        inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.guid")], {});
+        element(env, element17, context, "action", ["selectImage", get(env, context, "image.Id")], {});
+        inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.Id")], {});
         return fragment;
       }
     };
@@ -2053,7 +2053,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         var element14 = dom.childAt(element13, [1]);
         var element15 = dom.childAt(element13, [3]);
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-        inline(env, morph0, context, "textarea", [], {"class": "form-control", "placeholder": "Enter description", "value": get(env, context, "description")});
+        inline(env, morph0, context, "textarea", [], {"class": "form-control", "placeholder": "Enter description", "value": get(env, context, "Description")});
         element(env, element14, context, "action", ["saveDescription"], {"on": "click"});
         element(env, element15, context, "action", ["discardDescription"], {"on": "click"});
         return fragment;
@@ -2096,7 +2096,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-          content(env, morph0, context, "description");
+          content(env, morph0, context, "Description");
           return fragment;
         }
       };
@@ -2169,7 +2169,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
         }
         if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-        block(env, morph0, context, "if", [get(env, context, "description")], {}, child0, child1);
+        block(env, morph0, context, "if", [get(env, context, "Description")], {}, child0, child1);
         return fragment;
       }
     };
@@ -2308,7 +2308,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           fragment = this.build(dom);
         }
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-        inline(env, morph0, context, "bootstrap-slider", [], {"type": "temperature", "enabled": get(env, context, "canEditBuild"), "low": get(env, context, "lowTemperature"), "high": get(env, context, "highTemperature"), "modified": get(env, context, "tempModified"), "min": -50, "max": 100});
+        inline(env, morph0, context, "bootstrap-slider", [], {"type": "temperature", "enabled": get(env, context, "canEditBuild"), "low": get(env, context, "LowTemperature"), "high": get(env, context, "HighTemperature"), "modified": get(env, context, "tempModified"), "min": -50, "max": 100});
         return fragment;
       }
     };
@@ -2525,7 +2525,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-            content(env, morph0, context, "part.title");
+            content(env, morph0, context, "part.Title");
             return fragment;
           }
         };
@@ -2613,7 +2613,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,1);
           var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),0,1);
           block(env, morph0, context, "if", [get(env, context, "canEditBuild")], {}, child0, null);
-          block(env, morph1, context, "if", [get(env, context, "part.title")], {}, child1, child2);
+          block(env, morph1, context, "if", [get(env, context, "part.Title")], {}, child1, child2);
           return fragment;
         }
       };
@@ -2851,7 +2851,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,1);
           var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),0,1);
           block(env, morph0, context, "if", [get(env, context, "canEditBuild")], {}, child0, null);
-          inline(env, morph1, context, "buildImageAnchor", [get(env, context, "image.guid"), get(env, context, "image.title")], {});
+          inline(env, morph1, context, "buildImageAnchor", [get(env, context, "image.Id"), get(env, context, "image.Title")], {});
           return fragment;
         }
       };
@@ -3154,20 +3154,20 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
       block(env, morph0, context, "if", [get(env, context, "editTitle")], {}, child0, child1);
       block(env, morph1, context, "if", [get(env, context, "userLoginKey")], {}, child2, null);
       block(env, morph2, context, "if", [get(env, context, "canEditBuild")], {}, child3, null);
-      block(env, morph3, context, "drag-drop", [], {"dropped": "uploadFile", "guid": get(env, context, "id")}, child4, null);
+      block(env, morph3, context, "drag-drop", [], {"dropped": "uploadFile", "guid": get(env, context, "Id")}, child4, null);
       block(env, morph4, context, "if", [get(env, context, "progressBars")], {}, child5, null);
-      block(env, morph5, context, "each", [get(env, context, "model.images")], {"keyword": "image"}, child6, null);
+      block(env, morph5, context, "each", [get(env, context, "model.Images")], {"keyword": "image"}, child6, null);
       block(env, morph6, context, "if", [get(env, context, "canEditBuild")], {}, child7, null);
       block(env, morph7, context, "if", [get(env, context, "editDescription")], {}, child8, child9);
-      content(env, morph8, context, "lowTemperature");
+      content(env, morph8, context, "LowTemperature");
       content(env, morph9, context, "tempUnit");
-      content(env, morph10, context, "highTemperature");
+      content(env, morph10, context, "HighTemperature");
       content(env, morph11, context, "tempUnit");
       block(env, morph12, context, "if", [get(env, context, "canEditBuild")], {}, child10, null);
       block(env, morph13, context, "if", [get(env, context, "canEditBuild")], {}, child11, null);
       block(env, morph14, context, "if", [get(env, context, "canEditBuild")], {}, child12, null);
-      block(env, morph15, context, "each", [get(env, context, "model.parts")], {"itemController": "part", "keyword": "part"}, child13, null);
-      block(env, morph16, context, "each", [get(env, context, "model.images")], {"itemController": "image", "keyword": "image"}, child14, null);
+      block(env, morph15, context, "each", [get(env, context, "model.Parts")], {"itemController": "part", "keyword": "part"}, child13, null);
+      block(env, morph16, context, "each", [get(env, context, "model.Images")], {"itemController": "image", "keyword": "image"}, child14, null);
       return fragment;
     }
   };
@@ -4079,7 +4079,7 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var element0 = dom.childAt(fragment, [1]);
-          element(env, element0, context, "action", ["removeFromList", get(env, context, "build.id")], {});
+          element(env, element0, context, "action", ["removeFromList", get(env, context, "build.Id")], {});
           return fragment;
         }
       };
@@ -4122,7 +4122,7 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-          inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.guid")], {});
+          inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.Id")], {});
           return fragment;
         }
       };
@@ -4564,8 +4564,8 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
             }
             var element1 = dom.childAt(fragment, [1, 0]);
             var morph0 = dom.createMorphAt(element1,-1,-1);
-            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.id"), get(env, context, "build.id")], {});
-            content(env, morph0, context, "buildList.title");
+            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.Id"), get(env, context, "build.Id")], {});
+            content(env, morph0, context, "buildList.Title");
             return fragment;
           }
         };
@@ -4677,7 +4677,7 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-          inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.guid")], {});
+          inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.Id")], {});
           return fragment;
         }
       };
@@ -4724,8 +4724,8 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
             }
             var element0 = dom.childAt(fragment, [1, 0]);
             var morph0 = dom.createMorphAt(element0,-1,-1);
-            element(env, element0, context, "bind-attr", [], {"href": get(env, context, "part.url")});
-            content(env, morph0, context, "part.title");
+            element(env, element0, context, "bind-attr", [], {"href": get(env, context, "part.Url")});
+            content(env, morph0, context, "part.Title");
             return fragment;
           }
         };
@@ -5049,8 +5049,8 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
             }
             var element1 = dom.childAt(fragment, [1, 0]);
             var morph0 = dom.createMorphAt(element1,-1,-1);
-            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.id"), get(env, context, "build.id")], {});
-            content(env, morph0, context, "buildList.title");
+            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.Id"), get(env, context, "build.Id")], {});
+            content(env, morph0, context, "buildList.Title");
             return fragment;
           }
         };
@@ -5162,7 +5162,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-          inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.guid")], {});
+          inline(env, morph0, context, "buildThumbnail", [get(env, context, "image.Id")], {});
           return fragment;
         }
       };
@@ -5209,8 +5209,8 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
             }
             var element0 = dom.childAt(fragment, [1, 0]);
             var morph0 = dom.createMorphAt(element0,-1,-1);
-            element(env, element0, context, "bind-attr", [], {"href": get(env, context, "part.url")});
-            content(env, morph0, context, "part.title");
+            element(env, element0, context, "bind-attr", [], {"href": get(env, context, "part.Url")});
+            content(env, morph0, context, "part.Title");
             return fragment;
           }
         };
@@ -5252,7 +5252,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-            content(env, morph0, context, "part.title");
+            content(env, morph0, context, "part.Title");
             return fragment;
           }
         };
@@ -5292,7 +5292,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
           }
           if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
           var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-          block(env, morph0, context, "if", [get(env, context, "part.url")], {}, child0, child1);
+          block(env, morph0, context, "if", [get(env, context, "part.Url")], {}, child0, child1);
           return fragment;
         }
       };
@@ -5414,10 +5414,10 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
         var morph3 = dom.createMorphAt(dom.childAt(element4, [1]),0,1);
         var morph4 = dom.createMorphAt(dom.childAt(element4, [3, 1]),0,1);
         inline(env, morph0, context, "buildTitleAnchor", [get(env, context, "build")], {});
-        inline(env, morph1, context, "modifiedFrom", [get(env, context, "build.modified")], {});
+        inline(env, morph1, context, "modifiedFrom", [get(env, context, "build.Modified")], {});
         block(env, morph2, context, "if", [get(env, context, "userLoginKey")], {}, child0, null);
-        block(env, morph3, context, "each", [get(env, context, "build.images")], {"keyword": "image"}, child1, null);
-        block(env, morph4, context, "each", [get(env, context, "build.parts")], {"keyword": "part"}, child2, null);
+        block(env, morph3, context, "each", [get(env, context, "build.Images")], {"keyword": "image"}, child1, null);
+        block(env, morph4, context, "each", [get(env, context, "build.Parts")], {"keyword": "part"}, child2, null);
         return fragment;
       }
     };
@@ -5501,7 +5501,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
       var element6 = dom.childAt(element5, [1, 3, 1]);
       var morph0 = dom.createMorphAt(element5,2,3);
       element(env, element6, context, "action", ["createBuild"], {});
-      block(env, morph0, context, "each", [get(env, context, "model")], {"keyword": "build"}, child0, null);
+      block(env, morph0, context, "each", [get(env, context, "model.builds")], {"keyword": "build"}, child0, null);
       return fragment;
     }
   };
@@ -5574,7 +5574,7 @@ Ember.TEMPLATES["userlists"] = Ember.HTMLBars.template((function() {
         var morph0 = dom.createMorphAt(dom.childAt(element0, [1]),0,1);
         var morph1 = dom.createMorphAt(dom.childAt(element0, [3]),0,-1);
         inline(env, morph0, context, "listTitleAnchor", [get(env, context, "list")], {});
-        inline(env, morph1, context, "modifiedFrom", [get(env, context, "list.modified")], {});
+        inline(env, morph1, context, "modifiedFrom", [get(env, context, "list.Modified")], {});
         return fragment;
       }
     };

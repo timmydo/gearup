@@ -7,7 +7,7 @@
 		{{#if editTitle}}
 		<form class="form">
 			<div class="form-group">
-				{{input type="text" class="form-control" insert-newline='saveTitle' placeholder="Enter title" value=title size="50"}}
+				{{input type="text" class="form-control" insert-newline='saveTitle' placeholder="Enter title" value=Title size="50"}}
 			</div>
 			<div class="form-group">
 				<span class="input-group-btn">
@@ -20,15 +20,15 @@
 			{{#if canEditBuild}}
 				<h1>
 					<span class="clickable" {{action 'startEditTitle' on="click"}} title="Click to change">
-						{{#if title}}
-							{{title}}
+						{{#if Title}}
+							{{Title}}
 						{{else}}
 							Edit your build title...
 						{{/if}}
 					</span>
 				</h1>
 			{{else}}
-				<h1>{{title}}</h1>
+				<h1>{{Title}}</h1>
 			{{/if}}
 		{{/if}}
 
@@ -42,7 +42,7 @@
 			</button>
 			<ul class="dropdown-menu" role="menu">
 				{{#each buildList in controllers.Userbuilds.userBuildList.lists}}
-				<li><a class="clickable" {{action 'addBuildToList' buildList.id}}>{{buildList.title}}</a></li>
+				<li><a class="clickable" {{action 'addBuildToList' buildList.Id}}>{{buildList.Title}}</a></li>
 
 				{{/each}}
 			</ul>
@@ -65,8 +65,8 @@
 <div class="row">
 
 	<div class="col-xs-12 col-md-8">
-		{{#drag-drop dropped="uploadFile" guid=id}}
-		{{#unless model.images}}
+		{{#drag-drop dropped="uploadFile" guid=Id}}
+		{{#unless model.Images}}
 		{{#if canEditBuild}}
 		Drag and drop images here...
 		{{/if}}
@@ -121,8 +121,8 @@
 		</div>
 		{{/if}}
 
-		{{#each image in model.images}}
-		<div class="build-image-thumbnail" {{action 'selectImage' image.guid}}>{{buildThumbnail image.guid}}</div>
+		{{#each image in model.Images}}
+		<div class="build-image-thumbnail" {{action 'selectImage' image.Id}}>{{buildThumbnail image.Id}}</div>
 		{{/each}}
 	</div>
 
@@ -134,15 +134,15 @@
 			<div class="pull-right"><i title="Edit the description" class="fa fa-pencil clickable" {{action 'startEditDescription'}}></i></div>
 			{{/if}}
 			{{#if editDescription}}
-				{{textarea class="form-control" placeholder="Enter description" value=description}}
+				{{textarea class="form-control" placeholder="Enter description" value=Description}}
 			<br />
 				<span class="input-group-btn">
 					<button class="btn btn-default" type="button" {{action 'saveDescription' on="click"}}>Save</button>
 					<button class="btn btn-default" type="button" {{action 'discardDescription' on="click"}}>Discard</button>
 				</span>
 			{{else}}
-				{{#if description}}
-					{{description}}
+				{{#if Description}}
+					{{Description}}
 				{{else}}
 					No descriptions entered
 				{{/if}}
@@ -151,7 +151,7 @@
 
 		<div class="build-temperature-section well">
 			<div class="build-section-label">Temperature Range: 
-				<span class="temperature-range">{{lowTemperature}}&deg;{{tempUnit}} &ndash; {{highTemperature}}&deg;{{tempUnit}}</span>
+				<span class="temperature-range">{{LowTemperature}}&deg;{{tempUnit}} &ndash; {{HighTemperature}}&deg;{{tempUnit}}</span>
 				{{#if canEditBuild}}
 				<span class="pull-right"><i title="Switch between Fahrenheit and Celsius" class="fa fa-exchange clickable" {{action 'changeCelsius'}}></i></span>
 				{{#if tempModified}}
@@ -160,7 +160,7 @@
 				{{/if}}
 			</div>
 			{{#if canEditBuild}}
-			{{bootstrap-slider type="temperature" enabled=canEditBuild low=lowTemperature high=highTemperature modified=tempModified min=-50 max=100}}
+			{{bootstrap-slider type="temperature" enabled=canEditBuild low=LowTemperature high=HighTemperature modified=tempModified min=-50 max=100}}
 			{{/if}}
 		</div>
 
@@ -178,7 +178,7 @@
 			</thead>
 
 			<tbody>
-				{{#each part in model.parts itemController="part"}}
+				{{#each part in model.Parts itemController="part"}}
 				<tr>
 					
 					{{#if part.editing}}
@@ -202,8 +202,8 @@
 					</td>
 
 					<td>
-						{{#if part.title}}
-						{{part.title}}
+						{{#if part.Title}}
+						{{part.Title}}
 						{{else}}
 						Enter name here
 						{{/if}}
@@ -230,7 +230,7 @@
 				</thead>
 
 				<tbody>
-					{{#each image in model.images itemController="image"}}
+					{{#each image in model.Images itemController="image"}}
 					<tr>
 
 						{{#if image.editing}}
@@ -253,7 +253,7 @@
 							{{/if}}
 						</td>
 						<td>
-							{{buildImageAnchor image.guid image.title}}
+							{{buildImageAnchor image.Id image.Title}}
 						</td>
 						{{/if}}
 					</tr>

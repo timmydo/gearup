@@ -41,7 +41,7 @@ App.getJSON = function(url) {
 App.BuildObject = Ember.Object.extend({
 
 	save: function() {
-		App.Track.track("SaveBuild", { Build: this.id });
+		App.Track.track("SaveBuild", { Build: this.Id });
 
 		var data = JSON.stringify(this);
 		return Ember.$.ajax({
@@ -55,7 +55,7 @@ App.BuildObject = Ember.Object.extend({
 
 	deleteBuild: function() {
 		var data = JSON.stringify(this);
-		App.Track.track("DeleteBuild", { Build: this.id });
+		App.Track.track("DeleteBuild", { Build: this.Id });
 
 		return Ember.$.ajax({
 			type: 'POST',
@@ -65,7 +65,7 @@ App.BuildObject = Ember.Object.extend({
 			dataType: 'text'
 		}).then((res) => {
 			//fixme todo does deleting a build remove it from lists???
-			App.Data.removeBuildFromCache(this.id);
+			App.Data.removeBuildFromCache(this.Id);
 
 			return res;
 		});
@@ -101,11 +101,11 @@ App.BuildObject = Ember.Object.extend({
 
 	addImageToBuild: function(file, guid, progressFunc) {
 		var thisbuild = this;
-		App.Track.track("AddImageToBuild", { Build: thisbuild.id });
+		App.Track.track("AddImageToBuild", { Build: thisbuild.Id });
 
 		return new Ember.RSVP.Promise((resolve, reject) => {
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.id, true);
+			xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.Id, true);
 			xhr.onload = function(e) {
 				if (this.status == 200) {
 					var parsed = JSON.parse(this.response);
@@ -141,7 +141,7 @@ App.UserListsObject = Ember.Object.extend({});
 App.BuildListObject = Ember.Object.extend({
 	save: function() {
 		var data = JSON.stringify(this);
-		App.Track.track("SaveList", { List: this.id });
+		App.Track.track("SaveList", { List: this.Id });
 		App.Data.updateCacheList(this);
 		return Ember.$.ajax({
 			type: 'POST',
@@ -153,7 +153,7 @@ App.BuildListObject = Ember.Object.extend({
 	},
 
 	addBuildToList: function(bid) {
-		var opts = { build: bid, list: this.id };
+		var opts = { build: bid, list: this.Id };
 		var data = JSON.stringify(opts);
 		App.Track.track("AddBuildToList", opts);
 
@@ -176,7 +176,7 @@ App.BuildListObject = Ember.Object.extend({
 	},
 
 	removeBuildFromList: function(bid) {
-		var opts = { 'build': bid, 'list': this.id };
+		var opts = { 'build': bid, 'list': this.Id };
 		var data = JSON.stringify(opts);
 		App.Track.track("RemoveBuildFromList", opts);
 
@@ -187,7 +187,7 @@ App.BuildListObject = Ember.Object.extend({
 			data: data,
 			dataType: 'text'
 		}).then((success) => {
-			this.builds.removeObjects(this.builds.filter((b) => { return b.id === bid; }));
+			this.builds.removeObjects(this.builds.filter((b) => { return b.Id === bid; }));
 			return success;
 		});
 	},
@@ -199,8 +199,8 @@ App.BuildListObject = Ember.Object.extend({
 		var data = JSON.stringify(this);
 		console.log('delete list');
 		console.log(this);
-		App.Track.track("DeleteList", { List: this.id });
-		App.Data.removeListFromCache(this.id);
+		App.Track.track("DeleteList", { List: this.Id });
+		App.Data.removeListFromCache(this.Id);
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/list/delete',
@@ -254,7 +254,7 @@ class MyAppData {
 		for (var key in this.userbuilds) {
 			var list = this.userbuilds[key];
 			list.removeObjects(list.filter((item) => {
-				return item.id === bid;
+				return item.Id === bid;
 			}));
 		}
 	}
@@ -269,12 +269,19 @@ class MyAppData {
 		for (var name in App.Data.userlists) {
 			var ul = App.Data.userlists[name];
 			ul.get('lists').removeObjects(ul.get('lists').filter((li) => {
-				return li.id === lid;
+				return li.Id === lid;
 			}));
 		}
 
 	}
 
+	createBuild() {
+		return Ember.$.ajax({
+			type: 'POST',
+			url: '/api/build/create',
+			contentType: 'application/json',
+		});
+	}
 
 	getBuild(bid) {
 		console.log('Get Build: ' + bid);
@@ -284,10 +291,10 @@ class MyAppData {
 				b = App.BuildObject.create(res);
 				console.log(b);
 				this.builds[bid] = b;
-				var ubl = this.userbuilds[b.get('creator')];
+				var ubl = this.userbuilds[b.get('Creator')];
 				if (ubl) {
-					if (!ubl.findBy('id', b.id)) {
-						console.log('Adding new build ' + b.id + ' to user build list ' + b.get('creator'));
+					if (!ubl.findBy('Id', b.Id)) {
+						console.log('Adding new build ' + b.Id + ' to user build list ' + b.get('Creator'));
 						ubl.pushObject(b);
 					}
 				}
@@ -307,7 +314,7 @@ class MyAppData {
 		var origbuilds = l.get('builds').slice(0);
 				
 		// set builds to the ones we haven't already cached--so we can load them
-		var notCachedBuilds = origbuilds.filter((el) => { return !App.Data.builds[el.id]; })
+		var notCachedBuilds = origbuilds.filter((el) => { return !App.Data.builds[el.Id]; })
 		//console.log('filter');
 		//console.log(notCachedBuilds);
 		//console.log(App.Data.builds);
@@ -320,7 +327,7 @@ class MyAppData {
 		if (notCachedBuilds.length > 0) {
 
 			l.set('builds', notCachedBuilds);
-			var postdata = JSON.stringify(l);
+			var postdata = JSON.stringify(notCachedBuilds);
 			Ember.$.ajax({
 				type: 'POST',
 				url: '/api/build/get',
@@ -332,9 +339,9 @@ class MyAppData {
 				//console.log('postbuild');
 				//console.log(data);
 				data.forEach((elem) => {
-					if (!App.Data.builds[elem.id]) {
+					if (!App.Data.builds[elem.Id]) {
 						var item = App.BuildObject.create(elem);
-						App.Data.builds[elem.id] = item;
+						App.Data.builds[elem.Id] = item;
 					}
 
 				});
@@ -384,11 +391,11 @@ class MyAppData {
 				}).then((res) => {
 					var newList = Ember.A();
 					res.forEach((elem) => {
-						if (!App.Data.buildlists[elem.id]) {
-							App.Data.buildlists[elem.id] = App.BuildListObject.create(elem);
+						if (!App.Data.buildlists[elem.Id]) {
+							App.Data.buildlists[elem.Id] = App.BuildListObject.create(elem);
 						}
-						this.fillListBuilds(App.Data.buildlists[elem.id]);
-						newList.pushObject(App.Data.buildlists[elem.id]);
+						this.fillListBuilds(App.Data.buildlists[elem.Id]);
+						newList.pushObject(App.Data.buildlists[elem.Id]);
 					});
 					l = App.UserListsObject.create({ lists: newList });
 					console.log(l);
@@ -415,10 +422,10 @@ class MyAppData {
 				this.fillListBuilds(l);
 				this.buildlists[lid] = l;
 
-				var ubl = this.userlists[l.get('creator')];
+				var ubl = this.userlists[l.get('Creator')];
 				if (ubl) {
-					if (!ubl.get('lists').findBy('id', l.id)) {
-						console.log('Adding new list ' + l.id + ' to user build list ' + l.get('creator'));
+					if (!ubl.get('lists').findBy('Id', l.Id)) {
+						console.log('Adding new list ' + l.Id + ' to user build list ' + l.get('Creator'));
 						ubl.get('lists').pushObject(l);
 					}
 				}
@@ -467,19 +474,22 @@ class MyAppData {
 			return promiseFor(this.userbuilds[bid]);
 		} else {
 			return App.getJSON('/api/user/builds/' + bid).then((builds) => {
-				var arr = Ember.A();
-				builds.forEach((b) => {
-					if (!this.builds[b.id]) {
-						var bo = App.BuildObject.create(b);
-						this.builds[b.id] = bo;
-					}
+				var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+				console.log(bl);
+				this.fillListBuilds(bl);
 
-					arr.pushObject(this.builds[b.id]);
-				});
-				this.userbuilds[bid] = arr;
+				//var arr = Ember.A();
+				//builds.forEach((b) => {
+				//	if (!this.builds[b.id]) {
+				//		var bo = App.BuildObject.create(b);
+				//		this.builds[b.id] = bo;
+				//	}
 
-				console.log(arr);
-				return arr;
+				//	arr.pushObject(this.builds[b.id]);
+				//});
+				this.userbuilds[bid] = bl;
+
+				return bl;
 			});
 		}
 	}

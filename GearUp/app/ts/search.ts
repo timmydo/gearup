@@ -7,7 +7,7 @@ App.SearchRoute = Ember.Route.extend({
 		return App.Data.searchIndex(params.q).then((res) => {
 			var ids = [];
 			res.value.forEach((elem) => {
-				ids.push(elem.id);
+				ids.push(elem.Id);
 			});
 			var obj = {"builds": ids, "query": params.q};
 			var l = App.BuildListObject.create(obj);

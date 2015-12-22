@@ -34,8 +34,7 @@
 			var data = await this._ddb.GetKeyAsync(ns + id);
 			if (string.IsNullOrEmpty(data))
 			{
-				HttpContext.Response.StatusCode = 404;
-				return null;
+				return new List<string>();
 			}
 
 			var list = JsonConvert.DeserializeObject<List<string>>(data);

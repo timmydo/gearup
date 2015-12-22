@@ -62,7 +62,7 @@
 				</div>
 				<div class="col-md-3 text-right">
 					{{#if canEditList}}
-					<button class="btn btn-default" {{action 'removeFromList' build.id}}><i class="fa fa-trash-o"></i></button>
+					<button class="btn btn-default" {{action 'removeFromList' build.Id}}><i class="fa fa-trash-o"></i></button>
 					{{/if}}
 				</div>
 			</div>
@@ -70,7 +70,7 @@
 			<div class="row">
 				<div class="col-md-9">
 					{{#each image in build.images}}
-					<div class="user-build-image-thumbnail">{{buildThumbnail image.guid}}</div>
+					<div class="user-build-image-thumbnail">{{buildThumbnail image.Id}}</div>
 					{{/each}}
 				</div>
 				<div class="col-md-3">

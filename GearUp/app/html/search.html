@@ -25,7 +25,7 @@ Search for {{model.query}}. Result count: {{model.builds.length}}
 						</button>
 						<ul class="dropdown-menu" role="menu">
 							{{#each buildList in userBuildList.lists}}
-							<li><a class="clickable" {{action 'addBuildToList' buildList.id build.id}}>{{buildList.title}}</a></li>
+							<li><a class="clickable" {{action 'addBuildToList' buildList.Id build.Id}}>{{buildList.Title}}</a></li>
 
 							{{/each}}
 						</ul>
@@ -37,14 +37,14 @@ Search for {{model.query}}. Result count: {{model.builds.length}}
 			<div class="row">
 				<div class="col-md-9">
 					{{#each image in build.images}}
-					<div class="user-build-image-thumbnail">{{buildThumbnail image.guid}}</div>
+					<div class="user-build-image-thumbnail">{{buildThumbnail image.Id}}</div>
 					{{/each}}
 				</div>
 				<div class="col-md-3">
 					<ul>
 						{{#each part in build.parts}}
 						{{#if part.url}}
-						<li><a target="_blank" {{bind-attr href=part.url}}>{{part.title}}</a></li>
+						<li><a target="_blank" {{bind-attr href=part.Url}}>{{part.Title}}</a></li>
 						{{else}}
 						<li>{{part.title}}</li>
 						{{/if}}

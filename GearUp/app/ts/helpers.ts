@@ -25,14 +25,14 @@ Ember.Handlebars.registerBoundHelper('buildTitleAnchor', function (value) {
 	if (!value) {
 		return "";
 	}
-	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '">' + (value.title||'Untitled') + '</a>');
+	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.Id + '">' + (value.Title||'Untitled') + '</a>');
 });
 
 Ember.Handlebars.registerBoundHelper('listTitleAnchor', function (value) {
 	if (!value) {
 		return "";
 	}
-	return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + (value.title||'Untitled') + '</a>');
+	return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.Id + '">' + (value.Title||'Untitled') + '</a>');
 });
 
 
@@ -48,5 +48,5 @@ Ember.Handlebars.registerBoundHelper('buildThumbnailAnchor', function (value) {
 	if (!value || !value.images || value.images.length < 1) {
 		return "";
 	}
-	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.images[0] || {guid:'empty'}).guid + '" /></a>');
+	return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.Id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.images[0] || {Id:'empty'}).Id + '" /></a>');
 });

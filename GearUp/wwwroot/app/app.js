@@ -132,20 +132,20 @@ App.BuildController = Ember.ObjectController.extend({
         }
     }.property('IsCelsius'),
     createdTime: function () {
-        return moment(this.get('model.created')).format('ll');
-    }.property('model.created'),
+        return moment(this.get('model.Created')).format('ll');
+    }.property('model.Created'),
     selectedImage: function () {
-        var i = this.get('model.images');
+        var i = this.get('model.Images');
         if (i && i.length > 0) {
-            return i[0].guid;
+            return i[0].Id;
         }
     }.property('model.images'),
     selectedImageCaption: function () {
-        var images = this.get('model.images');
+        var images = this.get('model.Images');
         var guid = this.get('selectedImage');
         for (var i = 0; i < images.length; i++) {
-            if (images[i].guid === guid) {
-                return images[i].title;
+            if (images[i].Id === guid) {
+                return images[i].Title;
             }
         }
         return "No caption found";
@@ -154,8 +154,8 @@ App.BuildController = Ember.ObjectController.extend({
         return window['UserIdentityKey'] || '';
     }.property('window.UserIdentityKey'),
     canEditBuild: function () {
-        return this.get('model.creator') === window['UserIdentityKey'];
-    }.property('model.creator'),
+        return this.get('model.Creator') === window['UserIdentityKey'];
+    }.property('model.Creator'),
     editTitle: false,
     editDescription: false,
     editCaption: false,
@@ -168,7 +168,7 @@ App.BuildController = Ember.ObjectController.extend({
             var _this = this;
             var build = this.get('model');
             App.Data.getList(listId).then(function (list) {
-                list.addBuildToList(build.id).then(function () {
+                list.addBuildToList(build.Id).then(function () {
                     _this.growl.success('Build added to list');
                 }, function (xhr) {
                     _this.growl.error('Error adding build to list: ' + xhr.responseText);
@@ -176,7 +176,7 @@ App.BuildController = Ember.ObjectController.extend({
             });
         },
         deletePart: function (part) {
-            var parts = this.get('parts');
+            var parts = this.get('Parts');
             parts.removeObject(part);
             this.send('saveBuild');
         },
@@ -189,9 +189,9 @@ App.BuildController = Ember.ObjectController.extend({
             console.log(b);
             console.log(image);
             b.deleteImageFromBuild(image).then(function (x) {
-                var i = _this.get('model.images');
+                var i = _this.get('model.Images');
                 if (i && i.length > 0) {
-                    _this.set('selectedImage', i[0].guid);
+                    _this.set('selectedImage', i[0].Id);
                 }
                 _this.growl.success('Image deleted');
             }, function (xhr) {
@@ -200,7 +200,7 @@ App.BuildController = Ember.ObjectController.extend({
         },
         addPart: function () {
             if (this.get('canEditBuild')) {
-                this.get('parts').pushObject({ title: '' });
+                this.get('Parts').pushObject({ Title: '' });
             }
         },
         tryDeleteBuild: function () {
@@ -212,7 +212,7 @@ App.BuildController = Ember.ObjectController.extend({
             var model = this.get('model');
             model.deleteBuild().then(function (data) {
                 console.log(data);
-                _this.transitionToRoute('userbuilds', model.creator);
+                _this.transitionToRoute('userbuilds', model.Creator);
             }, function (xhr) {
                 console.log(xhr);
                 _this.growl.error('Error deleting build: ' + xhr.responseText);
@@ -220,7 +220,7 @@ App.BuildController = Ember.ObjectController.extend({
         },
         startEditTitle: function () {
             if (this.get('canEditBuild')) {
-                this.savedTitle = this.get('title');
+                this.savedTitle = this.get('Title');
                 this.set('editTitle', true);
             }
         },
@@ -232,25 +232,25 @@ App.BuildController = Ember.ObjectController.extend({
         },
         startEditDescription: function () {
             if (this.get('canEditBuild')) {
-                this.savedDescription = this.get('description');
+                this.savedDescription = this.get('Description');
                 this.set('editDescription', true);
             }
         },
         discardDescription: function () {
             this.set('editDescription', false);
-            this.set('title', this.savedDescription);
+            this.set('Title', this.savedDescription);
         },
         saveImageCaption: function () {
             this.set('editCaption', false);
             var c = this.get('imageCaption');
             var si = this.get('selectedImage');
-            var images = this.get('images');
+            var images = this.get('Images');
             console.log(c);
             console.log(si);
             console.log(images);
             for (var i = 0; i < images.length; i++) {
-                if (images[i].guid === si) {
-                    Ember.set(images[i], 'title', c);
+                if (images[i].Id === si) {
+                    Ember.set(images[i], 'Title', c);
                     break;
                 }
             }
@@ -274,7 +274,7 @@ App.BuildController = Ember.ObjectController.extend({
         },
         discardTitle: function () {
             this.set('editTitle', false);
-            this.set('title', this.savedTitle);
+            this.set('Title', this.savedTitle);
         },
         saveTitle: function () {
             this.set('editTitle', false);
@@ -365,7 +365,7 @@ App.getJSON = function (url) {
 };
 App.BuildObject = Ember.Object.extend({
     save: function () {
-        App.Track.track("SaveBuild", { Build: this.id });
+        App.Track.track("SaveBuild", { Build: this.Id });
         var data = JSON.stringify(this);
         return Ember.$.ajax({
             type: 'POST',
@@ -378,7 +378,7 @@ App.BuildObject = Ember.Object.extend({
     deleteBuild: function () {
         var _this = this;
         var data = JSON.stringify(this);
-        App.Track.track("DeleteBuild", { Build: this.id });
+        App.Track.track("DeleteBuild", { Build: this.Id });
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/build/delete',
@@ -387,7 +387,7 @@ App.BuildObject = Ember.Object.extend({
             dataType: 'text'
         }).then(function (res) {
             //fixme todo does deleting a build remove it from lists???
-            App.Data.removeBuildFromCache(_this.id);
+            App.Data.removeBuildFromCache(_this.Id);
             return res;
         });
     },
@@ -418,10 +418,10 @@ App.BuildObject = Ember.Object.extend({
     },
     addImageToBuild: function (file, guid, progressFunc) {
         var thisbuild = this;
-        App.Track.track("AddImageToBuild", { Build: thisbuild.id });
+        App.Track.track("AddImageToBuild", { Build: thisbuild.Id });
         return new Ember.RSVP.Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.id, true);
+            xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.Id, true);
             xhr.onload = function (e) {
                 if (this.status == 200) {
                     var parsed = JSON.parse(this.response);
@@ -452,7 +452,7 @@ App.UserListsObject = Ember.Object.extend({});
 App.BuildListObject = Ember.Object.extend({
     save: function () {
         var data = JSON.stringify(this);
-        App.Track.track("SaveList", { List: this.id });
+        App.Track.track("SaveList", { List: this.Id });
         App.Data.updateCacheList(this);
         return Ember.$.ajax({
             type: 'POST',
@@ -464,7 +464,7 @@ App.BuildListObject = Ember.Object.extend({
     },
     addBuildToList: function (bid) {
         var _this = this;
-        var opts = { build: bid, list: this.id };
+        var opts = { build: bid, list: this.Id };
         var data = JSON.stringify(opts);
         App.Track.track("AddBuildToList", opts);
         return Ember.$.ajax({
@@ -486,7 +486,7 @@ App.BuildListObject = Ember.Object.extend({
     },
     removeBuildFromList: function (bid) {
         var _this = this;
-        var opts = { 'build': bid, 'list': this.id };
+        var opts = { 'build': bid, 'list': this.Id };
         var data = JSON.stringify(opts);
         App.Track.track("RemoveBuildFromList", opts);
         return Ember.$.ajax({
@@ -496,7 +496,7 @@ App.BuildListObject = Ember.Object.extend({
             data: data,
             dataType: 'text'
         }).then(function (success) {
-            _this.builds.removeObjects(_this.builds.filter(function (b) { return b.id === bid; }));
+            _this.builds.removeObjects(_this.builds.filter(function (b) { return b.Id === bid; }));
             return success;
         });
     },
@@ -504,8 +504,8 @@ App.BuildListObject = Ember.Object.extend({
         var data = JSON.stringify(this);
         console.log('delete list');
         console.log(this);
-        App.Track.track("DeleteList", { List: this.id });
-        App.Data.removeListFromCache(this.id);
+        App.Track.track("DeleteList", { List: this.Id });
+        App.Data.removeListFromCache(this.Id);
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/list/delete',
@@ -535,7 +535,7 @@ var MyAppData = (function () {
         for (var key in this.userbuilds) {
             var list = this.userbuilds[key];
             list.removeObjects(list.filter(function (item) {
-                return item.id === bid;
+                return item.Id === bid;
             }));
         }
     };
@@ -548,9 +548,16 @@ var MyAppData = (function () {
         for (var name in App.Data.userlists) {
             var ul = App.Data.userlists[name];
             ul.get('lists').removeObjects(ul.get('lists').filter(function (li) {
-                return li.id === lid;
+                return li.Id === lid;
             }));
         }
+    };
+    MyAppData.prototype.createBuild = function () {
+        return Ember.$.ajax({
+            type: 'POST',
+            url: '/api/build/create',
+            contentType: 'application/json',
+        });
     };
     MyAppData.prototype.getBuild = function (bid) {
         var _this = this;
@@ -561,10 +568,10 @@ var MyAppData = (function () {
                 b = App.BuildObject.create(res);
                 console.log(b);
                 _this.builds[bid] = b;
-                var ubl = _this.userbuilds[b.get('creator')];
+                var ubl = _this.userbuilds[b.get('Creator')];
                 if (ubl) {
-                    if (!ubl.findBy('id', b.id)) {
-                        console.log('Adding new build ' + b.id + ' to user build list ' + b.get('creator'));
+                    if (!ubl.findBy('Id', b.Id)) {
+                        console.log('Adding new build ' + b.Id + ' to user build list ' + b.get('Creator'));
                         ubl.pushObject(b);
                     }
                 }
@@ -583,7 +590,7 @@ var MyAppData = (function () {
         //console.log('getList');
         var origbuilds = l.get('builds').slice(0);
         // set builds to the ones we haven't already cached--so we can load them
-        var notCachedBuilds = origbuilds.filter(function (el) { return !App.Data.builds[el.id]; });
+        var notCachedBuilds = origbuilds.filter(function (el) { return !App.Data.builds[el.Id]; });
         //console.log('filter');
         //console.log(notCachedBuilds);
         //console.log(App.Data.builds);
@@ -592,7 +599,7 @@ var MyAppData = (function () {
         // if we need to load some builds in this list, ask for them in bulk
         if (notCachedBuilds.length > 0) {
             l.set('builds', notCachedBuilds);
-            var postdata = JSON.stringify(l);
+            var postdata = JSON.stringify(notCachedBuilds);
             Ember.$.ajax({
                 type: 'POST',
                 url: '/api/build/get',
@@ -604,9 +611,9 @@ var MyAppData = (function () {
                 //console.log('postbuild');
                 //console.log(data);
                 data.forEach(function (elem) {
-                    if (!App.Data.builds[elem.id]) {
+                    if (!App.Data.builds[elem.Id]) {
                         var item = App.BuildObject.create(elem);
-                        App.Data.builds[elem.id] = item;
+                        App.Data.builds[elem.Id] = item;
                     }
                 });
                 //console.log('cache');
@@ -645,11 +652,11 @@ var MyAppData = (function () {
                 }).then(function (res) {
                     var newList = Ember.A();
                     res.forEach(function (elem) {
-                        if (!App.Data.buildlists[elem.id]) {
-                            App.Data.buildlists[elem.id] = App.BuildListObject.create(elem);
+                        if (!App.Data.buildlists[elem.Id]) {
+                            App.Data.buildlists[elem.Id] = App.BuildListObject.create(elem);
                         }
-                        _this.fillListBuilds(App.Data.buildlists[elem.id]);
-                        newList.pushObject(App.Data.buildlists[elem.id]);
+                        _this.fillListBuilds(App.Data.buildlists[elem.Id]);
+                        newList.pushObject(App.Data.buildlists[elem.Id]);
                     });
                     l = App.UserListsObject.create({ lists: newList });
                     console.log(l);
@@ -675,10 +682,10 @@ var MyAppData = (function () {
                 var l = App.BuildListObject.create(res);
                 _this.fillListBuilds(l);
                 _this.buildlists[lid] = l;
-                var ubl = _this.userlists[l.get('creator')];
+                var ubl = _this.userlists[l.get('Creator')];
                 if (ubl) {
-                    if (!ubl.get('lists').findBy('id', l.id)) {
-                        console.log('Adding new list ' + l.id + ' to user build list ' + l.get('creator'));
+                    if (!ubl.get('lists').findBy('Id', l.Id)) {
+                        console.log('Adding new list ' + l.Id + ' to user build list ' + l.get('Creator'));
                         ubl.get('lists').pushObject(l);
                     }
                 }
@@ -724,17 +731,19 @@ var MyAppData = (function () {
         }
         else {
             return App.getJSON('/api/user/builds/' + bid).then(function (builds) {
-                var arr = Ember.A();
-                builds.forEach(function (b) {
-                    if (!_this.builds[b.id]) {
-                        var bo = App.BuildObject.create(b);
-                        _this.builds[b.id] = bo;
-                    }
-                    arr.pushObject(_this.builds[b.id]);
-                });
-                _this.userbuilds[bid] = arr;
-                console.log(arr);
-                return arr;
+                var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+                console.log(bl);
+                _this.fillListBuilds(bl);
+                //var arr = Ember.A();
+                //builds.forEach((b) => {
+                //	if (!this.builds[b.id]) {
+                //		var bo = App.BuildObject.create(b);
+                //		this.builds[b.id] = bo;
+                //	}
+                //	arr.pushObject(this.builds[b.id]);
+                //});
+                _this.userbuilds[bid] = bl;
+                return bl;
             });
         }
     };
@@ -932,13 +941,13 @@ Ember.Handlebars.registerBoundHelper('buildTitleAnchor', function (value) {
     if (!value) {
         return "";
     }
-    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '">' + (value.title || 'Untitled') + '</a>');
+    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.Id + '">' + (value.Title || 'Untitled') + '</a>');
 });
 Ember.Handlebars.registerBoundHelper('listTitleAnchor', function (value) {
     if (!value) {
         return "";
     }
-    return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.id + '">' + (value.title || 'Untitled') + '</a>');
+    return new Ember.Handlebars.SafeString('<a href="#/lists/' + value.Id + '">' + (value.Title || 'Untitled') + '</a>');
 });
 Ember.Handlebars.registerBoundHelper('buildImageAnchor', function (value, value2) {
     if (!value || !value2) {
@@ -950,7 +959,7 @@ Ember.Handlebars.registerBoundHelper('buildThumbnailAnchor', function (value) {
     if (!value || !value.images || value.images.length < 1) {
         return "";
     }
-    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.images[0] || { guid: 'empty' }).guid + '" /></a>');
+    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.Id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.images[0] || { Id: 'empty' }).Id + '" /></a>');
 });
 /// <reference path="app.ts" />
 App.ImageController = Ember.ObjectController.extend({
@@ -1175,7 +1184,7 @@ App.SearchRoute = Ember.Route.extend({
         return App.Data.searchIndex(params.q).then(function (res) {
             var ids = [];
             res.value.forEach(function (elem) {
-                ids.push(elem.id);
+                ids.push(elem.Id);
             });
             var obj = { "builds": ids, "query": params.q };
             var l = App.BuildListObject.create(obj);
@@ -1294,7 +1303,7 @@ App.UserbuildsRoute = Ember.Route.extend({
         return App.Data.getUserBuilds(bid);
     }
 });
-App.UserbuildsController = Ember.ArrayController.extend({
+App.UserbuildsController = Ember.ObjectController.extend({
     userLoginKey: function () {
         return window['UserIdentityKey'] || '';
     }.property('window.UserIdentityKey'),
@@ -1324,7 +1333,10 @@ App.UserbuildsController = Ember.ArrayController.extend({
     }.property('userLoginKey'),
     actions: {
         createBuild: function () {
-            this.transitionToRoute('build', Gear.UUID.v4());
+            var _this = this;
+            App.Data.createBuild().then(function (bid) {
+                _this.transitionToRoute('build', bid.Id);
+            });
         },
         addBuildToList: function (listId, bid) {
             var _this = this;

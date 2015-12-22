@@ -121,6 +121,12 @@
 		[HttpPost("get")]
 		public async Task<List<Build>> GetMultiple([FromBody]List<string> bl)
 		{
+			if (bl == null)
+			{
+				HttpContext.Response.StatusCode = 400;
+				return null;
+			}
+
 			this._logger.LogInformation("Get builds, count: " + bl.Count);
 			if (bl.Count < 1)
 			{
@@ -261,7 +267,7 @@
 			var r = await this._data.GetKeyAsync(RecentBuildNamespace + RecentBuildName);
 			if (string.IsNullOrEmpty(r))
 			{
-				throw new Exception("No recent builds");
+				return new List<string>();
 			}
 
 			return JsonConvert.DeserializeObject<List<string>>(r);
