@@ -34,7 +34,8 @@ namespace GearUp.Test.Controllers
 		{
 			var bc = new BuildController(_serviceProvider.GetRequiredService<ILogger>(),
 				_serviceProvider.GetRequiredService<IPartitionedKeyValueDictionary>(),
-				_serviceProvider.GetRequiredService<IAppBlobStorage>()
+				_serviceProvider.GetRequiredService<IAppBlobStorage>(),
+				_serviceProvider.GetRequiredService<IUserAuthenticator>()
 				);
 
 			bc.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -70,7 +71,7 @@ namespace GearUp.Test.Controllers
 
 			TestHelper.SetupUser(c);
 			
-			var uuid = UserLogin.UserUniqueId(c.HttpContext.User.Identity);
+			var uuid = _serviceProvider.GetRequiredService<IUserAuthenticator>().AuthenticateUser(c);
 			var build = await c.CreateBuild();
 
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
@@ -81,7 +82,7 @@ namespace GearUp.Test.Controllers
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 			Assert.True(result2 != null);
 			Assert.True(result2.Id == build.Id);
-			Assert.True(result2.Creator == uuid);
+			Assert.True(result2.Creator == uuid.UserId);
 			Assert.True(result2.Creator == build.Creator);
 
 			await c.DeleteBuild(build.Id);

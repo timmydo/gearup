@@ -45,7 +45,8 @@
 			var uc = GetController();
 			var bc = new BuildController(_serviceProvider.GetRequiredService<ILogger>(),
 				_serviceProvider.GetRequiredService<IPartitionedKeyValueDictionary>(),
-				_serviceProvider.GetRequiredService<IAppBlobStorage>()
+				_serviceProvider.GetRequiredService<IAppBlobStorage>(),
+				_serviceProvider.GetRequiredService<IUserAuthenticator>()
 				);
 			bc.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -54,14 +55,14 @@
 			var build = await bc.CreateBuild();
 			Assert.True(bc.HttpContext.Response.StatusCode == 200);
 
-			var user = UserLogin.UserUniqueId(uc.User?.Identity);
-			var bl = await uc.UserBuilds(user);
+			var user = _serviceProvider.GetRequiredService<IUserAuthenticator>().AuthenticateUser(bc);
+			var bl = await uc.UserBuilds(user.UserId);
 			Assert.True(uc.HttpContext.Response.StatusCode == 200);
 			Assert.True(bl.Contains(build.Id));
 
 			await bc.DeleteBuild(build.Id);
 			Assert.True(uc.HttpContext.Response.StatusCode == 200);
-			var bl2 = await uc.UserBuilds(user);
+			var bl2 = await uc.UserBuilds(user.UserId);
 			Assert.True(uc.HttpContext.Response.StatusCode == 200);
 			Assert.True(!bl2.Contains(build.Id));
 		}
@@ -72,7 +73,8 @@
 		{
 			var uc = GetController();
 			var lc = new ListController(_serviceProvider.GetRequiredService<IPartitionedKeyValueDictionary>(),
-				_serviceProvider.GetRequiredService<ILogger>()
+				_serviceProvider.GetRequiredService<ILogger>(),
+				_serviceProvider.GetRequiredService<IUserAuthenticator>()
 				);
 			lc.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -81,14 +83,14 @@
 			var list = await lc.CreateList();
 			Assert.True(lc.HttpContext.Response.StatusCode == 200);
 
-			var user = UserLogin.UserUniqueId(uc.User?.Identity);
-			var ul = await uc.UserLists(user);
+			var user = _serviceProvider.GetRequiredService<IUserAuthenticator>().AuthenticateUser(uc);
+			var ul = await uc.UserLists(user.UserId);
 			Assert.True(uc.HttpContext.Response.StatusCode == 200);
 			Assert.True(ul.Contains(list.Id));
 
 			await lc.DeleteList(list.Id);
 			Assert.True(uc.HttpContext.Response.StatusCode == 200);
-			var ul2 = await uc.UserLists(user);
+			var ul2 = await uc.UserLists(user.UserId);
 			Assert.True(uc.HttpContext.Response.StatusCode == 200);
 			Assert.True(!ul2.Contains(list.Id));
 		}

@@ -19,13 +19,15 @@ namespace GearUp.Controllers
 
 		private readonly ILogger _logger;
 		private readonly IPartitionedKeyValueDictionary _data;
+		private IUserAuthenticator _ua;
 
 		public readonly string ListNamespace = "l/";
 
-		public ListController(IPartitionedKeyValueDictionary ddb, ILogger logger)
+		public ListController(IPartitionedKeyValueDictionary ddb, ILogger logger, IUserAuthenticator ua)
 		{
 			this._data = ddb;
 			this._logger = logger;
+			this._ua = ua;
 		}
 
 		[Produces("application/json", "text/json")]
@@ -40,8 +42,8 @@ namespace GearUp.Controllers
 		[HttpPost("create")]
 		public async Task<BuildList> CreateList()
 		{
-			var uid = UserLogin.UserUniqueId(User?.Identity);
-			if (string.IsNullOrEmpty(uid))
+			var uid = _ua.AuthenticateUser(this);
+			if (uid == null)
 			{
 				HttpContext.Response.StatusCode = 401;
 				return null;
@@ -50,7 +52,7 @@ namespace GearUp.Controllers
 			var bl = new BuildList()
 			{
 				Id = Guid.NewGuid().ToString("N"),
-				Creator = uid,
+				Creator = uid.UserId,
 				Title = string.Empty,
 				Description = string.Empty,
 				Builds = new List<string>(),
@@ -60,7 +62,7 @@ namespace GearUp.Controllers
 
 			await this._data.AddKeyAsync(ListNamespace + bl.Id, JsonConvert.SerializeObject(bl));
 
-			await ListHelper.AddToList(_data, UserController.UserListNamespace, uid, bl.Id);
+			await ListHelper.AddToList(_data, UserController.UserListNamespace, uid.UserId, bl.Id);
 
 			return bl;
 		}
@@ -73,7 +75,13 @@ namespace GearUp.Controllers
 				HttpContext.Response.StatusCode = 400;
 				return "invalid list";
 			}
-			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var uid = _ua.AuthenticateUser(this);
+
+			if (uid == null)
+			{
+				HttpContext.Response.StatusCode = 401;
+				return "log in";
+			}
 
 			var ldata = await this._data.GetKeyAsync(ListNamespace + id);
 			if (string.IsNullOrEmpty(ldata))
@@ -83,7 +91,7 @@ namespace GearUp.Controllers
 			}
 
 			var list = JsonConvert.DeserializeObject<BuildList>(ldata);
-			if (list.Creator != uid)
+			if (list.Creator != uid.UserId)
 			{
 				HttpContext.Response.StatusCode = 403;
 				return "must be owner to edit list";
@@ -91,7 +99,7 @@ namespace GearUp.Controllers
 
 
 			await this._data.DeleteKeyAsync(ListNamespace + id);
-			await ListHelper.RemoveFromList(_data, UserController.UserListNamespace, uid, list.Id);
+			await ListHelper.RemoveFromList(_data, UserController.UserListNamespace, uid.UserId, list.Id);
 
 			return "Deleted";
 		}
@@ -99,9 +107,9 @@ namespace GearUp.Controllers
 		[HttpPost("save")]
 		public async Task<string> Save([FromBody]BuildList bl)
 		{
-			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var uid = _ua.AuthenticateUser(this);
 
-			if (string.IsNullOrEmpty(uid))
+			if (uid == null)
 			{
 				HttpContext.Response.StatusCode = 401;
 				return "log in first";
@@ -116,7 +124,7 @@ namespace GearUp.Controllers
 			}
 
 			var actualList = JsonConvert.DeserializeObject<BuildList>(ldata);
-			if (actualList.Creator != uid)
+			if (actualList.Creator != uid.UserId)
 			{
 				HttpContext.Response.StatusCode = 403;
 				return "must be owner to edit list";

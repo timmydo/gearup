@@ -1,31 +1,14 @@
-﻿@{
-	ViewBag.Title = "Home Page";
-}
-
-
+﻿
 <script src="/app/app.js?v=2"></script>
 <script type="text/javascript">
 	(function () {
-
 		App.ImageEndpoint = '@(ViewBag.SiteSettings.CdnEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
 		App.SearchQueryKey = '@(ViewBag.SiteSettings.SearchQueryKey)';
 		App.SearchIndexName = '@(ViewBag.SiteSettings.SearchIndexName)';
 		App.SearchEndpoint = 'https://' + '@(ViewBag.SiteSettings.SearchName)' + '.search.windows.net';
 
-		@if (User != null && User.Identity.IsAuthenticated)
-	{
-		<text>window['UserIsAuthenticated'] = true;</text>
-		<text>window['UserIdentityName'] = '@User.Identity.Name';</text>
-		<text>window['UserIdentityKey'] = '@GearUp.Auth.UserLogin.UserUniqueId(User?.Identity)';</text>
-    }
-		else
-		{
-		<text>window['UserIsAuthenticated'] = false;</text>
-		<text>window['UserIdentityName'] = '';</text>
-		<text>window['UserIdentityKey'] = '@GearUp.Auth.UserLogin.UserUniqueId(User?.Identity)';</text>
-
-	}
-
+		window['UserIsAuthenticated'] = @ViewBag.UserIsAuthenticated.ToString().ToLowerInvariant();
+		window['UserIdentityName'] = '@ViewBag.UserIdentityName';
+		window['UserIdentityKey'] = '@ViewBag.UserIdentityKey';
 	})();
-
 </script>

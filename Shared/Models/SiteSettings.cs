@@ -13,5 +13,8 @@ namespace GearUp.Models
 		public string SearchIndexName { get; set; }
 		public string SearchQueryKey { get; set; }
 		public string SearchApiKey { get; set; }
+		public string CookieHmacKey { get; set; }
+
+		
 	}
 }

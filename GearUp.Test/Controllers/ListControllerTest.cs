@@ -29,7 +29,8 @@
 		{
 			var c = new ListController(
 				_serviceProvider.GetRequiredService<IPartitionedKeyValueDictionary>(),
-				_serviceProvider.GetRequiredService<ILogger>()
+				_serviceProvider.GetRequiredService<ILogger>(),
+				_serviceProvider.GetRequiredService<IUserAuthenticator>()
 				);
 
 			c.ControllerContext.HttpContext = new DefaultHttpContext();

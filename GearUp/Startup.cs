@@ -14,6 +14,7 @@
 	using Microsoft.Extensions.PlatformAbstractions;
 	using Shared.Interfaces;
 	using Models;
+	using Auth;
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
@@ -41,6 +42,7 @@
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);
+			services.AddSingleton<IUserAuthenticator,UserAuthenticator>();
 
 			//FIXME
 			if (true)

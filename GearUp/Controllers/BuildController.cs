@@ -20,6 +20,8 @@
 		private readonly ILogger _logger;
 		private readonly IPartitionedKeyValueDictionary _data;
 		private readonly IAppBlobStorage _blobService;
+		public readonly List<string> ValidContentTypes = new List<string>() { "image/png", "image/jpeg", "image/gif" };
+		private IUserAuthenticator _ua;
 
 		public readonly static string BuildNamespace = "b/";
 		public readonly static string RecentBuildNamespace = "rb/";
@@ -33,11 +35,12 @@
 		}
 
 
-		public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService)
+		public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService, IUserAuthenticator ua)
 		{
 			this._logger = logger;
 			this._data = data;
 			this._blobService = blobService;
+			this._ua = ua;
 		}
 
 
@@ -59,9 +62,9 @@
 		[HttpPost("create")]
 		public async Task<Build> CreateBuild()
 		{
-			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var uid = _ua.AuthenticateUser(this);
 
-			if (string.IsNullOrEmpty(uid))
+			if (uid == null)
 			{
 				HttpContext.Response.StatusCode = 401;
 				return null;
@@ -70,7 +73,7 @@
 			var b = new Build
 			{
 				Id = System.Guid.NewGuid().ToString("N"),
-				Creator = UserLogin.UserUniqueId(User?.Identity),
+				Creator = uid.UserId,
 				Created = DateTime.UtcNow,
 				Modified = DateTime.UtcNow
 			};
@@ -78,7 +81,7 @@
 			var bstr = JsonConvert.SerializeObject(b);
 			await this._data.AddKeyAsync(BuildNamespace + b.Id, bstr);
 
-			await ListHelper.AddToList(_data, UserController.UserBuildNamespace, uid, b.Id);
+			await ListHelper.AddToList(_data, UserController.UserBuildNamespace, uid.UserId, b.Id);
 			await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
 
 			return b;
@@ -93,7 +96,7 @@
 				return "bad build";
 			}
 
-			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var uid = _ua.AuthenticateUser(this);
 			var bdata = await this._data.GetKeyAsync(BuildNamespace + b);
 			if (string.IsNullOrEmpty(bdata))
 			{
@@ -102,14 +105,14 @@
 			}
 
 			var build = JsonConvert.DeserializeObject<Build>(await this._data.GetKeyAsync(BuildNamespace + b));
-			if (uid != build.Creator)
+			if (uid.UserId != build.Creator)
 			{
 				HttpContext.Response.StatusCode = 403;
 				return "you are not the owner";
 			}
 
 			await this._data.DeleteKeyAsync(BuildNamespace + build.Id);
-			await ListHelper.RemoveFromList(_data, UserController.UserBuildNamespace, uid, build.Id);
+			await ListHelper.RemoveFromList(_data, UserController.UserBuildNamespace, uid.UserId, build.Id);
 			await ListHelper.RemoveFromQueue(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, build.Id);
 
 			return "Deleted";
@@ -145,16 +148,13 @@
 			return list;
 		}
 
-
-		public readonly List<string> ValidContentTypes = new List<string>() { "image/png", "image/jpeg", "image/gif" };
-
 		[HttpPost("add-image")]
 		public async Task<string> AddImage([FromQuery]string buildid)
 		{
 			var stream = Request.Body;
-			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var uid = _ua.AuthenticateUser(this);
 
-			if (string.IsNullOrEmpty(uid))
+			if (uid == null)
 			{
 				HttpContext.Response.StatusCode = 401;
 				return "User is not logged in";
@@ -181,7 +181,7 @@
 
 			var build = JsonConvert.DeserializeObject<Build>(bdata);
 
-			if (build.Creator != uid)
+			if (build.Creator != uid.UserId)
 			{
 				HttpContext.Response.StatusCode = 403;
 				return "cannot modify other user's build";
@@ -214,7 +214,7 @@
 		[HttpPost("delete-image")]
 		public async Task<string> DeleteImage([FromBody]DeleteImageParamInfo pi)
 		{
-			var uid = UserLogin.UserUniqueId(User?.Identity);
+			var uid = _ua.AuthenticateUser(this).UserId;
 
 			if (string.IsNullOrEmpty(uid))
 			{
@@ -280,14 +280,14 @@
 		{
 			if (b != null && !string.IsNullOrEmpty(b.Creator))
 			{
-				var uid = UserLogin.UserUniqueId(User?.Identity);
-				if (string.IsNullOrEmpty(uid))
+				var uid = _ua.AuthenticateUser(this);
+				if (uid == null)
 				{
 					HttpContext.Response.StatusCode = 401;
 					return "login first";
 				}
 
-				if (uid != b.Creator)
+				if (uid.UserId != b.Creator)
 				{
 					HttpContext.Response.StatusCode = 403;
 					return "not your build";
