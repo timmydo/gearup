@@ -28,7 +28,7 @@
 						</button>
 						<ul class="dropdown-menu" role="menu">
 							{{#each buildList in userBuildList.Lists}}
-							<li><a class="clickable" {{action 'addBuildToList' buildList.Id build.Id}}>{{buildList.Title}}</a></li>
+							<li><a class="clickable" {{action 'addBuildToList' buildList build}}>{{buildList.Title}}</a></li>
 
 							{{/each}}
 						</ul>

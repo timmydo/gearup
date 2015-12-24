@@ -75,7 +75,7 @@ App.BuildController = Ember.ObjectController.extend({
 			var build = this.get('model');
 			
 			App.Data.getList(listId).then((list) => {
-				list.addBuildToList(build.Id).then(() => {
+				list.addBuildToList(build).then(() => {
 					this.growl.success('Build added to list');
 				}, (xhr) => {
 					this.growl.error('Error adding build to list: ' + xhr.responseText);

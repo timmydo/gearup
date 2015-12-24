@@ -25,14 +25,14 @@
 
 		<h1>
 			<span class="clickable" {{action 'startEditTitle' on="click"}} title="Click to change">
-			{{#if title}}
-				{{title}}
+			{{#if Title}}
+				{{Title}}
 			{{else}}
 					Edit your list title...
 			{{/if}}
 			</span>
 		</h1>
-		<div class="build-description">{{description}}</div>
+		<div class="build-description">{{Description}}</div>
 		{{/if}}
 
 	</div>
@@ -53,7 +53,7 @@
 <div class="row">
 
 	<div class="col-xs-12 col-md-8">
-		{{#each build in builds}}
+		{{#each build in Builds}}
 
 		<div class="container user-build">
 			<div class="row">
@@ -69,14 +69,14 @@
 
 			<div class="row">
 				<div class="col-md-9">
-					{{#each image in build.images}}
+					{{#each image in build.Images}}
 					<div class="user-build-image-thumbnail">{{buildThumbnail image.Id}}</div>
 					{{/each}}
 				</div>
 				<div class="col-md-3">
 					<ul>
-						{{#each part in build.parts}}
-						<li>{{part.title}}</li>
+						{{#each part in build.Parts}}
+						<li>{{part.Title}}</li>
 						{{/each}}
 					</ul>
 				</div>

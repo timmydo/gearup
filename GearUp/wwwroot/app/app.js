@@ -168,7 +168,7 @@ App.BuildController = Ember.ObjectController.extend({
             var _this = this;
             var build = this.get('model');
             App.Data.getList(listId).then(function (list) {
-                list.addBuildToList(build.Id).then(function () {
+                list.addBuildToList(build).then(function () {
                     _this.growl.success('Build added to list');
                 }, function (xhr) {
                     _this.growl.error('Error adding build to list: ' + xhr.responseText);
@@ -452,6 +452,9 @@ App.UserListsObject = Ember.Object.extend({});
 App.BuildListObject = Ember.Object.extend({
     save: function () {
         var data = JSON.stringify(this);
+        var parseBack = JSON.parse(data);
+        parseBack.Builds = parseBack.Builds.map(function (x) { return x.Id; });
+        data = JSON.stringify(parseBack);
         App.Track.track("SaveList", { List: this.Id });
         return Ember.$.ajax({
             type: 'POST',
@@ -461,43 +464,13 @@ App.BuildListObject = Ember.Object.extend({
             dataType: 'text'
         });
     },
-    addBuildToList: function (bid) {
-        var _this = this;
-        var opts = { build: bid, list: this.Id };
-        var data = JSON.stringify(opts);
-        App.Track.track("AddBuildToList", opts);
-        return Ember.$.ajax({
-            type: 'POST',
-            url: '/api/list/add',
-            contentType: 'application/json',
-            data: data,
-            dataType: 'text'
-        }).then(function (success) {
-            var b = App.Data.builds[bid];
-            if (!b) {
-                console.log('Add Build To List, could not find build ' + bid);
-                App.Track.track("RemoveBuildFromListError", { Build: bid });
-            }
-            else {
-                _this.builds.pushObject(b);
-            }
-        });
+    addBuildToList: function (b) {
+        this.Builds.pushObject(b);
+        return this.save();
     },
     removeBuildFromList: function (bid) {
-        var _this = this;
-        var opts = { 'build': bid, 'list': this.Id };
-        var data = JSON.stringify(opts);
-        App.Track.track("RemoveBuildFromList", opts);
-        return Ember.$.ajax({
-            type: 'POST',
-            url: '/api/list/remove',
-            contentType: 'application/json',
-            data: data,
-            dataType: 'text'
-        }).then(function (success) {
-            _this.builds.removeObjects(_this.builds.filter(function (b) { return b.Id === bid; }));
-            return success;
-        });
+        this.Builds.removeObjects(this.Builds.filter(function (b) { return b.Id === bid; }));
+        return this.save();
     },
     deleteList: function () {
         var data = JSON.stringify(this);
@@ -1341,15 +1314,12 @@ App.UserbuildsController = Ember.ObjectController.extend({
                 _this.transitionToRoute('build', bid.Id);
             });
         },
-        addBuildToList: function (listId, bid) {
+        addBuildToList: function (thelist, thebuild) {
             var _this = this;
-            var build = this.get('model');
-            App.Data.getList(listId).then(function (list) {
-                list.addBuildToList(bid).then(function () {
-                    _this.growl.success('Build added to list');
-                }, function (xhr) {
-                    _this.growl.error('Error adding build to list: ' + xhr.responseText);
-                });
+            thelist.addBuildToList(thebuild).then(function () {
+                _this.growl.success('Build added to list');
+            }, function (xhr) {
+                _this.growl.error('Error adding build to list: ' + xhr.responseText);
             });
         },
     }

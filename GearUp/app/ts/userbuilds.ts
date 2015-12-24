@@ -53,15 +53,11 @@ App.UserbuildsController = Ember.ObjectController.extend({
 			});
 		},
 
-		addBuildToList: function (listId, bid) {
-			var build = this.get('model');
-
-			App.Data.getList(listId).then((list) => {
-				list.addBuildToList(bid).then(() => {
-					this.growl.success('Build added to list');
-				},(xhr) => {
-						this.growl.error('Error adding build to list: ' + xhr.responseText);
-					});
+		addBuildToList: function (thelist, thebuild) {
+			thelist.addBuildToList(thebuild).then(() => {
+				this.growl.success('Build added to list');
+			}, (xhr) => {
+				this.growl.error('Error adding build to list: ' + xhr.responseText);
 			});
 		},
 	}

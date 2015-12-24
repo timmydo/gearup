@@ -150,6 +150,12 @@ namespace GearUp.Controllers
 				return "log in first";
 			}
 
+			if (bl == null)
+			{
+				HttpContext.Response.StatusCode = 400;
+				return "invalid build list";
+			}
+
 			var ldata = await this._data.GetKeyAsync(ListNamespace + bl.Id);
 
 			if (string.IsNullOrEmpty(ldata))

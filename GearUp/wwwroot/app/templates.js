@@ -3839,7 +3839,7 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-          content(env, morph0, context, "title");
+          content(env, morph0, context, "Title");
           return fragment;
         }
       };
@@ -3933,8 +3933,8 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
         var morph0 = dom.createMorphAt(element6,0,1);
         var morph1 = dom.createMorphAt(dom.childAt(fragment, [3]),-1,-1);
         element(env, element6, context, "action", ["startEditTitle"], {"on": "click"});
-        block(env, morph0, context, "if", [get(env, context, "title")], {}, child0, child1);
-        content(env, morph1, context, "description");
+        block(env, morph0, context, "if", [get(env, context, "Title")], {}, child0, child1);
+        content(env, morph1, context, "Description");
         return fragment;
       }
     };
@@ -4164,7 +4164,7 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-          content(env, morph0, context, "part.title");
+          content(env, morph0, context, "part.Title");
           return fragment;
         }
       };
@@ -4272,8 +4272,8 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
         var morph3 = dom.createMorphAt(dom.childAt(element3, [3, 1]),0,1);
         inline(env, morph0, context, "buildTitleAnchor", [get(env, context, "build")], {});
         block(env, morph1, context, "if", [get(env, context, "canEditList")], {}, child0, null);
-        block(env, morph2, context, "each", [get(env, context, "build.images")], {"keyword": "image"}, child1, null);
-        block(env, morph3, context, "each", [get(env, context, "build.parts")], {"keyword": "part"}, child2, null);
+        block(env, morph2, context, "each", [get(env, context, "build.Images")], {"keyword": "image"}, child1, null);
+        block(env, morph3, context, "each", [get(env, context, "build.Parts")], {"keyword": "part"}, child2, null);
         return fragment;
       }
     };
@@ -4356,7 +4356,7 @@ Ember.TEMPLATES["list"] = Ember.HTMLBars.template((function() {
       var morph2 = dom.createMorphAt(dom.childAt(fragment, [3, 1]),0,1);
       block(env, morph0, context, "if", [get(env, context, "editTitle")], {}, child0, child1);
       block(env, morph1, context, "if", [get(env, context, "canEditList")], {}, child2, null);
-      block(env, morph2, context, "each", [get(env, context, "builds")], {"keyword": "build"}, child3, null);
+      block(env, morph2, context, "each", [get(env, context, "Builds")], {"keyword": "build"}, child3, null);
       return fragment;
     }
   };
@@ -5049,7 +5049,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
             }
             var element1 = dom.childAt(fragment, [1, 0]);
             var morph0 = dom.createMorphAt(element1,-1,-1);
-            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList.Id"), get(env, context, "build.Id")], {});
+            element(env, element1, context, "action", ["addBuildToList", get(env, context, "buildList"), get(env, context, "build")], {});
             content(env, morph0, context, "buildList.Title");
             return fragment;
           }

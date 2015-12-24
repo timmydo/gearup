@@ -121,6 +121,15 @@
 		}
 
 		[Fact]
+		public async Task ListSave_Null()
+		{
+			var c = GetController();
+			TestHelper.SetupUser(c);
+			await c.Save(null);
+			Assert.True(c.HttpContext.Response.StatusCode == 400);
+		}
+
+		[Fact]
 		public async Task ListSave_Success()
 		{
 			var c = GetController();
