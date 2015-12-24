@@ -1,4 +1,5 @@
 ﻿{
+  "Platform": "local",
   "AppSettings": {
     "AppInsightsKey": "988f790a-d88d-411f-bd15-7fdbc37e1202",
     "CookieHmacKey": "njhUnWN2rVH8N5pq9zlQYE3SvVPP/wf9dReUQhzzRMtkALSw2w4FdL3YjTCe2V4/nxVgMGy+6jVasjP1JBwBAQ==",

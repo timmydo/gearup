@@ -14,11 +14,9 @@ App.UserlistsController = Ember.ObjectController.extend({
 
 	actions: {
 		createList: function () {
-			this.transitionToRoute('list', Gear.UUID.v4());
-			// refresh the cache
-			if (window['UserIdentityKey']) {
-				App.Data.getUserList(window['UserIdentityKey']);
-			}
+			App.Data.createList().then((lid) => {
+				this.transitionToRoute('list', lid.Id);
+			});
 		}
 
 	}

@@ -9,17 +9,17 @@ App.PartController = Ember.ObjectController.extend({
 		editPart: function () {
 			this.setProperties({
 				editing: true,
-				newTitle: this.get('title'),
-				newUrl: this.get('url'),
-				newPrice: this.get('price')
+				newTitle: this.get('Title'),
+				newUrl: this.get('Url'),
+				newPrice: this.get('Price')
 			});
 		},
 		savePart: function () {
 			this.setProperties({
 				editing: false,
-				title: this.get('newTitle'),
-				url: this.get('newUrl'),
-				price: this.get('newPrice')
+				Title: this.get('newTitle'),
+				Url: this.get('newUrl'),
+				Price: this.get('newPrice')
 			});
 
 			this.send('saveBuild');

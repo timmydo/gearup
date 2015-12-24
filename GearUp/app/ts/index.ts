@@ -18,7 +18,7 @@ App.IndexController = Ember.Controller.extend({
 		var a = Ember.A();
 		var row = Ember.A();
 		var count = 0;
-		var builds = this.get('model.builds');
+		var builds = this.get('model.Builds');
 		if (builds) {
 			builds.forEach((b) => {
 				if (count >= 3) {
@@ -28,7 +28,7 @@ App.IndexController = Ember.Controller.extend({
 				}
 
 				// only display builds that have an image
-				if (b.images.length > 0) {
+				if (b.Images.length > 0) {
 					count++;
 					row.pushObject(b);
 				}
@@ -41,6 +41,6 @@ App.IndexController = Ember.Controller.extend({
 
 		return a;
 
-	}.property('model.builds')
+	}.property('model.Builds')
 
 });

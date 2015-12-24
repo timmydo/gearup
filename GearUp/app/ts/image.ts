@@ -7,13 +7,13 @@ App.ImageController = Ember.ObjectController.extend({
 		editImage: function (Image) {
 			this.setProperties({
 				editing: true,
-				newTitle: this.get('title'),
+				newTitle: this.get('Title'),
 			});
 		},
 		saveImage: function (Image) {
 			this.setProperties({
 				editing: false,
-				title: this.get('newTitle'),
+				Title: this.get('newTitle'),
 			});
 
 			this.send('saveBuild');

@@ -33,7 +33,7 @@ App.ListRoute = Ember.Route.extend({
 
 App.ListController = Ember.ObjectController.extend({
 	canEditList: function () {
-		return this.get('model.creator') === window['UserIdentityKey'];
+		return this.get('model.Creator') === window['UserIdentityKey'];
 	}.property('model'),
 	editTitle: false,
 	savedTitle: '',
@@ -65,7 +65,7 @@ App.ListController = Ember.ObjectController.extend({
 			model.deleteList().then((data) => {
 				//console.log(status);
 				this.growl.success('List deleted');
-				this.transitionToRoute('userlists', model.creator);
+				this.transitionToRoute('userlists', model.Creator);
 			},(xhr) => {
 				console.log(xhr);
 				this.growl.error('Error deleting list: ' + xhr.responseText);
@@ -74,14 +74,14 @@ App.ListController = Ember.ObjectController.extend({
 		},
 		startEditTitle: function () {
 			if (this.get('canEditList')) {
-				this.savedTitle = this.get('title');
-				this.savedDescription = this.get('description');
+				this.savedTitle = this.get('Title');
+				this.savedDescription = this.get('Description');
 				this.set('editTitle', true);
 			}
 		},
 		discardTitle: function () {
 			this.set('editTitle', false);
-			this.set('title', this.savedTitle);
+			this.set('Title', this.savedTitle);
 		},
 		saveTitle: function () {
 			this.set('editTitle', false);

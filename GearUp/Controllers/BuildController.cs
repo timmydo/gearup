@@ -75,7 +75,11 @@
 				Id = System.Guid.NewGuid().ToString("N"),
 				Creator = uid.UserId,
 				Created = DateTime.UtcNow,
-				Modified = DateTime.UtcNow
+				Modified = DateTime.UtcNow,
+				Parts = new List<Part>(),
+				Images = new List<Image>(),
+				Title = string.Empty,
+				Description = string.Empty
 			};
 
 			var bstr = JsonConvert.SerializeObject(b);

@@ -453,7 +453,6 @@ App.BuildListObject = Ember.Object.extend({
     save: function () {
         var data = JSON.stringify(this);
         App.Track.track("SaveList", { List: this.Id });
-        App.Data.updateCacheList(this);
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/list/save',
@@ -547,7 +546,7 @@ var MyAppData = (function () {
         // remove this from user lists
         for (var name in App.Data.userlists) {
             var ul = App.Data.userlists[name];
-            ul.get('lists').removeObjects(ul.get('lists').filter(function (li) {
+            ul.get('Lists').removeObjects(ul.get('Lists').filter(function (li) {
                 return li.Id === lid;
             }));
         }
@@ -556,6 +555,13 @@ var MyAppData = (function () {
         return Ember.$.ajax({
             type: 'POST',
             url: '/api/build/create',
+            contentType: 'application/json',
+        });
+    };
+    MyAppData.prototype.createList = function () {
+        return Ember.$.ajax({
+            type: 'POST',
+            url: '/api/list/create',
             contentType: 'application/json',
         });
     };
@@ -570,9 +576,9 @@ var MyAppData = (function () {
                 _this.builds[bid] = b;
                 var ubl = _this.userbuilds[b.get('Creator')];
                 if (ubl) {
-                    if (!ubl.findBy('Id', b.Id)) {
+                    if (!ubl.get('Builds').findBy('Id', b.Id)) {
                         console.log('Adding new build ' + b.Id + ' to user build list ' + b.get('Creator'));
-                        ubl.pushObject(b);
+                        ubl.get('Builds').pushObject(b);
                     }
                 }
                 return b;
@@ -587,18 +593,12 @@ var MyAppData = (function () {
     // then set the l.builds property to a ember array of actual build objects, using the cache,
     // so that build objects are reused and are updated together
     MyAppData.prototype.fillListBuilds = function (l) {
-        //console.log('getList');
-        var origbuilds = l.get('builds').slice(0);
+        var origbuilds = l.get('Builds').slice(0);
         // set builds to the ones we haven't already cached--so we can load them
         var notCachedBuilds = origbuilds.filter(function (el) { return !App.Data.builds[el.Id]; });
-        //console.log('filter');
-        //console.log(notCachedBuilds);
-        //console.log(App.Data.builds);
-        //console.log(filtered);
-        //l.set('builds', filtered);
         // if we need to load some builds in this list, ask for them in bulk
         if (notCachedBuilds.length > 0) {
-            l.set('builds', notCachedBuilds);
+            l.set('Builds', notCachedBuilds);
             var postdata = JSON.stringify(notCachedBuilds);
             Ember.$.ajax({
                 type: 'POST',
@@ -608,34 +608,73 @@ var MyAppData = (function () {
                 dataType: 'json'
             }).then(function (data) {
                 var barray = Ember.A();
-                //console.log('postbuild');
-                //console.log(data);
                 data.forEach(function (elem) {
                     if (!App.Data.builds[elem.Id]) {
                         var item = App.BuildObject.create(elem);
                         App.Data.builds[elem.Id] = item;
                     }
                 });
-                //console.log('cache');
-                //console.log(App.Data.builds);
-                //console.log(origbuilds);
                 origbuilds.forEach(function (guid) {
                     barray.pushObject(App.Data.builds[guid]);
                 });
-                //console.log('set builds');
-                //console.log(barray);
-                l.set('builds', barray);
+                l.set('Builds', barray);
             }, function (xhr) {
                 console.log(xhr);
                 App.Track.track("GetListError", { Message: 'Error getting user build list: ' + xhr.responseJSON });
             });
             // set the list to empty until we load everything
-            l.set('builds', Ember.A());
+            l.set('Builds', Ember.A());
         }
         else {
-            l.set('builds', Ember.A());
+            l.set('Builds', Ember.A());
             origbuilds.forEach(function (b) {
-                l.get('builds').pushObject(App.Data.builds[b]);
+                l.get('Builds').pushObject(App.Data.builds[b]);
+            });
+        }
+    };
+    // a list has a List<string> of BuildLists, after calling this, it will
+    // be a List<BuildList>
+    MyAppData.prototype.fillListLists = function (l) {
+        var _this = this;
+        console.log("Fill List Lists");
+        console.log(l);
+        var origList = l.get('Lists').slice(0);
+        // set builds to the ones we haven't already cached--so we can load them
+        var notCached = origList.filter(function (el) { return !App.Data.buildlists[el.Id]; });
+        // if we need to load some builds in this list, ask for them in bulk
+        if (notCached.length > 0) {
+            l.set('Lists', notCached);
+            var postdata = JSON.stringify(notCached);
+            Ember.$.ajax({
+                type: 'POST',
+                url: '/api/list/get',
+                contentType: 'application/json',
+                data: postdata,
+                dataType: 'json'
+            }).then(function (data) {
+                var arr = Ember.A();
+                data.forEach(function (elem) {
+                    if (!App.Data.buildlists[elem.Id]) {
+                        var item = App.BuildListObject.create(elem);
+                        _this.fillListBuilds(item);
+                        App.Data.buildlists[elem.Id] = item;
+                    }
+                });
+                origList.forEach(function (guid) {
+                    arr.pushObject(App.Data.buildlists[guid]);
+                });
+                l.set('Lists', arr);
+            }, function (xhr) {
+                console.log(xhr);
+                App.Track.track("GetListError", { Message: 'Error getting user build list: ' + xhr.responseJSON });
+            });
+            // set the list to empty until we load everything
+            l.set('Lists', Ember.A());
+        }
+        else {
+            l.set('Lists', Ember.A());
+            origList.forEach(function (b) {
+                l.get('Lists').pushObject(App.Data.buildlists[b]);
             });
         }
     };
@@ -650,16 +689,8 @@ var MyAppData = (function () {
                     url: '/api/user/lists/' + userKey,
                     dataType: 'json',
                 }).then(function (res) {
-                    var newList = Ember.A();
-                    res.forEach(function (elem) {
-                        if (!App.Data.buildlists[elem.Id]) {
-                            App.Data.buildlists[elem.Id] = App.BuildListObject.create(elem);
-                        }
-                        _this.fillListBuilds(App.Data.buildlists[elem.Id]);
-                        newList.pushObject(App.Data.buildlists[elem.Id]);
-                    });
-                    l = App.UserListsObject.create({ lists: newList });
-                    console.log(l);
+                    l = App.UserListsObject.create({ Lists: res });
+                    _this.fillListLists(l);
                     _this.userlists[userKey] = l;
                     resolve(l);
                 }).fail(function (err) {
@@ -684,9 +715,9 @@ var MyAppData = (function () {
                 _this.buildlists[lid] = l;
                 var ubl = _this.userlists[l.get('Creator')];
                 if (ubl) {
-                    if (!ubl.get('lists').findBy('Id', l.Id)) {
+                    if (!ubl.get('Lists').findBy('Id', l.Id)) {
                         console.log('Adding new list ' + l.Id + ' to user build list ' + l.get('Creator'));
-                        ubl.get('lists').pushObject(l);
+                        ubl.get('Lists').pushObject(l);
                     }
                 }
                 return l;
@@ -708,13 +739,13 @@ var MyAppData = (function () {
         }
         else {
             return App.getJSON('/api/build/recent').then(function (builds) {
-                var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+                var bl = App.BuildListObject.create({ Builds: Ember.A(builds) });
                 console.log(bl);
                 _this.fillListBuilds(bl);
                 _this.recentbuilds = bl;
                 return bl;
             }, function (fail) {
-                var bl = App.BuildListObject.create({ builds: Ember.A([]) });
+                var bl = App.BuildListObject.create({ Builds: Ember.A([]) });
                 console.log('Failure getting recent builds: ' + fail);
                 _this.fillListBuilds(bl);
                 _this.recentbuilds = bl;
@@ -731,17 +762,9 @@ var MyAppData = (function () {
         }
         else {
             return App.getJSON('/api/user/builds/' + bid).then(function (builds) {
-                var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+                var bl = App.BuildListObject.create({ Builds: Ember.A(builds) });
                 console.log(bl);
                 _this.fillListBuilds(bl);
-                //var arr = Ember.A();
-                //builds.forEach((b) => {
-                //	if (!this.builds[b.id]) {
-                //		var bo = App.BuildObject.create(b);
-                //		this.builds[b.id] = bo;
-                //	}
-                //	arr.pushObject(this.builds[b.id]);
-                //});
                 _this.userbuilds[bid] = bl;
                 return bl;
             });
@@ -795,7 +818,7 @@ App.DragDropComponent = Ember.Component.extend({
     drop: function (event) {
         event.preventDefault();
         var data = event.dataTransfer;
-        this.sendAction('dropped', data, this.get('guid'));
+        this.sendAction('dropped', data, this.get('Id'));
         Ember.set(this, 'dragClass', 'deactivated');
     }
 });
@@ -968,13 +991,13 @@ App.ImageController = Ember.ObjectController.extend({
         editImage: function (Image) {
             this.setProperties({
                 editing: true,
-                newTitle: this.get('title'),
+                newTitle: this.get('Title'),
             });
         },
         saveImage: function (Image) {
             this.setProperties({
                 editing: false,
-                title: this.get('newTitle'),
+                Title: this.get('newTitle'),
             });
             this.send('saveBuild');
         },
@@ -999,7 +1022,7 @@ App.IndexController = Ember.Controller.extend({
         var a = Ember.A();
         var row = Ember.A();
         var count = 0;
-        var builds = this.get('model.builds');
+        var builds = this.get('model.Builds');
         if (builds) {
             builds.forEach(function (b) {
                 if (count >= 3) {
@@ -1008,7 +1031,7 @@ App.IndexController = Ember.Controller.extend({
                     row = Ember.A();
                 }
                 // only display builds that have an image
-                if (b.images.length > 0) {
+                if (b.Images.length > 0) {
                     count++;
                     row.pushObject(b);
                 }
@@ -1018,7 +1041,7 @@ App.IndexController = Ember.Controller.extend({
             a.pushObject(row);
         }
         return a;
-    }.property('model.builds')
+    }.property('model.Builds')
 });
 /// <reference path="app.ts" />
 App.ListRoute = Ember.Route.extend({
@@ -1053,7 +1076,7 @@ App.ListRoute = Ember.Route.extend({
 });
 App.ListController = Ember.ObjectController.extend({
     canEditList: function () {
-        return this.get('model.creator') === window['UserIdentityKey'];
+        return this.get('model.Creator') === window['UserIdentityKey'];
     }.property('model'),
     editTitle: false,
     savedTitle: '',
@@ -1084,7 +1107,7 @@ App.ListController = Ember.ObjectController.extend({
             model.deleteList().then(function (data) {
                 //console.log(status);
                 _this.growl.success('List deleted');
-                _this.transitionToRoute('userlists', model.creator);
+                _this.transitionToRoute('userlists', model.Creator);
             }, function (xhr) {
                 console.log(xhr);
                 _this.growl.error('Error deleting list: ' + xhr.responseText);
@@ -1092,14 +1115,14 @@ App.ListController = Ember.ObjectController.extend({
         },
         startEditTitle: function () {
             if (this.get('canEditList')) {
-                this.savedTitle = this.get('title');
-                this.savedDescription = this.get('description');
+                this.savedTitle = this.get('Title');
+                this.savedDescription = this.get('Description');
                 this.set('editTitle', true);
             }
         },
         discardTitle: function () {
             this.set('editTitle', false);
-            this.set('title', this.savedTitle);
+            this.set('Title', this.savedTitle);
         },
         saveTitle: function () {
             this.set('editTitle', false);
@@ -1107,26 +1130,6 @@ App.ListController = Ember.ObjectController.extend({
         },
     }
 });
-/// <reference path="app.ts" />
-App.LoginCreds = Ember.Object.extend({
-    username: null,
-    password: null,
-    remember: false,
-    json: function () {
-        return {
-            username: this.get('username') || '',
-            password: this.get('password') || '',
-            remember: !!this.get('remember')
-        };
-    }
-});
-App.LoginRoute = Ember.Route.extend({
-    model: function () {
-        // let our login template fill in the properties of a creds object
-        return App.LoginCreds.create({});
-    },
-});
-App.LoginController = Ember.ObjectController.extend({});
 /// <reference path="app.ts" />
 App.NavView = Ember.View.extend({
     tagName: 'li',
@@ -1151,17 +1154,17 @@ App.PartController = Ember.ObjectController.extend({
         editPart: function () {
             this.setProperties({
                 editing: true,
-                newTitle: this.get('title'),
-                newUrl: this.get('url'),
-                newPrice: this.get('price')
+                newTitle: this.get('Title'),
+                newUrl: this.get('Url'),
+                newPrice: this.get('Price')
             });
         },
         savePart: function () {
             this.setProperties({
                 editing: false,
-                title: this.get('newTitle'),
-                url: this.get('newUrl'),
-                price: this.get('newPrice')
+                Title: this.get('newTitle'),
+                Url: this.get('newUrl'),
+                Price: this.get('newPrice')
             });
             this.send('saveBuild');
         },
@@ -1364,11 +1367,10 @@ App.UserlistsRoute = Ember.Route.extend({
 App.UserlistsController = Ember.ObjectController.extend({
     actions: {
         createList: function () {
-            this.transitionToRoute('list', Gear.UUID.v4());
-            // refresh the cache
-            if (window['UserIdentityKey']) {
-                App.Data.getUserList(window['UserIdentityKey']);
-            }
+            var _this = this;
+            App.Data.createList().then(function (lid) {
+                _this.transitionToRoute('list', lid.Id);
+            });
         }
     }
 });

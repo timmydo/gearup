@@ -41,7 +41,7 @@
 				Add to list <span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu">
-				{{#each buildList in controllers.Userbuilds.userBuildList.lists}}
+				{{#each buildList in controllers.Userbuilds.userBuildList.Lists}}
 				<li><a class="clickable" {{action 'addBuildToList' buildList.Id}}>{{buildList.Title}}</a></li>
 
 				{{/each}}

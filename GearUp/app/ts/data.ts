@@ -142,7 +142,6 @@ App.BuildListObject = Ember.Object.extend({
 	save: function() {
 		var data = JSON.stringify(this);
 		App.Track.track("SaveList", { List: this.Id });
-		App.Data.updateCacheList(this);
 		return Ember.$.ajax({
 			type: 'POST',
 			url: '/api/list/save',
@@ -268,7 +267,7 @@ class MyAppData {
 		// remove this from user lists
 		for (var name in App.Data.userlists) {
 			var ul = App.Data.userlists[name];
-			ul.get('lists').removeObjects(ul.get('lists').filter((li) => {
+			ul.get('Lists').removeObjects(ul.get('Lists').filter((li) => {
 				return li.Id === lid;
 			}));
 		}
@@ -283,6 +282,14 @@ class MyAppData {
 		});
 	}
 
+	createList() {
+		return Ember.$.ajax({
+			type: 'POST',
+			url: '/api/list/create',
+			contentType: 'application/json',
+		});
+	}
+
 	getBuild(bid) {
 		console.log('Get Build: ' + bid);
 		var b = this.builds[bid];
@@ -293,9 +300,9 @@ class MyAppData {
 				this.builds[bid] = b;
 				var ubl = this.userbuilds[b.get('Creator')];
 				if (ubl) {
-					if (!ubl.findBy('Id', b.Id)) {
+					if (!ubl.get('Builds').findBy('Id', b.Id)) {
 						console.log('Adding new build ' + b.Id + ' to user build list ' + b.get('Creator'));
-						ubl.pushObject(b);
+						ubl.get('Builds').pushObject(b);
 					}
 				}
 				return b;
@@ -310,23 +317,15 @@ class MyAppData {
 	// then set the l.builds property to a ember array of actual build objects, using the cache,
 	// so that build objects are reused and are updated together
 	fillListBuilds(l) {
-		//console.log('getList');
-		var origbuilds = l.get('builds').slice(0);
-				
+		var origbuilds = l.get('Builds').slice(0);
+		
 		// set builds to the ones we haven't already cached--so we can load them
 		var notCachedBuilds = origbuilds.filter((el) => { return !App.Data.builds[el.Id]; })
-		//console.log('filter');
-		//console.log(notCachedBuilds);
-		//console.log(App.Data.builds);
-		//console.log(filtered);
-		//l.set('builds', filtered);
-
-
-
+		
 		// if we need to load some builds in this list, ask for them in bulk
 		if (notCachedBuilds.length > 0) {
 
-			l.set('builds', notCachedBuilds);
+			l.set('Builds', notCachedBuilds);
 			var postdata = JSON.stringify(notCachedBuilds);
 			Ember.$.ajax({
 				type: 'POST',
@@ -336,8 +335,6 @@ class MyAppData {
 				dataType: 'json'
 			}).then((data) => {
 				var barray = Ember.A();
-				//console.log('postbuild');
-				//console.log(data);
 				data.forEach((elem) => {
 					if (!App.Data.builds[elem.Id]) {
 						var item = App.BuildObject.create(elem);
@@ -346,38 +343,76 @@ class MyAppData {
 
 				});
 
-				//console.log('cache');
-				//console.log(App.Data.builds);
-				//console.log(origbuilds);
-
 				origbuilds.forEach((guid) => {
 					barray.pushObject(App.Data.builds[guid]);
 				});
 
-				//console.log('set builds');
-				//console.log(barray);
-
-				l.set('builds', barray);
+				l.set('Builds', barray);
 			}, (xhr) => {
 					console.log(xhr);
 					App.Track.track("GetListError", { Message: 'Error getting user build list: ' + xhr.responseJSON });
 				});
 
 			// set the list to empty until we load everything
-			l.set('builds', Ember.A());
-
-
-
+			l.set('Builds', Ember.A());
 		} else {
-			l.set('builds', Ember.A());
+			l.set('Builds', Ember.A());
 			origbuilds.forEach((b) => {
-				l.get('builds').pushObject(App.Data.builds[b]);
+				l.get('Builds').pushObject(App.Data.builds[b]);
 			});
-			//console.log('builds');
-			//console.log(l.get('builds'));
 		}
 	}
 
+	// a list has a List<string> of BuildLists, after calling this, it will
+	// be a List<BuildList>
+	fillListLists(l) {
+		console.log("Fill List Lists");
+		console.log(l);
+		var origList = l.get('Lists').slice(0);
+		
+		// set builds to the ones we haven't already cached--so we can load them
+		var notCached = origList.filter((el) => { return !App.Data.buildlists[el.Id]; })
+		
+		// if we need to load some builds in this list, ask for them in bulk
+		if (notCached.length > 0) {
+
+			l.set('Lists', notCached);
+			var postdata = JSON.stringify(notCached);
+			Ember.$.ajax({
+				type: 'POST',
+				url: '/api/list/get',
+				contentType: 'application/json',
+				data: postdata,
+				dataType: 'json'
+			}).then((data) => {
+				var arr = Ember.A();
+				data.forEach((elem) => {
+					if (!App.Data.buildlists[elem.Id]) {
+						var item = App.BuildListObject.create(elem);
+						this.fillListBuilds(item);
+						App.Data.buildlists[elem.Id] = item;
+					}
+				});
+
+				origList.forEach((guid) => {
+					arr.pushObject(App.Data.buildlists[guid]);
+				});
+
+				l.set('Lists', arr);
+			}, (xhr) => {
+				console.log(xhr);
+				App.Track.track("GetListError", { Message: 'Error getting user build list: ' + xhr.responseJSON });
+			});
+
+			// set the list to empty until we load everything
+			l.set('Lists', Ember.A());
+		} else {
+			l.set('Lists', Ember.A());
+			origList.forEach((b) => {
+				l.get('Lists').pushObject(App.Data.buildlists[b]);
+			});
+		}
+	}
 
 	getUserList(userKey) {
 		console.log('Get User List: ' + userKey);
@@ -389,16 +424,8 @@ class MyAppData {
 					url: '/api/user/lists/' + userKey,
 					dataType: 'json',
 				}).then((res) => {
-					var newList = Ember.A();
-					res.forEach((elem) => {
-						if (!App.Data.buildlists[elem.Id]) {
-							App.Data.buildlists[elem.Id] = App.BuildListObject.create(elem);
-						}
-						this.fillListBuilds(App.Data.buildlists[elem.Id]);
-						newList.pushObject(App.Data.buildlists[elem.Id]);
-					});
-					l = App.UserListsObject.create({ lists: newList });
-					console.log(l);
+					l = App.UserListsObject.create({ Lists: res });
+					this.fillListLists(l);
 
 					this.userlists[userKey] = l;
 					resolve(l);
@@ -424,9 +451,9 @@ class MyAppData {
 
 				var ubl = this.userlists[l.get('Creator')];
 				if (ubl) {
-					if (!ubl.get('lists').findBy('Id', l.Id)) {
+					if (!ubl.get('Lists').findBy('Id', l.Id)) {
 						console.log('Adding new list ' + l.Id + ' to user build list ' + l.get('Creator'));
-						ubl.get('lists').pushObject(l);
+						ubl.get('Lists').pushObject(l);
 					}
 				}
 
@@ -450,14 +477,14 @@ class MyAppData {
 			return promiseFor(this.recentbuilds);
 		} else {
 			return App.getJSON('/api/build/recent').then((builds) => {
-				var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+				var bl = App.BuildListObject.create({ Builds: Ember.A(builds) });
 				console.log(bl);
 				this.fillListBuilds(bl);
 				this.recentbuilds = bl;
 
 				return bl;
 			}, (fail) => {
-				var bl = App.BuildListObject.create({ builds: Ember.A([]) });
+				var bl = App.BuildListObject.create({ Builds: Ember.A([]) });
 				console.log('Failure getting recent builds: ' + fail);
 				this.fillListBuilds(bl);
 				this.recentbuilds = bl;
@@ -474,19 +501,9 @@ class MyAppData {
 			return promiseFor(this.userbuilds[bid]);
 		} else {
 			return App.getJSON('/api/user/builds/' + bid).then((builds) => {
-				var bl = App.BuildListObject.create({ builds: Ember.A(builds) });
+				var bl = App.BuildListObject.create({ Builds: Ember.A(builds) });
 				console.log(bl);
 				this.fillListBuilds(bl);
-
-				//var arr = Ember.A();
-				//builds.forEach((b) => {
-				//	if (!this.builds[b.id]) {
-				//		var bo = App.BuildObject.create(b);
-				//		this.builds[b.id] = bo;
-				//	}
-
-				//	arr.pushObject(this.builds[b.id]);
-				//});
 				this.userbuilds[bid] = bl;
 
 				return bl;

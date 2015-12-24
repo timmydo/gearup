@@ -1226,7 +1226,7 @@ Ember.TEMPLATES["build"] = Ember.HTMLBars.template((function() {
           fragment = this.build(dom);
         }
         var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 3]),0,1);
-        block(env, morph0, context, "each", [get(env, context, "controllers.Userbuilds.userBuildList.lists")], {"keyword": "buildList"}, child0, null);
+        block(env, morph0, context, "each", [get(env, context, "controllers.Userbuilds.userBuildList.Lists")], {"keyword": "buildList"}, child0, null);
         return fragment;
       }
     };
@@ -5119,7 +5119,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 3]),0,1);
-          block(env, morph0, context, "each", [get(env, context, "userBuildList.lists")], {"keyword": "buildList"}, child0, null);
+          block(env, morph0, context, "each", [get(env, context, "userBuildList.Lists")], {"keyword": "buildList"}, child0, null);
           return fragment;
         }
       };
@@ -5501,7 +5501,7 @@ Ember.TEMPLATES["userbuilds"] = Ember.HTMLBars.template((function() {
       var element6 = dom.childAt(element5, [1, 3, 1]);
       var morph0 = dom.createMorphAt(element5,2,3);
       element(env, element6, context, "action", ["createBuild"], {});
-      block(env, morph0, context, "each", [get(env, context, "model.builds")], {"keyword": "build"}, child0, null);
+      block(env, morph0, context, "each", [get(env, context, "model.Builds")], {"keyword": "build"}, child0, null);
       return fragment;
     }
   };
@@ -5658,7 +5658,7 @@ Ember.TEMPLATES["userlists"] = Ember.HTMLBars.template((function() {
       var element2 = dom.childAt(element1, [1, 3, 1]);
       var morph0 = dom.createMorphAt(element1,2,3);
       element(env, element2, context, "action", ["createList"], {});
-      block(env, morph0, context, "each", [get(env, context, "model.lists")], {"keyword": "list"}, child0, null);
+      block(env, morph0, context, "each", [get(env, context, "model.Lists")], {"keyword": "list"}, child0, null);
       return fragment;
     }
   };

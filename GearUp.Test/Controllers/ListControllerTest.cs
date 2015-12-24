@@ -7,6 +7,7 @@
 	using Microsoft.Extensions.Logging;
 	using Shared.Interfaces;
 	using System;
+	using System.Collections.Generic;
 	using System.Threading.Tasks;
 	using Xunit;
 
@@ -55,6 +56,39 @@
 			var result = await c.GetById(l.Id);
 			Assert.True(c.HttpContext.Response.StatusCode == 200);
 			Assert.True(result.Id == l.Id);
+		}
+
+		[Fact]
+		public async Task List_GetMultiple()
+		{
+			var c = GetController();
+			TestHelper.SetupUser(c);
+			var result = await c.CreateList();
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+
+			var result2 = await c.CreateList();
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+
+			var bl = new List<string>()
+			{
+				result.Id,
+				result2.Id
+			};
+
+			var result3 = await c.GetMultiple(bl);
+			Assert.True(c.HttpContext.Response.StatusCode == 200);
+			Assert.True(result3[0].Id.Equals(result.Id));
+			Assert.True(result3[1].Id.Equals(result2.Id));
+		}
+
+
+		[Fact]
+		public async Task ListGet_NotFound()
+		{
+			var c = GetController();
+			var result = await c.GetById("123");
+			Assert.True(c.HttpContext.Response.StatusCode == 404);
+			Assert.True(result == null);
 		}
 
 		[Fact]

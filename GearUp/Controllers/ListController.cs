@@ -35,9 +35,44 @@ namespace GearUp.Controllers
 		public async Task<BuildList> GetById(string id)
 		{
 			var blstr = await this._data.GetKeyAsync(ListNamespace + id);
+			if (string.IsNullOrEmpty(blstr))
+			{
+				HttpContext.Response.StatusCode = 404;
+				return null;
+			}
+
 			var bl = JsonConvert.DeserializeObject<BuildList>(blstr);
 			return bl;
 		}
+
+		[Produces("application/json", "text/json")]
+		[HttpPost("get")]
+		public async Task<List<BuildList>> GetMultiple([FromBody]List<string> bl)
+		{
+			if (bl == null)
+			{
+				HttpContext.Response.StatusCode = 400;
+				return null;
+			}
+
+			this._logger.LogInformation("Get lists, count: " + bl.Count);
+			if (bl.Count < 1)
+			{
+				return new List<BuildList>();
+			}
+			var list = new List<BuildList>();
+			foreach (var id in bl)
+			{
+				var fullBuildList = await this._data.GetKeyAsync(ListNamespace + id);
+				if (!string.IsNullOrEmpty(fullBuildList))
+				{
+					list.Add(JsonConvert.DeserializeObject<BuildList>(fullBuildList));
+				}
+			}
+
+			return list;
+		}
+
 
 		[HttpPost("create")]
 		public async Task<BuildList> CreateList()

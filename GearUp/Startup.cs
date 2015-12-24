@@ -39,23 +39,27 @@
 		{
 			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
+			string platform = Configuration["Platform"];
+
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);
 			services.AddSingleton<IUserAuthenticator,UserAuthenticator>();
 
-			//FIXME
-			if (true)
+			if (platform == "local")
 			{
 				services.AddSingleton<IAppBlobStorage, AzureBlobService>();
 				var dict = new LocalDictionary();
 				services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
 			}
-			else
+			else if (platform == "servicefabric")
 			{
 				services.AddSingleton<AzureBlobService>();
 				var dict = new ServiceFabricPartitionedKeyValueDictionary(new Uri("fabric:/GearUp/BE"));
 				services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
+			}
+			else
+			{
 			}
 			services.AddMvc();
 

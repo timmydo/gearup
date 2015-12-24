@@ -18,7 +18,7 @@ App.DragDropComponent = Ember.Component.extend({
 	drop(event) {
 		event.preventDefault();
 		var data = event.dataTransfer;
-		this.sendAction('dropped', data, this.get('guid'));
+		this.sendAction('dropped', data, this.get('Id'));
 
 		Ember.set(this, 'dragClass', 'deactivated');
 	}
