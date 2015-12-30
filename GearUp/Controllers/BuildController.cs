@@ -49,12 +49,12 @@
 		public async Task<Build> GetById(string id)
 		{
 			var b = await this._data.GetKeyAsync(BuildNamespace + id);
-			if (string.IsNullOrEmpty(b))
+			if (b == null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return null;
 			}
-			var build = JsonConvert.DeserializeObject<Build>(b);
+			var build = JsonConvert.DeserializeObject<Build>(b.Value);
 			return build;
 		}
 
@@ -102,13 +102,13 @@
 
 			var uid = _ua.AuthenticateUser(this);
 			var bdata = await this._data.GetKeyAsync(BuildNamespace + b);
-			if (string.IsNullOrEmpty(bdata))
+			if (bdata == null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return "not found";
 			}
 
-			var build = JsonConvert.DeserializeObject<Build>(await this._data.GetKeyAsync(BuildNamespace + b));
+			var build = JsonConvert.DeserializeObject<Build>(bdata.Value);
 			if (uid.UserId != build.Creator)
 			{
 				HttpContext.Response.StatusCode = 403;
@@ -143,9 +143,9 @@
 			foreach (var id in bl)
 			{
 				var fullBuild = await this._data.GetKeyAsync(BuildNamespace + id);
-				if (!string.IsNullOrEmpty(fullBuild))
+				if (fullBuild != null)
 				{
-					list.Add(JsonConvert.DeserializeObject<Build>(fullBuild));
+					list.Add(JsonConvert.DeserializeObject<Build>(fullBuild.Value));
 				}
 			}
 
@@ -177,13 +177,13 @@
 			}
 
 			var bdata = await this._data.GetKeyAsync(BuildNamespace + buildid);
-			if (string.IsNullOrEmpty(bdata))
+			if (bdata == null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return "build not found";
 			}
 
-			var build = JsonConvert.DeserializeObject<Build>(bdata);
+			var build = JsonConvert.DeserializeObject<Build>(bdata.Value);
 
 			if (build.Creator != uid.UserId)
 			{
@@ -202,7 +202,8 @@
 
 			build.Images.Add(new Image { Id = imageGuid });
 
-			var success = await this._data.UpdateKeyAsync(BuildNamespace + buildid, JsonConvert.SerializeObject(build));
+			bdata.Value = JsonConvert.SerializeObject(build);
+			var success = await bdata.UpdateAsync();
 
 			if (!success)
 			{
@@ -227,13 +228,13 @@
 			}
 
 			var bstr = await this._data.GetKeyAsync(BuildNamespace + pi.Build);
-			if (string.IsNullOrEmpty(bstr))
+			if (bstr == null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return "build not found";
 			}
 
-			var b = JsonConvert.DeserializeObject<Build>(bstr);
+			var b = JsonConvert.DeserializeObject<Build>(bstr.Value);
 
 			if (b.Creator != uid)
 			{
@@ -251,15 +252,22 @@
 				}
 
 				b.Images = newList.ToList();
-				await this._data.UpdateKeyAsync(BuildNamespace + pi.Build, JsonConvert.SerializeObject(b));
+				bstr.Value = JsonConvert.SerializeObject(b);
+				if (await bstr.UpdateAsync())
+				{
+					return "success";
+				}
+				else
+				{
+					HttpContext.Response.StatusCode = 500;
+					return "failed to update";
+				}
 			}
 			else
 			{
 				HttpContext.Response.StatusCode = 400;
 				return "no images to delete";
 			}
-
-			return "Success";
 		}
 
 
@@ -269,12 +277,12 @@
 		{
 			//FIXME
 			var r = await this._data.GetKeyAsync(RecentBuildNamespace + RecentBuildName);
-			if (string.IsNullOrEmpty(r))
+			if (r == null)
 			{
 				return new List<string>();
 			}
 
-			return JsonConvert.DeserializeObject<List<string>>(r);
+			return JsonConvert.DeserializeObject<List<string>>(r.Value);
 		}
 
 
@@ -297,16 +305,31 @@
 					return "not your build";
 				}
 
-				var actual = await this.GetById(b.Id);
+				var actualBstr = await this._data.GetKeyAsync(BuildNamespace + b.Id);
+				if (actualBstr == null)
+				{
+					HttpContext.Response.StatusCode = 404;
+					return null;
+				}
+				var actual = JsonConvert.DeserializeObject<Build>(actualBstr.Value);
 
 				// do not allow update of creator or images
 				b.Creator = actual.Creator;
 				b.Images = actual.Images;
 
-				await this._data.UpdateKeyAsync(BuildNamespace + b.Id, JsonConvert.SerializeObject(b));
-				await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
+				actualBstr.Value = JsonConvert.SerializeObject(b);
 
-				return "saved";
+
+				if (await actualBstr.UpdateAsync())
+				{
+					await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
+					return "saved";
+				}
+				else
+				{
+					HttpContext.Response.StatusCode = 500;
+					return "failed to save build";
+				}
 			}
 			else
 			{

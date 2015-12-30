@@ -32,12 +32,12 @@
 			}
 
 			var data = await this._ddb.GetKeyAsync(ns + id);
-			if (string.IsNullOrEmpty(data))
+			if (data == null)
 			{
 				return new List<string>();
 			}
 
-			var list = JsonConvert.DeserializeObject<List<string>>(data);
+			var list = JsonConvert.DeserializeObject<List<string>>(data.Value);
 			return list;
 		}
 

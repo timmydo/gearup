@@ -13,7 +13,7 @@
 		{
 			var ub = await data.GetKeyAsync(ns + uid);
 			IList<string> userList;
-			if (string.IsNullOrEmpty(ub))
+			if (ub == null)
 			{
 				userList = new List<string>() { idToAdd };
 				await data.AddKeyAsync(ns + uid,
@@ -21,9 +21,10 @@
 			}
 			else
 			{
-				userList = JsonConvert.DeserializeObject<List<string>>(ub);
+				userList = JsonConvert.DeserializeObject<List<string>>(ub.Value);
 				userList.Add(idToAdd);
-				await data.UpdateKeyAsync(ns + uid,	JsonConvert.SerializeObject(userList));
+				ub.Value = JsonConvert.SerializeObject(userList);
+				await ub.UpdateAsync();
 			}
 		}
 
@@ -32,14 +33,14 @@
 			const int maxSize = 1000;
 			var ub = await data.GetKeyAsync(ns + uid);
 			IList<string> q;
-			if (string.IsNullOrEmpty(ub))
+			if (ub == null)
 			{
 				q = new List<string>() { idToAdd };
 				await data.AddKeyAsync(ns + uid, JsonConvert.SerializeObject(q));
 			}
 			else
 			{
-				q = JsonConvert.DeserializeObject<List<string>>(ub);
+				q = JsonConvert.DeserializeObject<List<string>>(ub.Value);
 				if (!q.Contains(idToAdd))
 				{
 					q.Insert(0, idToAdd);
@@ -47,7 +48,8 @@
 					{
 						q = q.Take(maxSize).ToList();
 					}
-					await data.UpdateKeyAsync(ns + uid, JsonConvert.SerializeObject(q));
+					ub.Value = JsonConvert.SerializeObject(q);
+					await ub.UpdateAsync();
 				}
 			}
 		}
@@ -56,36 +58,38 @@
 		{
 			var ub = await data.GetKeyAsync(ns + uid);
 			IList<string> userBuilds;
-			if (string.IsNullOrEmpty(ub))
+			if (ub == null)
 			{
 				userBuilds = new List<string>();
 			}
 			else
 			{
-				userBuilds = JsonConvert.DeserializeObject<List<string>>(ub);
+				userBuilds = JsonConvert.DeserializeObject<List<string>>(ub.Value);
 			}
 
 			userBuilds.Remove(idToRemove);
-			await data.UpdateKeyAsync(ns + uid,	JsonConvert.SerializeObject(userBuilds));
+			ub.Value = JsonConvert.SerializeObject(userBuilds);
+			await ub.UpdateAsync();
 		}
 
 		public static async Task RemoveFromQueue(IPartitionedKeyValueDictionary data, string ns, string uid, string idToRemove)
 		{
 			var ub = await data.GetKeyAsync(ns + uid);
 			IList<string> q;
-			if (string.IsNullOrEmpty(ub))
+			if (ub == null)
 			{
 				q = new List<string>();
 			}
 			else
 			{
-				q = JsonConvert.DeserializeObject<List<string>>(ub);
+				q = JsonConvert.DeserializeObject<List<string>>(ub.Value);
 			}
 
 			if (q.Contains(idToRemove))
 			{
 				q.Remove(idToRemove);
-				await data.UpdateKeyAsync(ns + uid, JsonConvert.SerializeObject(q));
+				ub.Value = JsonConvert.SerializeObject(q);
+				await ub.UpdateAsync();
 			}
 		}
 	}

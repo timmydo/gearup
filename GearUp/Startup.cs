@@ -49,8 +49,9 @@
 			if (platform == "local")
 			{
 				services.AddSingleton<IAppBlobStorage, AzureBlobService>();
-				var dict = new LocalDictionary();
-				services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
+				//var dict = new LocalDictionary();
+				//services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
+				services.AddSingleton<IPartitionedKeyValueDictionary, AzureTableDictionary>();
 			}
 			else if (platform == "servicefabric")
 			{

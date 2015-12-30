@@ -35,13 +35,13 @@ namespace GearUp.Controllers
 		public async Task<BuildList> GetById(string id)
 		{
 			var blstr = await this._data.GetKeyAsync(ListNamespace + id);
-			if (string.IsNullOrEmpty(blstr))
+			if (blstr == null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return null;
 			}
 
-			var bl = JsonConvert.DeserializeObject<BuildList>(blstr);
+			var bl = JsonConvert.DeserializeObject<BuildList>(blstr.Value);
 			return bl;
 		}
 
@@ -64,9 +64,9 @@ namespace GearUp.Controllers
 			foreach (var id in bl)
 			{
 				var fullBuildList = await this._data.GetKeyAsync(ListNamespace + id);
-				if (!string.IsNullOrEmpty(fullBuildList))
+				if (fullBuildList != null)
 				{
-					list.Add(JsonConvert.DeserializeObject<BuildList>(fullBuildList));
+					list.Add(JsonConvert.DeserializeObject<BuildList>(fullBuildList.Value));
 				}
 			}
 
@@ -119,13 +119,13 @@ namespace GearUp.Controllers
 			}
 
 			var ldata = await this._data.GetKeyAsync(ListNamespace + id);
-			if (string.IsNullOrEmpty(ldata))
+			if (ldata != null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return "not found";
 			}
 
-			var list = JsonConvert.DeserializeObject<BuildList>(ldata);
+			var list = JsonConvert.DeserializeObject<BuildList>(ldata.Value);
 			if (list.Creator != uid.UserId)
 			{
 				HttpContext.Response.StatusCode = 403;
@@ -158,13 +158,13 @@ namespace GearUp.Controllers
 
 			var ldata = await this._data.GetKeyAsync(ListNamespace + bl.Id);
 
-			if (string.IsNullOrEmpty(ldata))
+			if (ldata == null)
 			{
 				HttpContext.Response.StatusCode = 404;
 				return "not found";
 			}
 
-			var actualList = JsonConvert.DeserializeObject<BuildList>(ldata);
+			var actualList = JsonConvert.DeserializeObject<BuildList>(ldata.Value);
 			if (actualList.Creator != uid.UserId)
 			{
 				HttpContext.Response.StatusCode = 403;
@@ -180,7 +180,8 @@ namespace GearUp.Controllers
 				bl.Builds = new List<string>();
 			}
 
-			if (await this._data.UpdateKeyAsync(ListNamespace + bl.Id, JsonConvert.SerializeObject(bl)))
+			ldata.Value = JsonConvert.SerializeObject(bl);
+			if (await ldata.UpdateAsync())
 			{
 				return "success";
 			}

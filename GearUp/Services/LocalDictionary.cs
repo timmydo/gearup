@@ -10,6 +10,24 @@ namespace GearUp.Services
 	{
 		private Dictionary<string, string> _dict = new Dictionary<string,string>();
 
+		private class LocalDictionaryKey : IKeyValueEntity
+		{
+			public string Key { get; set; }
+			public string Value { get; set; }
+			private LocalDictionary _dict { get; set; }
+
+			public LocalDictionaryKey(LocalDictionary d)
+			{
+				_dict = d;
+			}
+
+			public async Task<bool> UpdateAsync()
+			{
+				return await _dict.UpdateKeyAsync(this.Key, this.Value);
+			}
+		}
+
+
 		public async Task AddKeyAsync(string key, string value)
 		{
 			await Task.FromResult(0);
@@ -32,14 +50,18 @@ namespace GearUp.Services
 			_dict.Remove(key);
 		}
 
-		public async Task<string> GetKeyAsync(string key)
+		public async Task<IKeyValueEntity> GetKeyAsync(string key)
 		{
 			await Task.FromResult(0);
 			if (!_dict.ContainsKey(key)) return null;
-			return _dict[key];
+			return new LocalDictionaryKey(this)
+			{
+				Key = key,
+				Value = _dict[key]
+			};
 		}
 
-		public async Task<bool> UpdateKeyAsync(string key, string value)
+		private async Task<bool> UpdateKeyAsync(string key, string value)
 		{
 			await Task.FromResult(0);
 			_dict[key] = value;

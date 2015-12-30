@@ -8,6 +8,8 @@
     "SearchIndexName": "localtest",
     "SearchQueryKey": "ECA36C018F6E3D63C24062C94AB43082",
     "BlobStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=gearuptest;AccountKey=H7p5WKcTiBb/uBqN3vvh2tfajMtUcrVSQjuXHK5cvLr0ZI4fXGtQK8W9JGLB4sTtyZ3lq506FAC8f56OPWpuLg==",
+    "TableStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=gearuptest;AccountKey=H7p5WKcTiBb/uBqN3vvh2tfajMtUcrVSQjuXHK5cvLr0ZI4fXGtQK8W9JGLB4sTtyZ3lq506FAC8f56OPWpuLg==",
+    "TableStorageTableName": "GU",
     "BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
     "ImagesContainer": "uploadimages",
     "CdnEndpoint": "https://az745127.vo.msecnd.net/"

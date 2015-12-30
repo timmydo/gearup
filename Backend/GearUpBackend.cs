@@ -19,6 +19,21 @@ namespace GearUpBackend
 	/// </summary>
 	public class GearUpBackend : StatefulService, IPartitionedKeyValueDictionary, IService
 	{
+
+		private class GearUpTableKey : IKeyValueEntity
+		{
+			public string Key { get; set; }
+			public string Value { get; set; }
+			private string _tag { get; set; }
+
+			private GearUpBackend _backend { get; set;	}
+
+			public async Task<bool> UpdateAsync()
+			{
+				return await _backend.UpdateKeyAsync(this.Key, this.Value);
+			}
+		}
+
 		private IReliableDictionary<string, string> _dict;
 
 		public async Task AddKeyAsync(string key, string value)
@@ -41,17 +56,26 @@ namespace GearUpBackend
 			}
 		}
 
-		public async Task<string> GetKeyAsync(string key)
+		public async Task<IKeyValueEntity> GetKeyAsync(string key)
 		{
 			if (_dict == null) throw new NullReferenceException(nameof(_dict));
 			using (var tx = this.StateManager.CreateTransaction())
 			{
 				var result = await _dict.TryGetValueAsync(tx, key);
-				return result.HasValue ? result.Value : string.Empty;
+				if (result.HasValue)
+				{
+					return new GearUpTableKey()
+					{
+						Key = key,
+						Value = result.Value
+					};
+				}
+
+				return null;
 			}
 		}
 
-		public async Task<bool> UpdateKeyAsync(string key, string value)
+		private async Task<bool> UpdateKeyAsync(string key, string value)
 		{
 			if (_dict == null) throw new NullReferenceException(nameof(_dict));
 			using (var tx = this.StateManager.CreateTransaction())
