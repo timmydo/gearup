@@ -44,12 +44,17 @@
 			}
 		}
 
+		private static string EscapeKey(string key)
+		{
+			return key.Replace('/', '$');
+		}
+
 		public AzureTableDictionary(IOptions<SiteSettings> settings, ILogger logger)
 		{
 			this._logger = logger;
 			logger.LogInformation("Azure Table creation start");
 
-			var acct = CloudStorageAccount.Parse(settings.Value.TableStorageConnectionString);
+			var acct = CloudStorageAccount.Parse(settings.Value.StorageConnectionString);
 			var client = acct.CreateCloudTableClient();
 			this._table = client.GetTableReference(settings.Value.TableStorageTableName);
 			this._table.CreateIfNotExists();
@@ -61,7 +66,7 @@
 		{
 			var obj = new InternalAzureTableEntity()
 			{
-				PartitionKey = key,
+				PartitionKey = EscapeKey(key),
 				RowKey = string.Empty,
 				Value = value
 			};
@@ -73,7 +78,7 @@
 		{
 			var obj = new InternalAzureTableEntity()
 			{
-				PartitionKey = key,
+				PartitionKey = EscapeKey(key),
 				RowKey = string.Empty
 			};
 			var op = TableOperation.Delete(obj);
@@ -82,12 +87,7 @@
 
 		public async Task<IKeyValueEntity> GetKeyAsync(string key)
 		{
-			var obj = new InternalAzureTableEntity()
-			{
-				PartitionKey = key,
-				RowKey = string.Empty
-			};
-			var op = TableOperation.Retrieve<InternalAzureTableEntity>(key, string.Empty);
+			var op = TableOperation.Retrieve<InternalAzureTableEntity>(EscapeKey(key), string.Empty);
 			var res = await _table.ExecuteAsync(op);
 			var returnedObj = (InternalAzureTableEntity)res.Result;
 			if (returnedObj != null)

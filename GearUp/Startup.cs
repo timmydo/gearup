@@ -28,7 +28,9 @@
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(applicationEnvironment.ApplicationBasePath)
 				.AddJsonFile("config.json")
+				.AddUserSecrets()
 				.AddEnvironmentVariables();
+			
 			Configuration = builder.Build();
 		}
 

@@ -8,7 +8,7 @@
 	using Microsoft.Extensions.OptionsModel;
 	using Models;
 	using System;
-
+	using System.Security.Cryptography;
 	public class AzureBlobService : IAppBlobStorage
     {
 		private SiteSettings _settings;
@@ -19,7 +19,7 @@
 		{
 			this._settings = settings.Value;
 			this._logger = logger;
-			this._storageAccount = CloudStorageAccount.Parse(this._settings.BlobStorageConnectionString);
+			this._storageAccount = CloudStorageAccount.Parse(this._settings.StorageConnectionString);
 
 			logger.LogInformation("BlobService creation");
 		}
@@ -49,8 +49,13 @@
 
 		public async Task<string> UploadUserImage(Stream stream, string contentType)
 		{
-			string guid = Guid.NewGuid().ToString("N");
-			await this.UploadFile(stream, contentType, this._settings.ImagesContainer, guid);
+			var hash = SHA256.Create();
+			var ms = new MemoryStream();
+			stream.CopyTo(ms);
+			ms.Seek(0, SeekOrigin.Begin);
+			var guid = Convert.ToBase64String(hash.ComputeHash(ms), Base64FormattingOptions.None);
+			ms.Seek(0, SeekOrigin.Begin);
+			await this.UploadFile(ms, contentType, this._settings.ImagesContainer, guid);
 			return guid;
 		}
 	}

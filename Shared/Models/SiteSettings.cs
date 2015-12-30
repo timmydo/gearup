@@ -5,9 +5,8 @@ namespace GearUp.Models
     public class SiteSettings
 	{
 		public string AppInsightsKey { get; set; }
-		public string TableStorageConnectionString { get; set; }
+		public string StorageConnectionString { get; set; }
 		public string TableStorageTableName { get; set; }
-		public string BlobStorageConnectionString { get; set; }
 		public string BlobEndpoint { get; set; }
 		public string CdnEndpoint { get; set; }
 		public string ImagesContainer { get; set; }

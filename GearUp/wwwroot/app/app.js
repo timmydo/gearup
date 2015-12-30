@@ -392,7 +392,7 @@ App.BuildObject = Ember.Object.extend({
         });
     },
     deleteImageFromBuild: function (guid) {
-        var opts = { Build: this.id, Image: guid };
+        var opts = { Build: this.Id, Image: guid };
         var data = JSON.stringify(opts);
         App.Track.track("DeleteImage", opts);
         var thisbuild = this;
@@ -404,14 +404,14 @@ App.BuildObject = Ember.Object.extend({
             dataType: 'text'
         }).then(function (res) {
             var obj = null;
-            for (var i = thisbuild.images.length - 1; i >= 0; i--) {
-                if (thisbuild.images[i].guid === guid) {
-                    obj = thisbuild.images[i];
+            for (var i = thisbuild.Images.length - 1; i >= 0; i--) {
+                if (thisbuild.Images[i].Id === guid) {
+                    obj = thisbuild.Images[i];
                     break;
                 }
             }
             if (obj) {
-                thisbuild.images.removeObject(obj);
+                thisbuild.Images.removeObject(obj);
             }
             return res;
         });
@@ -421,11 +421,11 @@ App.BuildObject = Ember.Object.extend({
         App.Track.track("AddImageToBuild", { Build: thisbuild.Id });
         return new Ember.RSVP.Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.Id, true);
+            xhr.open('POST', '/api/build/add-image?buildid=' + thisbuild.Id, true);
             xhr.onload = function (e) {
                 if (this.status == 200) {
-                    var parsed = JSON.parse(this.response);
-                    thisbuild.images.pushObject(parsed);
+                    var img = { Id: this.response, Title: "none" };
+                    thisbuild.Images.pushObject(img);
                     resolve(this.response);
                 }
                 else {
@@ -952,10 +952,10 @@ Ember.Handlebars.registerBoundHelper('buildImageAnchor', function (value, value2
     return new Ember.Handlebars.SafeString('<a target="_blank" href="' + App.ImageEndpoint + '/' + value + '">' + (value2 || 'Untitled') + '</a>');
 });
 Ember.Handlebars.registerBoundHelper('buildThumbnailAnchor', function (value) {
-    if (!value || !value.images || value.images.length < 1) {
+    if (!value || !value.Images || value.Images.length < 1) {
         return "";
     }
-    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.Id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.images[0] || { Id: 'empty' }).Id + '" /></a>');
+    return new Ember.Handlebars.SafeString('<a href="#/builds/' + value.Id + '"><img class="recent-build-image-thumbnail" src="' + App.ImageEndpoint + '/' + (value.Images[0] || { Id: 'empty' }).Id + '" /></a>');
 });
 /// <reference path="app.ts" />
 App.ImageController = Ember.ObjectController.extend({

@@ -1,5 +1,6 @@
 {
   "version": "1.0.0-*",
+  "userSecretsId": "gearup-71a91bfc-97ed-43eb-8c0d-efd9b2d923be",
   "compilationOptions": {
     "emitEntryPoint": true
   },
@@ -24,6 +25,7 @@
     "Microsoft.Extensions.Configuration.CommandLine": "1.0.0-*",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-*",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Console": "1.0.0-*",
     "WindowsAzure.Storage": "6.2.2-preview",

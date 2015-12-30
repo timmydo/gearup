@@ -72,7 +72,7 @@ App.BuildObject = Ember.Object.extend({
 	},
 
 	deleteImageFromBuild: function(guid) {
-		var opts = { Build: this.id, Image: guid };
+		var opts = { Build: this.Id, Image: guid };
 		var data = JSON.stringify(opts);
 		App.Track.track("DeleteImage", opts);
 
@@ -85,14 +85,14 @@ App.BuildObject = Ember.Object.extend({
 			dataType: 'text'
 		}).then((res) => {
 			var obj = null;
-			for (var i = thisbuild.images.length - 1; i >= 0; i--) {
-				if (thisbuild.images[i].guid === guid) {
-					obj = thisbuild.images[i];
+			for (var i = thisbuild.Images.length - 1; i >= 0; i--) {
+				if (thisbuild.Images[i].Id === guid) {
+					obj = thisbuild.Images[i];
 					break;
 				}
 			}
 			if (obj) {
-				thisbuild.images.removeObject(obj);
+				thisbuild.Images.removeObject(obj);
 			}
 
 			return res;
@@ -105,11 +105,11 @@ App.BuildObject = Ember.Object.extend({
 
 		return new Ember.RSVP.Promise((resolve, reject) => {
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/api/UploadImage?buildid=' + thisbuild.Id, true);
+			xhr.open('POST', '/api/build/add-image?buildid=' + thisbuild.Id, true);
 			xhr.onload = function(e) {
 				if (this.status == 200) {
-					var parsed = JSON.parse(this.response);
-					thisbuild.images.pushObject(parsed);
+					var img = { Id: this.response, Title: "none" };
+					thisbuild.Images.pushObject(img);
 					resolve(this.response);
 				} else {
 					reject(this.response);

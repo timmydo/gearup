@@ -3695,7 +3695,7 @@ Ember.TEMPLATES["index"] = Ember.HTMLBars.template((function() {
         fragment = this.build(dom);
       }
       var morph0 = dom.createMorphAt(dom.childAt(fragment, [3]),0,-1);
-      block(env, morph0, context, "each", [get(env, context, "model.builds")], {"keyword": "build"}, child0, null);
+      block(env, morph0, context, "each", [get(env, context, "model.Builds")], {"keyword": "build"}, child0, null);
       return fragment;
     }
   };
