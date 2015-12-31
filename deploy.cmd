@@ -63,10 +63,8 @@ echo %PATH%
 call dnu restore "%DEPLOYMENT_SOURCE%" -f https://www.myget.org/F/aspnetvnext
 IF !ERRORLEVEL! NEQ 0 goto error
 
-call dnu publish "D:\home\site\repository\GearUp\project.json" --runtime active --out "%DEPLOYMENT_TEMP%" 
+call dnu publish "D:\home\site\repository\GearUp\project.json" --runtime active --out "%DEPLOYMENT_TARGET%" 
 IF !ERRORLEVEL! NEQ 0 goto error
-
-call robocopy /W:1 /R:3 /NP /MIR "%DEPLOYMENT_TEMP%" "%DEPLOYMENT_TARGET%"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Post deployment stub
