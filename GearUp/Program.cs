@@ -8,6 +8,8 @@
 	{
 		public static void Main(string[] args)
 		{
+			Console.WriteLine("Args:\n" + string.Join("\n", args));
+
 			var config = WebApplicationConfiguration.GetDefault(args);
 
 			var application = new WebApplicationBuilder()
