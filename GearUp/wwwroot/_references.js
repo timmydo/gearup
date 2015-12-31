@@ -12,5 +12,6 @@
 /// <reference path="../bower_components/typeahead.js/dist/typeahead.bundle.js" />
 /// <reference path="../gruntfile.js" />
 /// <reference path="app/app.js" />
+/// <reference path="app/templates.js" />
 /// <reference path="lib/vendor.js" />
 /// <reference path="lib/vendor-dev.js" />

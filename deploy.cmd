@@ -1,23 +1,5 @@
 @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
-:: ----------------------
-:: KUDU Deployment Script
-:: ----------------------
-
-
-
-:: Prerequisites
-:: -------------
-
-:: Verify node.js installed
-where node 2>nul >nul
-IF %ERRORLEVEL% NEQ 0 (
-  echo Missing node.js executable, please install node.js, if already installed make sure it can be reached from current environment.
-  goto error
-)
-
-:: Setup
-:: -----
 
 setlocal enabledelayedexpansion
 
@@ -31,23 +13,6 @@ IF NOT DEFINED DEPLOYMENT_TARGET (
   SET DEPLOYMENT_TARGET=%ARTIFACTS%\wwwroot
 )
 
-IF NOT DEFINED NEXT_MANIFEST_PATH (
-  SET NEXT_MANIFEST_PATH=%ARTIFACTS%\manifest
-
-  IF NOT DEFINED PREVIOUS_MANIFEST_PATH (
-    SET PREVIOUS_MANIFEST_PATH=%ARTIFACTS%\manifest
-  )
-)
-
-IF NOT DEFINED KUDU_SYNC_CMD (
-  :: Install kudu sync
-  echo Installing Kudu Sync
-  call npm install kudusync -g --silent
-  IF !ERRORLEVEL! NEQ 0 goto error
-
-  :: Locally just running "kuduSync" would also work
-  SET KUDU_SYNC_CMD=%appdata%\npm\kuduSync.cmd
-)
 IF NOT DEFINED DEPLOYMENT_TEMP (
   SET DEPLOYMENT_TEMP=%temp%\___deployTemp%random%
   SET CLEAN_LOCAL_DEPLOYMENT_TEMP=true
@@ -61,10 +26,6 @@ IF DEFINED CLEAN_LOCAL_DEPLOYMENT_TEMP (
 IF NOT DEFINED MSBUILD_PATH (
   SET MSBUILD_PATH=%WINDIR%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe
 )
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: Deployment
-:: ----------
-
 
 
 echo Handling ASP.NET 5 Web Application deployment.
@@ -88,8 +49,7 @@ set DNX_HOME=%USERPROFILE%\.dnx
 SET
 
 
-:: 1. Install KRE
-call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';$CmdPathFile='%DNVM_CMD_PATH_FILE%';& '%DEPLOYMENT_SOURCE%\azure\dnvm.ps1' install latest -unstable"
+call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';$CmdPathFile='%DNVM_CMD_PATH_FILE%';& '%DEPLOYMENT_SOURCE%\azure\dnvm.ps1' install latest -a x64 -unstable"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 
@@ -100,16 +60,12 @@ IF EXIST %DNVM_CMD_PATH_FILE% (
 
 echo %PATH%
 
-
-:: 2. Run DNU Restore
 call dnu restore "%DEPLOYMENT_SOURCE%"
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 3. Run DNU Publish
-call dnu publish "D:\home\site\repository\src\GearUp\project.json" --runtime active --out "%DEPLOYMENT_TEMP%" 
+call dnu publish "D:\home\site\repository\GearUp\project.json" --runtime active --out "%DEPLOYMENT_TEMP%" 
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 4. KuduSync
 call robocopy /W:1 /R:3 /NP /E "%DEPLOYMENT_TEMP%" "%DEPLOYMENT_TARGET%"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
