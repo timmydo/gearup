@@ -41,38 +41,15 @@
 		{
 			services.Configure<SiteSettings>(Configuration.GetSection("AppSettings"));
 
-			string platform = Configuration["Platform"];
-
 			this._logger = new LoggerFactory().AddConsole(LogLevel.Information).CreateLogger("GearUp");
 			_logger.LogInformation("Creating Logger");
 			services.AddSingleton<ILogger>(_logger);
 			services.AddSingleton<IUserAuthenticator,UserAuthenticator>();
 
-		
 			services.AddSingleton<IAppBlobStorage, AzureBlobService>();
-			//var dict = new LocalDictionary();
-			//services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
 			services.AddSingleton<IPartitionedKeyValueDictionary, AzureTableDictionary>();
 			
 			services.AddMvc();
-
-#if false
-
-
-				
-				mvcbuilder.Configure<MvcOptions>(options =>
-			{
-				options.OutputFormatters
-						   .Where(f => f.Instance is JsonOutputFormatter)
-						   .Select(f => f.Instance as JsonOutputFormatter)
-						   .First()
-						   .SerializerSettings
-						   .ContractResolver = new CamelCasePropertyNamesContractResolver();
-
-				options.Filters.Add(typeof(RequireHttpsExceptForLocalHostAttribute));
-			});
-#endif
-
 			services.AddDataProtection();
 			services.AddSession();
 			services.AddCaching();
@@ -80,8 +57,7 @@
 			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
 				options.Cookies.ApplicationCookie.AccessDeniedPath = "/Home/AccessDenied";
-			})
-				   .AddDefaultTokenProviders();
+			}).AddDefaultTokenProviders();
 		}
 
 		// Configure is called after ConfigureServices is called.
@@ -144,7 +120,6 @@
 				});
 			});
 
-			// Sign-out to remove the user cookie.
 			app.Map("/logout", signoutApp =>
 			{
 				signoutApp.Run(async context =>
@@ -173,7 +148,7 @@
 					await context.Response.WriteAsync("</body></html>");
 				});
 			});
-			// Add MVC to the request pipeline.
+
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(
