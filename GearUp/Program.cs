@@ -18,14 +18,25 @@
 				.Build();
 
 			string port = System.Environment.GetEnvironmentVariable("HTTP_PLATFORM_PORT");
-			Console.WriteLine("Port: " + (string.IsNullOrEmpty(port) ? "Not set" : port));
-
-			using (application.Start())
+			if (string.IsNullOrEmpty(port))
 			{
-				Console.ReadLine();
+				port = "5000";
 			}
 
-			Console.WriteLine("Exiting...");
+			Console.WriteLine("Port: " + port);
+
+			var addresses = application.GetAddresses();
+			addresses.Clear();
+			addresses.Add("http://localhost:" + port);
+
+			try
+			{
+				application.Run();
+			}
+			finally
+			{
+				Console.WriteLine("Exiting...");
+			}
 		}
 	}
 }
