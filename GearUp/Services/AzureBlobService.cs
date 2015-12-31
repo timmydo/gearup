@@ -9,6 +9,7 @@
 	using Models;
 	using System;
 	using System.Security.Cryptography;
+	using Microsoft.AspNet.WebUtilities;
 	public class AzureBlobService : IAppBlobStorage
     {
 		private SiteSettings _settings;
@@ -53,7 +54,7 @@
 			var ms = new MemoryStream();
 			stream.CopyTo(ms);
 			ms.Seek(0, SeekOrigin.Begin);
-			var guid = Convert.ToBase64String(hash.ComputeHash(ms), Base64FormattingOptions.None);
+			var guid = WebEncoders.Base64UrlEncode(hash.ComputeHash(ms));
 			ms.Seek(0, SeekOrigin.Begin);
 			await this.UploadFile(ms, contentType, this._settings.ImagesContainer, guid);
 			return guid;
