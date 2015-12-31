@@ -60,7 +60,7 @@ IF EXIST %DNVM_CMD_PATH_FILE% (
 
 echo %PATH%
 
-call dnu restore "%DEPLOYMENT_SOURCE%"
+call dnu restore "%DEPLOYMENT_SOURCE%" -f https://www.myget.org/F/aspnetvnext
 IF !ERRORLEVEL! NEQ 0 goto error
 
 call dnu publish "D:\home\site\repository\GearUp\project.json" --runtime active --out "%DEPLOYMENT_TEMP%" 
