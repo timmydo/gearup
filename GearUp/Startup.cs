@@ -95,6 +95,8 @@
 				options.ClientSecret = "ddce01745ef5275c31eea6c2c1b9dea8";
 			});
 
+			app.UseIISPlatformHandler();
+
 			// Choose an authentication type
 			app.Map("/login", signoutApp =>
 			{
