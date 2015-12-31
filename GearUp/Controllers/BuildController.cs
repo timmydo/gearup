@@ -315,8 +315,7 @@
 
 				// do not allow update of creator or images
 				b.Creator = actual.Creator;
-				b.Images = actual.Images;
-
+				
 				actualBstr.Value = JsonConvert.SerializeObject(b);
 
 
