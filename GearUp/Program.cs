@@ -2,7 +2,7 @@
 {
 	using System;
 	using Microsoft.AspNet.Hosting;
-	using GearUp;
+	using System.Linq;
 
 	public class Program
 	{
@@ -26,6 +26,8 @@
 			Console.WriteLine("Port: " + port);
 
 			var addresses = application.GetAddresses();
+			Console.WriteLine("Listening on " + string.Join(", ", addresses));
+
 			addresses.Clear();
 			addresses.Add("http://localhost:" + port);
 
