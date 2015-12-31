@@ -2,7 +2,7 @@
 {
 	using Microsoft.AspNet.Http;
 	using Microsoft.AspNet.Mvc;
-	using Microsoft.Extensions.OptionsModel;
+	using Microsoft.Extensions.Options;
 	using Models;
 	using Newtonsoft.Json;
 	using Shared.Interfaces;

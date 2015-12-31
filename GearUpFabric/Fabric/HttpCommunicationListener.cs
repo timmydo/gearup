@@ -14,8 +14,8 @@
 	{
 		private readonly string publishUri;
 		private readonly CancellationTokenSource processRequestsCancellation = new CancellationTokenSource();
-		private IHostingEngine engine;
-		private IApplication application;
+		private IWebApplication engine;
+		private IDisposable application;
 		private StatelessService svc;
 
 		public HttpCommunicationListener(string uriPrefix, string uriPublished, StatelessService svc)
@@ -32,7 +32,7 @@
 				.AddEnvironmentVariables().Build();
 
 			ServiceEventSource.Current.ServiceMessage(this.svc, "Building engine");
-			this.engine = new WebHostBuilder(config).UseStartup(typeof(GearUp.Web.Startup)).Build();
+			this.engine = new WebApplicationBuilder().UseConfiguration(config).UseStartup(typeof(GearUp.Startup)).Build();
 
 			ServiceEventSource.Current.ServiceMessage(this.svc, "starting");
 			this.application = engine.Start();
@@ -51,9 +51,9 @@
 
 		private void CloseApp()
 		{
-			var appLifetime = this.application.Services.GetRequiredService<IApplicationLifetime>();
-			appLifetime.StopApplication();
-			appLifetime.ApplicationStopping.WaitHandle.WaitOne();
+			//var appLifetime = this.application.Services.GetRequiredService<IApplicationLifetime>();
+			//appLifetime.StopApplication();
+			//appLifetime.ApplicationStopping.WaitHandle.WaitOne();
 		}
 
 		public Task CloseAsync(CancellationToken cancellationToken)

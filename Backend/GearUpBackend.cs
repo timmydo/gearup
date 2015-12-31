@@ -1,23 +1,19 @@
-﻿using Microsoft.ServiceFabric.Data.Collections;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using GearUp.Interfaces;
-using GearUp.Models;
-using Microsoft.ServiceFabric.Services.Remoting;
-using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-using Shared.Interfaces;
-
-namespace GearUpBackend
+﻿namespace GearUpBackend
 {
+	using Microsoft.ServiceFabric.Data.Collections;
+	using Microsoft.ServiceFabric.Services.Communication.Runtime;
+	using Microsoft.ServiceFabric.Services.Remoting;
+	using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+	using Shared.Interfaces;
+	using System;
+	using System.Collections.Generic;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	/// <summary>
 	/// The FabricRuntime creates an instance of this class for each service type instance.
 	/// </summary>
-	public class GearUpBackend : StatefulService, IPartitionedKeyValueDictionary, IService
+	public class GearUpBackend : Microsoft.ServiceFabric.Services.Runtime.StatefulService, IPartitionedKeyValueDictionary, IService
 	{
 
 		private class GearUpTableKey : IKeyValueEntity

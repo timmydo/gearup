@@ -3,7 +3,7 @@
 	using Auth;
 	using Microsoft.AspNet.Mvc;
 	using Microsoft.Extensions.Logging;
-	using Microsoft.Extensions.OptionsModel;
+	using Microsoft.Extensions.Options;
 	using Models;
 	using Shared.Interfaces;
 	using System;

@@ -5,12 +5,12 @@ using System.Threading;
 
 namespace GearUpBackend
 {
-	internal static class Program
+	public class Program
 	{
 		/// <summary>
 		/// This is the entry point of the service host process.
 		/// </summary>
-		private static void Main()
+		public static void Main(string[] args)
 		{
 			try
 			{

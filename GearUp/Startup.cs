@@ -1,4 +1,4 @@
-﻿namespace GearUp.Web
+﻿namespace GearUp
 {
 	using System;
 	using GearUp.Services;
@@ -48,22 +48,12 @@
 			services.AddSingleton<ILogger>(_logger);
 			services.AddSingleton<IUserAuthenticator,UserAuthenticator>();
 
-			if (platform == "local")
-			{
-				services.AddSingleton<IAppBlobStorage, AzureBlobService>();
-				//var dict = new LocalDictionary();
-				//services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
-				services.AddSingleton<IPartitionedKeyValueDictionary, AzureTableDictionary>();
-			}
-			else if (platform == "servicefabric")
-			{
-				services.AddSingleton<AzureBlobService>();
-				var dict = new ServiceFabricPartitionedKeyValueDictionary(new Uri("fabric:/GearUp/BE"));
-				services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
-			}
-			else
-			{
-			}
+		
+			services.AddSingleton<IAppBlobStorage, AzureBlobService>();
+			//var dict = new LocalDictionary();
+			//services.AddSingleton<IPartitionedKeyValueDictionary>(dict);
+			services.AddSingleton<IPartitionedKeyValueDictionary, AzureTableDictionary>();
+			
 			services.AddMvc();
 
 #if false

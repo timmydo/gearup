@@ -5,7 +5,7 @@
 	using System.IO;
 	using System.Threading.Tasks;
 	using GearUp.Interfaces;
-	using Microsoft.Extensions.OptionsModel;
+	using Microsoft.Extensions.Options;
 	using Models;
 	using System;
 	using System.Security.Cryptography;

@@ -1,7 +1,7 @@
-{
+﻿{
   "version": "1.0.0-*",
-  "description": "Backend Console Application",
-  "authors": [ "work" ],
+  "description": "GearUp Web App running on Service Fabric",
+  "authors": [ "timmydo" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
@@ -11,13 +11,14 @@
   },
 
   "dependencies": {
+    "GearUp": "1.0.0-*",
     "Microsoft.ServiceFabric": "4.4.87-preview",
     "Microsoft.ServiceFabric.Services": "1.4.87-preview",
-    "Shared": "1.0.0-*"
+    "Microsoft.ServiceFabric.AspNet.Hosting": "1.0.0-rc1"
   },
 
   "commands": {
-    "Backend": "Backend"
+    "GearUpFabric": "GearUpFabric"
   },
 
   "frameworks": {

@@ -1,6 +1,7 @@
 {
   "version": "1.0.0-*",
   "userSecretsId": "gearup-71a91bfc-97ed-43eb-8c0d-efd9b2d923be",
+
   "compilationOptions": {
     "emitEntryPoint": true
   },
@@ -29,16 +30,10 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Console": "1.0.0-*",
     "WindowsAzure.Storage": "6.2.2-preview",
-    "Microsoft.ServiceFabric": "4.4.87-preview",
-    "Microsoft.ServiceFabric.Services": "1.4.87-preview",
-    "Microsoft.ServiceFabric.AspNet.Hosting": "1.0.0-rc1",
     "Shared": "1.0.0-*"
   },
   "commands": {
-    "run": "run",
-    "web": "Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5000",
-    "gen": "Microsoft.Extensions.CodeGeneration",
-    "fabric": "Microsoft.ServiceFabric.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener"
+    "GearUp": "GearUp"
   },
   "frameworks": {
     "dnx451": {

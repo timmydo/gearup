@@ -1,12 +1,11 @@
-﻿using Microsoft.ServiceFabric.Services.Remoting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shared.Interfaces
 {
-    public interface IPartitionedKeyValueDictionary : IService
+    public interface IPartitionedKeyValueDictionary
     {
 		// return string.empty if it doesn't exist
 		Task<IKeyValueEntity> GetKeyAsync(string key);

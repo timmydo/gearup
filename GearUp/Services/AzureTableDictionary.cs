@@ -2,7 +2,7 @@
 {
 	using GearUp.Models;
 	using Microsoft.Extensions.Logging;
-	using Microsoft.Extensions.OptionsModel;
+	using Microsoft.Extensions.Options;
 	using Shared.Interfaces;
 	using System;
 	using System.Collections.Generic;
