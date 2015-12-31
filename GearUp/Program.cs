@@ -15,10 +15,15 @@
 				.UseStartup<Startup>()
 				.Build();
 
+			string port = System.Environment.GetEnvironmentVariable("HTTP_PLATFORM_PORT");
+			Console.WriteLine("Port: " + (string.IsNullOrEmpty(port) ? "Not set" : port));
+
 			using (application.Start())
 			{
 				Console.ReadLine();
 			}
+
+			Console.WriteLine("Exiting...");
 		}
 	}
 }
