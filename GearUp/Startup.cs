@@ -63,6 +63,8 @@
 		// Configure is called after ConfigureServices is called.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
+			app.UseIISPlatformHandler();
+
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
 			{
 				app.UseDeveloperExceptionPage();
@@ -95,7 +97,6 @@
 				options.ClientSecret = "ddce01745ef5275c31eea6c2c1b9dea8";
 			});
 
-			app.UseIISPlatformHandler();
 
 			// Choose an authentication type
 			app.Map("/login", signoutApp =>
