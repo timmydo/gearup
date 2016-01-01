@@ -15,6 +15,7 @@
 	using Shared.Interfaces;
 	using Models;
 	using Auth;
+	using Microsoft.AspNet.HttpOverrides;
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
@@ -63,6 +64,11 @@
 		// Configure is called after ConfigureServices is called.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
+			app.UseOverrideHeaders(h => new OverrideHeaderOptions()
+			{
+				ForwardedOptions = ForwardedHeaders.All
+			});
+
 			app.UseIISPlatformHandler();
 
 			if (string.Equals(env.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))

@@ -31,7 +31,8 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0-*",
     "WindowsAzure.Storage": "6.2.2-preview",
     "Shared": "1.0.0-*",
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-*"
+    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-*",
+    "Microsoft.AspNet.HttpOverrides": "1.0.0-*"
   },
   "commands": {
     "GearUp": "GearUp"
