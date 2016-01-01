@@ -32,7 +32,8 @@
     "WindowsAzure.Storage": "6.2.2-preview",
     "Shared": "1.0.0-*",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-*",
-    "Microsoft.AspNet.HttpOverrides": "1.0.0-*"
+    "Microsoft.AspNet.HttpOverrides": "1.0.0-*",
+    "System.Linq": "4.0.1-*"
   },
   "commands": {
     "GearUp": "GearUp"

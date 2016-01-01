@@ -16,6 +16,8 @@
 	using Models;
 	using Auth;
 	using Microsoft.AspNet.HttpOverrides;
+	using System.Linq;
+
 	public class ApplicationUser : IdentityUser { }
 
 	public class Startup
@@ -67,6 +69,29 @@
 			app.UseOverrideHeaders(h => new OverrideHeaderOptions()
 			{
 				ForwardedOptions = ForwardedHeaders.All
+			});
+
+			app.Use(next =>
+			{
+				return (HttpContext c) =>
+				{
+					c.Request.Headers.Keys.ToList().ForEach(key =>
+					{
+						string val = c.Request.Headers[key];
+						if (!string.IsNullOrEmpty(val) && val.Length < 100)
+						{
+							Console.WriteLine(key + ": " + val);
+						}
+						else
+						{
+							Console.WriteLine(key + ": [snip]");
+						}
+					});
+
+					Console.WriteLine(c.Request.Method + ": " + c.Request.Scheme + "://" + c.Request.Host + c.Request.Path);
+					Console.WriteLine("\n");
+					return next(c);
+				};
 			});
 
 			app.UseIISPlatformHandler();
