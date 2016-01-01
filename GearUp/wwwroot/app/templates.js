@@ -4383,10 +4383,10 @@ Ember.TEMPLATES["login"] = Ember.HTMLBars.template((function() {
       var el3 = dom.createTextNode("Choose a provider");
       dom.appendChild(el2, el3);
       dom.appendChild(el1, el2);
-      var el2 = dom.createTextNode("\n	\n	");
+      var el2 = dom.createTextNode("\n	");
       dom.appendChild(el1, el2);
       var el2 = dom.createElement("a");
-      dom.setAttribute(el2,"href","/login?authscheme=Google");
+      dom.setAttribute(el2,"href","/login?authtype=Google");
       var el3 = dom.createElement("div");
       dom.setAttribute(el3,"class","btn btn-lg btn-primary btn-block");
       dom.setAttribute(el3,"type","submit");
@@ -4401,7 +4401,7 @@ Ember.TEMPLATES["login"] = Ember.HTMLBars.template((function() {
       var el2 = dom.createTextNode("\n	");
       dom.appendChild(el1, el2);
       var el2 = dom.createElement("a");
-      dom.setAttribute(el2,"href","/login?authscheme=Facebook");
+      dom.setAttribute(el2,"href","/login?authtype=Facebook");
       var el3 = dom.createElement("div");
       dom.setAttribute(el3,"class","btn btn-lg btn-primary btn-block");
       dom.setAttribute(el3,"type","submit");

@@ -10,5 +10,12 @@
     "BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
     "ImagesContainer": "uploadimages",
     "CdnEndpoint": "https://az745127.vo.msecnd.net/"
+  },
+
+  "OAuth": {
+    "GoogleClientId": "332102071004-38tstqp212sbssfgkn5fil5s2qhs9upl.apps.googleusercontent.com",
+    "GoogleClientSecret": "1HBAvwhVIeZF6Jo0O71XeJud",
+    "FacebookClientId": "1524415717839570",
+    "FacebookClientSecret": "ddce01745ef5275c31eea6c2c1b9dea8"
   }
 }

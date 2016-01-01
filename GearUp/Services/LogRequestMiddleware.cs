@@ -33,7 +33,6 @@ namespace GearUp.Services
     {
 		private RequestDelegate _next;
 		private LogRequestOptions _options;
-		private ILogger logger;
 
 		public LogRequestMiddleware(RequestDelegate next, LogRequestOptions options)
 		{

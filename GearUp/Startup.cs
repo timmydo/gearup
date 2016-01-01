@@ -67,7 +67,7 @@
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 			app.UseOverrideHeaders(config => config.ForwardedOptions = ForwardedHeaders.All);
-			app.UseRequestLogger("post-override");
+			//app.UseRequestLogger("post-override");
 
 			app.UseIISPlatformHandler();
 
@@ -93,14 +93,14 @@
 
 			app.UseGoogleAuthentication(options =>
 			{
-				options.ClientId = "332102071004-38tstqp212sbssfgkn5fil5s2qhs9upl.apps.googleusercontent.com";
-				options.ClientSecret = "1HBAvwhVIeZF6Jo0O71XeJud";
+				options.ClientId = Configuration["OAuth:GoogleClientId"];
+				options.ClientSecret = Configuration["OAuth:GoogleClientSecret"];
 			});
 
 			app.UseFacebookAuthentication(options =>
 			{
-				options.ClientId = "1524415717839570";
-				options.ClientSecret = "ddce01745ef5275c31eea6c2c1b9dea8";
+				options.ClientId = Configuration["OAuth:FacebookClientId"];
+				options.ClientSecret = Configuration["OAuth:FacebookClientSecret"];
 			});
 
 
