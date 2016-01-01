@@ -66,13 +66,7 @@
 		// Configure is called after ConfigureServices is called.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
-			app.UseRequestLogger("pre-middleware");
-
-			app.UseOverrideHeaders(h => new OverrideHeaderOptions()
-			{
-				ForwardedOptions = ForwardedHeaders.All
-			});
-
+			app.UseOverrideHeaders(config => config.ForwardedOptions = ForwardedHeaders.All);
 			app.UseRequestLogger("post-override");
 
 			app.UseIISPlatformHandler();
