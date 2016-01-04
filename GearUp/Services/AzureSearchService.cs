@@ -63,7 +63,8 @@
 				},
 				Suggesters = new List<Suggester>() {
 					new Suggester("default", SuggesterSearchMode.AnalyzingInfixMatching, "Title", "Parts")
-				}
+				},
+				CorsOptions = new CorsOptions(new List<string> { "*" })
 			};
 
 			this._serviceClient.Indexes.CreateOrUpdate(this._index);
