@@ -4,8 +4,6 @@
     "CookieHmacKey": "njhUnWN2rVH8N5pq9zlQYE3SvVPP/wf9dReUQhzzRMtkALSw2w4FdL3YjTCe2V4/nxVgMGy+6jVasjP1JBwBAQ==",
     "LoginPath": "/login",
     "SearchName": "gearbuilder",
-    "SearchIndexName": "localtest",
-    "SearchQueryKey": "ECA36C018F6E3D63C24062C94AB43082",
     "TableStorageTableName": "gearuptable",
     "BlobEndpoint": "https://gearuptest.blob.core.windows.net/",
     "ImagesContainer": "uploadimages",

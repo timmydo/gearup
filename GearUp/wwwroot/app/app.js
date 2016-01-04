@@ -745,14 +745,12 @@ var MyAppData = (function () {
     };
     MyAppData.prototype.searchIndex = function (text) {
         var prom = new Ember.RSVP.Promise(function (resolve, reject) {
-            // fixme rename mainindexname 
             Ember.$.ajax({
-                url: App.SearchEndpoint + '/indexes/' + App.SearchIndexName + '/docs?api-version=2015-02-28&search=' + text,
+                url: '/api/search/builds/' + text,
                 type: 'GET',
                 dataType: 'json',
                 success: function (x) { resolve(x); },
                 error: function (x) { reject(x); },
-                beforeSend: function (xhr) { xhr.setRequestHeader('api-key', App.SearchQueryKey); }
             });
         });
         return prom;
@@ -762,12 +760,12 @@ var MyAppData = (function () {
         var prom = new Ember.RSVP.Promise(function (resolve, reject) {
             // fixme rename mainindexname 
             Ember.$.ajax({
-                url: App.SearchEndpoint + '/indexes/' + App.SearchIndexName + '/docs/suggest?api-version=2015-02-28&suggesterName=default&fuzzy=true&search=' + text,
+                url: 'https://gearbuilder.search.windows.net/indexes/builds/docs/suggest?api-version=2015-02-28&suggesterName=default&fuzzy=true&search=' + text,
                 type: 'GET',
                 dataType: 'json',
                 success: function (x) { resolve(x); },
                 error: function (x) { reject(x); },
-                beforeSend: function (xhr) { xhr.setRequestHeader('api-key', App.SearchQueryKey); }
+                beforeSend: function (xhr) { xhr.setRequestHeader('api-key', 'ECA36C018F6E3D63C24062C94AB43082'); }
             });
         });
         return prom;
@@ -1158,15 +1156,15 @@ App.RegisterController = Ember.Controller.extend({});
 App.SearchRoute = Ember.Route.extend({
     model: function (params) {
         return App.Data.searchIndex(params.q).then(function (res) {
-            var ids = [];
-            res.value.forEach(function (elem) {
-                ids.push(elem.Id);
+            var barray = Ember.A();
+            res.forEach(function (elem) {
+                if (!App.Data.builds[elem.Id]) {
+                    var item = App.BuildObject.create(elem);
+                    App.Data.builds[elem.Id] = item;
+                }
+                barray.pushObject(App.Data.builds[elem.Id]);
             });
-            var obj = { "builds": ids, "query": params.q };
-            var l = App.BuildListObject.create(obj);
-            App.Data.fillListBuilds(l);
-            console.log(l);
-            return l;
+            return { "Builds": barray, "Query": params.q };
         });
     },
     actions: {}

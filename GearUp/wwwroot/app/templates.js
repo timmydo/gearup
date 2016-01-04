@@ -4370,7 +4370,7 @@ Ember.TEMPLATES["login"] = Ember.HTMLBars.template((function() {
     hasRendered: false,
     build: function build(dom) {
       var el0 = dom.createDocumentFragment();
-      var el1 = dom.createTextNode("\n\n\n");
+      var el1 = dom.createTextNode("\n");
       dom.appendChild(el0, el1);
       var el1 = dom.createElement("form");
       dom.setAttribute(el1,"class","form-signin");
@@ -4634,7 +4634,7 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
             fragment = this.build(dom);
           }
           var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 3]),0,1);
-          block(env, morph0, context, "each", [get(env, context, "userBuildList.lists")], {"keyword": "buildList"}, child0, null);
+          block(env, morph0, context, "each", [get(env, context, "userBuildList.Lists")], {"keyword": "buildList"}, child0, null);
           return fragment;
         }
       };
@@ -4767,7 +4767,7 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-            content(env, morph0, context, "part.title");
+            content(env, morph0, context, "part.Title");
             return fragment;
           }
         };
@@ -4807,7 +4807,7 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
           }
           if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
           var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-          block(env, morph0, context, "if", [get(env, context, "part.url")], {}, child0, child1);
+          block(env, morph0, context, "if", [get(env, context, "part.Url")], {}, child0, child1);
           return fragment;
         }
       };
@@ -4929,10 +4929,10 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
         var morph3 = dom.createMorphAt(dom.childAt(element4, [1]),0,1);
         var morph4 = dom.createMorphAt(dom.childAt(element4, [3, 1]),0,1);
         inline(env, morph0, context, "buildTitleAnchor", [get(env, context, "build")], {});
-        inline(env, morph1, context, "modifiedFrom", [get(env, context, "build.modified")], {});
+        inline(env, morph1, context, "modifiedFrom", [get(env, context, "build.Modified")], {});
         block(env, morph2, context, "if", [get(env, context, "userLoginKey")], {}, child0, null);
-        block(env, morph3, context, "each", [get(env, context, "build.images")], {"keyword": "image"}, child1, null);
-        block(env, morph4, context, "each", [get(env, context, "build.parts")], {"keyword": "part"}, child2, null);
+        block(env, morph3, context, "each", [get(env, context, "build.Images")], {"keyword": "image"}, child1, null);
+        block(env, morph4, context, "each", [get(env, context, "build.Parts")], {"keyword": "part"}, child2, null);
         return fragment;
       }
     };
@@ -4948,9 +4948,13 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
       dom.appendChild(el0, el1);
       var el1 = dom.createElement("div");
       dom.setAttribute(el1,"class","row");
-      var el2 = dom.createTextNode("\nSearch for ");
+      var el2 = dom.createTextNode("\nSearch for \"");
       dom.appendChild(el1, el2);
-      var el2 = dom.createTextNode(". Result count: ");
+      var el2 = dom.createTextNode("\"\n");
+      dom.appendChild(el1, el2);
+      var el2 = dom.createElement("br");
+      dom.appendChild(el1, el2);
+      var el2 = dom.createTextNode("\nResult count: ");
       dom.appendChild(el1, el2);
       var el2 = dom.createTextNode("	\n");
       dom.appendChild(el1, el2);
@@ -4995,11 +4999,11 @@ Ember.TEMPLATES["search"] = Ember.HTMLBars.template((function() {
       }
       var element5 = dom.childAt(fragment, [1]);
       var morph0 = dom.createMorphAt(element5,0,1);
-      var morph1 = dom.createMorphAt(element5,1,2);
+      var morph1 = dom.createMorphAt(element5,3,4);
       var morph2 = dom.createMorphAt(dom.childAt(fragment, [3, 1]),0,1);
-      content(env, morph0, context, "model.query");
-      content(env, morph1, context, "model.builds.length");
-      block(env, morph2, context, "each", [get(env, context, "model.builds")], {"keyword": "build"}, child0, null);
+      content(env, morph0, context, "model.Query");
+      content(env, morph1, context, "model.Builds.length");
+      block(env, morph2, context, "each", [get(env, context, "model.Builds")], {"keyword": "build"}, child0, null);
       return fragment;
     }
   };

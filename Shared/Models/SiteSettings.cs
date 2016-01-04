@@ -11,8 +11,6 @@ namespace GearUp.Models
 		public string CdnEndpoint { get; set; }
 		public string ImagesContainer { get; set; }
 		public string SearchName { get; set; }
-		public string SearchIndexName { get; set; }
-		public string SearchQueryKey { get; set; }
 		public string SearchApiKey { get; set; }
 		public string CookieHmacKey { get; set; }
 

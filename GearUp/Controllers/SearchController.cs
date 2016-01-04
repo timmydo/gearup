@@ -20,12 +20,12 @@ namespace GearUp.Controllers
             this._logger = logger;
         }
 
-        [Produces("application/json", "text/json")]
-        [HttpGet("builds/{str}")]
-        public async Task<Build[]> SearchBuilds(string str)
-        {
-            var b = await this._search.SearchBuilds(str);
-            return b;
-        }
-    }
+		[Produces("application/json", "text/json")]
+		[HttpGet("builds/{str}")]
+		public async Task<Build[]> SearchBuilds(string str)
+		{
+			var b = await this._search.SearchBuildsAsync(str);
+			return b;
+		}
+	}
 }

@@ -5,15 +5,17 @@
 App.SearchRoute = Ember.Route.extend({
 	model: function (params) {
 		return App.Data.searchIndex(params.q).then((res) => {
-			var ids = [];
-			res.value.forEach((elem) => {
-				ids.push(elem.Id);
+			var barray = Ember.A();
+			res.forEach((elem) => {
+				if (!App.Data.builds[elem.Id]) {
+					var item = App.BuildObject.create(elem);
+					App.Data.builds[elem.Id] = item;
+				}
+				
+				barray.pushObject(App.Data.builds[elem.Id]);
 			});
-			var obj = {"builds": ids, "query": params.q};
-			var l = App.BuildListObject.create(obj);
-			App.Data.fillListBuilds(l);
-			console.log(l);
-			return l;
+
+			return { "Builds": barray, "Query": params.q };
 		});
 	},
 	actions: {

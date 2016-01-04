@@ -11,6 +11,5 @@
 /// <reference path="../bower_components/seiyria-bootstrap-slider/js/bootstrap-slider.js" />
 /// <reference path="../bower_components/typeahead.js/dist/typeahead.bundle.js" />
 /// <reference path="../gruntfile.js" />
-/// <reference path="app/app.js" />
 /// <reference path="lib/vendor.js" />
 /// <reference path="lib/vendor-dev.js" />

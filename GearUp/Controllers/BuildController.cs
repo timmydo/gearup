@@ -26,6 +26,7 @@
 		public readonly static string BuildNamespace = "b/";
 		public readonly static string RecentBuildNamespace = "rb/";
 		public readonly static string RecentBuildName = "*";
+		private IAppSearchService _search;
 
 		public class DeleteImageParamInfo
 		{
@@ -35,12 +36,13 @@
 		}
 
 
-		public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService, IUserAuthenticator ua)
+		public BuildController(ILogger logger, IPartitionedKeyValueDictionary data, IAppBlobStorage blobService, IUserAuthenticator ua, IAppSearchService ss)
 		{
 			this._logger = logger;
 			this._data = data;
 			this._blobService = blobService;
 			this._ua = ua;
+			this._search = ss;
 		}
 
 
@@ -88,6 +90,8 @@
 			await ListHelper.AddToList(_data, UserController.UserBuildNamespace, uid.UserId, b.Id);
 			await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
 
+			await this._search.AddBuildsToIndexAsync(new Build[] { b });
+
 			return b;
 		}
 
@@ -118,6 +122,7 @@
 			await this._data.DeleteKeyAsync(BuildNamespace + build.Id);
 			await ListHelper.RemoveFromList(_data, UserController.UserBuildNamespace, uid.UserId, build.Id);
 			await ListHelper.RemoveFromQueue(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, build.Id);
+			await this._search.RemoveBuildsFromIndexAsync(new Build[] { build });
 
 			return "Deleted";
 
@@ -322,6 +327,8 @@
 				if (await actualBstr.UpdateAsync())
 				{
 					await ListHelper.EnqueueList(_data, BuildController.RecentBuildNamespace, BuildController.RecentBuildName, b.Id);
+					await this._search.AddBuildsToIndexAsync(new Build[] { b });
+
 					return "saved";
 				}
 				else

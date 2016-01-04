@@ -33,7 +33,8 @@
     "Shared": "1.0.0-*",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-*",
     "Microsoft.AspNet.HttpOverrides": "1.0.0-*",
-    "System.Linq": "4.0.1-*"
+    "System.Linq": "4.0.1-*",
+    "Microsoft.Azure.Search": "0.13.0-preview"
   },
   "commands": {
     "GearUp": "GearUp"

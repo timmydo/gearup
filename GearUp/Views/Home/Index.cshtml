@@ -3,9 +3,6 @@
 <script type="text/javascript">
 	(function () {
 		App.ImageEndpoint = '@(ViewBag.SiteSettings.CdnEndpoint)' + '@(ViewBag.SiteSettings.ImagesContainer)';
-		App.SearchQueryKey = '@(ViewBag.SiteSettings.SearchQueryKey)';
-		App.SearchIndexName = '@(ViewBag.SiteSettings.SearchIndexName)';
-		App.SearchEndpoint = 'https://' + '@(ViewBag.SiteSettings.SearchName)' + '.search.windows.net';
 
 		window['UserIsAuthenticated'] = @ViewBag.UserIsAuthenticated.ToString().ToLowerInvariant();
 		window['UserIdentityName'] = '@ViewBag.UserIdentityName';

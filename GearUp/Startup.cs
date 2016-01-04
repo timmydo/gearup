@@ -50,6 +50,7 @@
 			services.AddSingleton<IUserAuthenticator,UserAuthenticator>();
 
 			services.AddSingleton<IAppBlobStorage, AzureBlobService>();
+			services.AddSingleton<IAppSearchService, AzureSearchService>();
 			services.AddSingleton<IPartitionedKeyValueDictionary, AzureTableDictionary>();
 			
 			services.AddMvc();

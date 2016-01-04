@@ -35,7 +35,8 @@ namespace GearUp.Test.Controllers
 			var bc = new BuildController(_serviceProvider.GetRequiredService<ILogger>(),
 				_serviceProvider.GetRequiredService<IPartitionedKeyValueDictionary>(),
 				_serviceProvider.GetRequiredService<IAppBlobStorage>(),
-				_serviceProvider.GetRequiredService<IUserAuthenticator>()
+				_serviceProvider.GetRequiredService<IUserAuthenticator>(),
+				_serviceProvider.GetRequiredService<IAppSearchService>()
 				);
 
 			bc.ControllerContext.HttpContext = new DefaultHttpContext();

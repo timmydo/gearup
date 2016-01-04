@@ -486,14 +486,12 @@ class MyAppData {
 
 	searchIndex(text) {
 		var prom = new Ember.RSVP.Promise((resolve, reject) => {
-			// fixme rename mainindexname 
 			Ember.$.ajax({
-				url: App.SearchEndpoint+'/indexes/' + App.SearchIndexName + '/docs?api-version=2015-02-28&search='+text,
+				url: '/api/search/builds/'+text,
           		type: 'GET',
           		dataType: 'json',
           		success: function(x) { resolve(x); },
           		error: function(x) { reject(x); },
-          		beforeSend: function(xhr) {xhr.setRequestHeader('api-key', App.SearchQueryKey);}
 			});
 		});
 		
@@ -505,12 +503,12 @@ class MyAppData {
 		var prom = new Ember.RSVP.Promise((resolve, reject) => {
 			// fixme rename mainindexname 
 			Ember.$.ajax({
-				url: App.SearchEndpoint+'/indexes/' + App.SearchIndexName + '/docs/suggest?api-version=2015-02-28&suggesterName=default&fuzzy=true&search='+text,
-          		type: 'GET',
-          		dataType: 'json',
-          		success: function(x) { resolve(x); },
-          		error: function(x) { reject(x); },
-          		beforeSend: function(xhr) {xhr.setRequestHeader('api-key', App.SearchQueryKey);}
+				url: 'https://gearbuilder.search.windows.net/indexes/builds/docs/suggest?api-version=2015-02-28&suggesterName=default&fuzzy=true&search=' + text,
+				type: 'GET',
+				dataType: 'json',
+				success: function (x) { resolve(x); },
+				error: function (x) { reject(x); },
+				beforeSend: function (xhr) { xhr.setRequestHeader('api-key', 'ECA36C018F6E3D63C24062C94AB43082'); }
 			});
 		});
 		
